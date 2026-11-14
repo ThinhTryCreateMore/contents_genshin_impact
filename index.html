@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Genshin Roster & Randomizer Sync</title>
+  <title>Contents Nguyên Thần</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
@@ -478,14 +478,23 @@
     }
     #splash.out { opacity: 0; pointer-events: none; }
     .splash-word {
-      font-size: clamp(26px, 6vw, 54px); font-weight: 300; color: #fff;
-      letter-spacing: .42em; padding-left: .42em;
-      text-shadow: 0 0 28px rgba(255,255,255,.35);
-      opacity: 0; animation: splashWord 3.5s ease forwards;
+        font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: clamp(48px, 11vw, 120px);
+  letter-spacing: .01em;
+  line-height: 1;
+  color: #3a3a3c;
     }
     .splash-sub {
-      margin-top: 18px; font-size: 11px; letter-spacing: .4em; text-transform: uppercase;
-      color: rgba(255,255,255,.45); opacity: 0; animation: splashSub 3.5s ease forwards;
+     font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: clamp(11px, 1.6vw, 18px);
+  letter-spacing: .42em;          /* thưa ra, đây là nét đặc trưng của dòng phụ */
+  text-transform: uppercase;
+  margin-top: 14px;
+  padding-left: .42em;            /* bù phần khoảng cách thừa ở cuối để chữ nằm đúng giữa */
+  color: #3a3a3c;
+}
     }
     @keyframes splashWord {
       0%   { opacity: 0; letter-spacing: .7em; filter: blur(8px); }
@@ -612,7 +621,7 @@
 <!-- MÀN HÌNH MỞ ĐẦU (SPLASH) -->
 <div id="splash">
   <div class="splash-word">HOYOVERSE</div>
-  <div class="splash-sub">Fan-made co-op tool</div>
+  <div class="splash-sub">Made by Ngọt</div>
 </div>
 
 <!-- CÁNH CỬA: HIỆN SAU KHI ĐĂNG NHẬP (CELESTIA FULLSCREEN SVG SCENE) -->
