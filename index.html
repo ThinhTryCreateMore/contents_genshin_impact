@@ -291,6 +291,54 @@
     }
     .tag:hover { border-color: rgba(227,194,122,.5); color: var(--gold-bright); background: rgba(227,194,122,.07); }
 
+
+    /* ---------- Avatar nhân vật ---------- */
+    .char-avatar {
+      width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: top center;
+      flex-shrink: 0; background: rgba(7, 11, 22, 0.85);
+      border: 1px solid rgba(227, 194, 122, 0.35);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    }
+    .char-card.owned .char-avatar {
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 10px rgba(227, 194, 122, 0.45);
+    }
+    .char-avatar-fallback {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 15px;
+      color: var(--gold); background: rgba(227, 194, 122, 0.1);
+      border: 1px solid rgba(227, 194, 122, 0.25);
+    }
+    .slot-avatar {
+      width: 54px; height: 54px; border-radius: 50%; object-fit: cover; object-position: top center;
+      flex-shrink: 0; background: rgba(7, 11, 22, 0.9);
+      border: 1.5px solid var(--gold);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(227, 194, 122, 0.25);
+    }
+    .slot-avatar-fallback {
+      width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 22px;
+      color: var(--gold-bright); background: rgba(227, 194, 122, 0.14);
+      border: 1.5px solid var(--gold);
+    }
+    .tag-with-icon {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 10px 3px 4px; margin: 3px 4px 3px 0;
+      border-radius: 999px; font-size: 12px; color: #d8def0;
+      background: rgba(255, 255, 255, 0.045); border: 1px solid var(--line-soft);
+      transition: all .2s ease;
+    }
+    .tag-with-icon:hover {
+      border-color: rgba(227, 194, 122, 0.55); color: var(--gold-bright);
+      background: rgba(227, 194, 122, 0.09);
+    }
+    .tag-avatar {
+      width: 22px; height: 22px; border-radius: 50%; object-fit: cover; object-position: top center;
+      background: rgba(7, 11, 22, 0.9); border: 1px solid rgba(227, 194, 122, 0.3);
+    }
+
     /* ---------- Lưới nhân vật ---------- */
     .char-card {
       position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -874,6 +922,57 @@
     let userCharactersMap = {};
     let myCharacterIds = new Set();
 
+
+    // Tự động ánh xạ tên nhân vật sang link icon chuẩn Enka/Ambr CDN nếu cột icon_url chưa có
+    const CDN_SLUG_OVERRIDES = {
+      'traveller': 'PlayerBoy', 'traveler': 'PlayerBoy', 'aether': 'PlayerBoy', 'lumine': 'PlayerGirl',
+      'nhà lữ hành': 'PlayerBoy', 'nha lu hanh': 'PlayerBoy',
+      'hu tao': 'Hutao', 'raiden shogun': 'Shougun', 'raiden': 'Shougun',
+      'kamisato ayaka': 'Ayaka', 'kamisato ayato': 'Ayato',
+      'kaedehara kazuha': 'Kazuha', 'sangonomiya kokomi': 'Kokomi',
+      'arataki itto': 'Itto', 'kujou sara': 'Sara', 'kuki shinobu': 'Shinobu',
+      'shikanoin heizou': 'Heizou', 'yae miko': 'Yae', 'yoimiya': 'Yoimiya',
+      'kirara': 'Momoka', 'chiori': 'Chiori', 'thoma': 'Tohma', 'gorou': 'Gorou', 'sayu': 'Sayu',
+      'yun jin': 'Yunjin', 'yanfei': 'Feiyan', 'xianyun': 'Liuyun', 'baizhu': 'Baizhuer',
+      'alhaitham': 'Alhatham', 'wanderer': 'Wanderer', 'scaramouche': 'Wanderer',
+      'lyney': 'Liney', 'lynette': 'Linette', 'freminet': 'Freminet',
+      'neuvillette': 'Neuvillette', 'wriothesley': 'Wriothesley', 'furina': 'Furina',
+      'charlotte': 'Charlotte', 'navia': 'Navia', 'chevreuse': 'Chevreuse',
+      'gaming': 'Gaming', 'arlecchino': 'Arlecchino', 'clorinde': 'Clorinde',
+      'sigewinne': 'Sigewinne', 'emilie': 'Emilie',
+      'kachina': 'Kachina', 'kinich': 'Kinich', 'mualani': 'Mualani', 'xilonen': 'Xilonen',
+      'chasca': 'Chasca', 'ororon': 'Olorun', 'mavuika': 'Mavuika', 'citlali': 'Citlali',
+      'lan yan': 'Lanyan', 'yumemizuki mizuki': 'Mizuki', 'varesa': 'Varesa', 'iansan': 'Iansan',
+      'escofier': 'Escoffier', 'escoffier': 'Escoffier', 'ifa': 'Ifa', 'skirk': 'Skirk', 'dahlia': 'Dahlia',
+      'jean': 'Qin', 'amber': 'Ambor', 'noelle': 'Noel', 'ningguang': 'Ningguang',
+      'xingqiu': 'Xingqiu', 'chongyun': 'Chongyun', 'tartaglia': 'Tartaglia', 'childe': 'Tartaglia'
+    };
+
+    function getCharacterIconUrl(charObj) {
+      if (!charObj) return '';
+      if (charObj.icon_url && String(charObj.icon_url).trim()) {
+        return String(charObj.icon_url).trim();
+      }
+      const rawName = String(charObj.name || '').trim();
+      if (!rawName) return '';
+      const lower = rawName.toLowerCase();
+      let slug = CDN_SLUG_OVERRIDES[lower];
+      if (!slug) {
+        const parts = rawName.split(/\s+/);
+        const lastWord = parts[parts.length - 1].replace(/[^a-zA-Z0-9]/g, '');
+        slug = lastWord ? lastWord.charAt(0).toUpperCase() + lastWord.slice(1) : '';
+      }
+      return slug ? `https://enka.network/ui/UI_AvatarIcon_${slug}.png` : '';
+    }
+
+    function renderAvatarImg(charObj, imgClass, fallbackClass) {
+      const name = charObj ? charObj.name : '?';
+      const initial = esc(name.charAt(0).toUpperCase());
+      const url = getCharacterIconUrl(charObj);
+      if (!url) return `<span class="${fallbackClass}">${initial}</span>`;
+      return `<img src="${esc(url)}" alt="${esc(name)}" class="${imgClass}" loading="lazy" onerror="this.outerHTML='<span class=\'${fallbackClass}\'>${initial}</span>'" />`;
+    }
+
     function esc(str) {
       return String(str ?? '').replace(/[&<>"']/g, ch => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -1159,11 +1258,16 @@
 
       resultDiv.innerHTML = results.map((item, idx) => {
         const isDuplicate = charCounts[item.character_name] > 1;
+        const charObj = allCharacters.find(c => c.id === item.character_id) || { name: item.character_name, icon_url: item.icon_url };
+        const avatarHtml = renderAvatarImg(charObj, 'slot-avatar', 'slot-avatar-fallback');
         return `
           <div class="slot-card ${isDuplicate ? 'dup' : ''}" style="animation-delay:${idx * 90}ms">
-            <div class="min-w-0">
-              <div class="slot-meta">Slot ${idx + 1} &middot; ${esc(item.username)}</div>
-              <div class="slot-name truncate">${esc(item.character_name)}</div>
+            <div class="flex items-center gap-3.5 min-w-0">
+              ${avatarHtml}
+              <div class="min-w-0">
+                <div class="slot-meta">Slot ${idx + 1} &middot; ${esc(item.username)}</div>
+                <div class="slot-name truncate">${esc(item.character_name)}</div>
+              </div>
             </div>
             <div class="text-right shrink-0">
               <span class="slot-num">#${esc(item.random_number)}</span>
@@ -1225,9 +1329,13 @@
 
       grid.innerHTML = filtered.map(char => {
         const owned = myCharacterIds.has(char.id);
+        const avatarHtml = renderAvatarImg(char, 'char-avatar', 'char-avatar-fallback');
         return `
           <button onclick="toggleCharacter(${char.id})" class="char-card ${owned ? 'owned' : ''}">
-            <span class="truncate">${esc(char.name)}</span>
+            <div class="flex items-center gap-2.5 min-w-0">
+              ${avatarHtml}
+              <span class="truncate">${esc(char.name)}</span>
+            </div>
             <span class="mark">${owned ? '&#10003;' : ''}</span>
           </button>
         `;
@@ -1267,13 +1375,19 @@
 
       tbody.innerHTML = allUsers.map((user, idx) => {
         const charIds = userCharactersMap[user.id] || [];
-        const charNames = charIds
-          .map(id => allCharacters.find(c => c.id === id)?.name)
+        const charObjs = charIds
+          .map(id => allCharacters.find(c => c.id === id))
           .filter(Boolean)
-          .sort();
+          .sort((a, b) => a.name.localeCompare(b.name));
 
-        const badges = charNames.length > 0
-          ? charNames.map(name => `<span class="tag">${esc(name)}</span>`).join('')
+        const badges = charObjs.length > 0
+          ? charObjs.map(c => {
+              const iconUrl = getCharacterIconUrl(c);
+              const imgTag = iconUrl
+                ? `<img src="${esc(iconUrl)}" alt="" class="tag-avatar" loading="lazy" onerror="this.style.display='none'" />`
+                : '';
+              return `<span class="tag-with-icon">${imgTag}<span>${esc(c.name)}</span></span>`;
+            }).join('')
           : `<span class="italic text-xs" style="color: var(--ink-mute);">Chưa chọn nhân vật nào</span>`;
 
         return `
@@ -1281,7 +1395,7 @@
             <td class="py-4 px-5 text-center"><span class="rank">${idx + 1}</span></td>
             <td class="py-4 px-5">
               <div class="font-display text-xl font-bold" style="color: var(--gold-bright);">${esc(user.username)}</div>
-              <div class="text-xs mt-0.5" style="color: var(--ink-mute);">${charNames.length} nhân vật</div>
+              <div class="text-xs mt-0.5" style="color: var(--ink-mute);">${charObjs.length} nhân vật</div>
             </td>
             <td class="py-4 px-5 font-mono text-xs" style="color: var(--ink-dim);">${esc(user.uid)}</td>
             <td class="py-4 px-5">${badges}</td>
@@ -1358,6 +1472,7 @@
           username: userObj ? userObj.username : 'Unknown',
           character_id: chosenCharId,
           character_name: charObj ? charObj.name : 'Unknown',
+          icon_url: getCharacterIconUrl(charObj),
           random_number: originalIndex + 1
         };
       });
