@@ -911,9 +911,19 @@
       renderBoardTable();
     }
 
-    function renderLobbyCards(results, spinnerName) {
+    let lastLobbySig = null; // dấu vết kết quả đang hiển thị, để tránh vẽ lại khi dữ liệu không đổi
+
+    function renderLobbyCards(results, spinnerName, force = false) {
       const resultDiv = document.getElementById('lobby-result');
       const metaDiv = document.getElementById('lobby-meta');
+
+      // Chỉ vẽ lại (và chạy hiệu ứng) khi kết quả thật sự thay đổi
+      const sig = JSON.stringify((results || []).map(r => [r.user_id, r.character_id, r.random_number]));
+      if (!force && sig === lastLobbySig) {
+        metaDiv.textContent = (results && results.length && spinnerName) ? `Quay bởi: ${spinnerName}` : '';
+        return;
+      }
+      lastLobbySig = sig;
 
       if (!results || results.length === 0) {
         resultDiv.innerHTML = `<div class="col-span-full text-center italic py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>`;
@@ -1129,7 +1139,7 @@
 
       // 1. HIỂN THỊ NGAY LẬP TỨC trên màn hình người bấm
       const me = allUsers.find(u => u.id === currentUser.id);
-      renderLobbyCards(results, me ? me.username : '');
+      renderLobbyCards(results, me ? me.username : '', true);
 
       // 2. Gửi đồng bộ ngầm lên Supabase cho các thành viên khác (không chặn giao diện)
       supabaseClient
