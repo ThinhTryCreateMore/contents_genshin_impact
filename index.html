@@ -1001,6 +1001,7 @@
         </div>
 
         <!-- Cột hiển thị Boss hiện tại đang áp dụng cho lượt quay nhân vật -->
+      <!-- Cột hiển thị Boss hiện tại đang áp dụng cho lượt quay nhân vật -->
         <div class="lg:col-span-2 stage flex flex-col justify-between">
           <div class="flex justify-between items-center mb-3">
             <span class="eyebrow">Mục tiêu Boss hiện tại</span>
@@ -1011,6 +1012,18 @@
             <div class="text-center italic py-8 font-display text-lg" style="color: var(--ink-mute);">
               Chưa chọn Boss — Vòng quay nhân vật đang ở chế độ tự do
             </div>
+          </div>
+
+          <div id="random-main-action" class="hidden mt-4 pt-4 text-center fade-in" style="border-top: 1px solid var(--line-soft);">
+            <div class="flex flex-wrap items-center justify-center gap-2.5">
+              <button type="button" onclick="spinMainPlayer()" id="spin-main-btn" class="btn-gold px-5 py-2.5 text-xs sm:text-sm uppercase tracking-wider">
+                ✨ Random 1 Player Dùng Main (Aether / Lumine)
+              </button>
+              <button type="button" onclick="clearMainPlayer()" id="clear-main-btn" class="hidden btn-ghost px-4 py-2.5 text-xs uppercase tracking-wider">
+                ✕ Hủy dùng Main
+              </button>
+            </div>
+            <div id="random-main-status" class="text-xs mt-2" style="color: var(--ink-dim);"></div>
           </div>
         </div>
       </div>
@@ -1524,31 +1537,36 @@
 
     let lastLobbySig = null;
 
-    function updateMainActionVisibility() {
+function updateMainActionVisibility() {
       const actionWrap = document.getElementById('random-main-action');
       const statusText = document.getElementById('random-main-status');
       const btn = document.getElementById('spin-main-btn');
+      const clearBtn = document.getElementById('clear-main-btn');
       if (!actionWrap) return;
 
-      const bossRecord = activeBoss ? allBosses.find(b => b.id === activeBoss.id) : null;
-      const needMain = isBossRequireMain(activeBoss) || isBossRequireMain(bossRecord);
-      const hasResults = Array.isArray(lastLobbyResults) && lastLobbyResults.length > 0;
-
-      if (needMain && hasResults) {
-        actionWrap.classList.remove('hidden');
-        const mainPlayer = lastLobbyResults.find(r => r.forced_main);
-        if (mainPlayer) {
-          btn.textContent = '🔄 Quay Lại Người Phải Chuyển Thành Main';
-          statusText.innerHTML = `Đã chọn <strong style="color: var(--gold-bright);">${esc(mainPlayer.username)}</strong> phải đổi sang <strong>Aether / Lumine (Main)</strong>!`;
-        } else {
-          btn.textContent = '✨ Random Player Phải Chuyển Thành Main (Aether / Lumine)';
-          statusText.textContent = 'Boss hiện tại yêu cầu Nhà Lữ Hành — Bấm nút trên để chọn ngẫu nhiên 1 thành viên trong đội hình.';
-        }
-      } else {
+      if (!activeBoss) {
         actionWrap.classList.add('hidden');
+        return;
+      }
+
+      actionWrap.classList.remove('hidden');
+      const bossRecord = allBosses.find(b => b.id === activeBoss.id);
+      const needMain = isBossRequireMain(activeBoss) || isBossRequireMain(bossRecord);
+      const lobbyMain = Array.isArray(lastLobbyResults) ? lastLobbyResults.find(r => r.forced_main) : null;
+      const chosenMain = lobbyMain || activeBoss.main_player || null;
+
+      if (chosenMain) {
+        btn.textContent = '🔄 Random Lại Người Dùng Main';
+        if (clearBtn) clearBtn.classList.remove('hidden');
+        statusText.innerHTML = `Đã chọn <strong style="color: var(--gold-bright);">${esc(chosenMain.username)}</strong> dùng <strong>Aether / Lumine (Main)</strong>!`;
+      } else {
+        btn.textContent = '✨ Random 1 Player Dùng Main (Aether / Lumine)';
+        if (clearBtn) clearBtn.classList.add('hidden');
+        statusText.textContent = needMain
+          ? 'Boss này có yêu cầu Nhà Lữ Hành — Bấm nút trên để chọn ngẫu nhiên 1 thành viên.'
+          : 'Tùy chọn hỗ trợ nếu cảm thấy đánh không nổi — Bấm để chọn ngẫu nhiên 1 người đổi sang Main.';
       }
     }
-
     function renderLobbyCards(results, spinnerName, force = false) {
       const resultDiv = document.getElementById('lobby-result');
       const metaDiv = document.getElementById('lobby-meta');
@@ -2087,7 +2105,7 @@
       return copy;
     }
 
-    function spinRandom() {
+  function spinRandom() {
       const checkedUserIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
       const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length > 0);
       const desiredCount = parseInt(document.getElementById('spin-count').value, 10);
@@ -2099,19 +2117,24 @@
 
       // 1. Trộn ngẫu nhiên danh sách người chơi và lấy tối đa desiredCount người
       const pickedUserIds = shuffleArray(validUsers).slice(0, Math.min(desiredCount, validUsers.length));
+      const preselectedMainUid = (activeBoss && activeBoss.main_player && pickedUserIds.includes(activeBoss.main_player.user_id))
+        ? activeBoss.main_player.user_id
+        : null;
 
-      // 2. Gán ngẫu nhiên 1 hoặc 2 người chơi cho nguyên tố yêu cầu của Boss (nếu có)
+      // 2. Gán ngẫu nhiên 1 hoặc 2 người chơi cho nguyên tố yêu cầu của Boss (ưu tiên người không cầm Main)
       const reqElements = (activeBoss && Array.isArray(activeBoss.required_elements))
         ? activeBoss.required_elements.slice(0, 2)
         : [];
-      const userRequiredElementMap = {}; // uid -> 'Pyro' | 'Hydro' | ...
+      const userRequiredElementMap = {};
 
       if (reqElements.length > 0) {
         const assignedUsers = new Set();
         reqElements.forEach(reqEl => {
           const targetEl = String(reqEl).trim().toLowerCase();
-          // Ưu tiên chọn ngẫu nhiên trong các thành viên chưa bị gán nguyên tố và CÓ sở hữu nhân vật thuộc nguyên tố này
-          const capableUnassigned = shuffleArray(pickedUserIds).filter(uid => {
+          const nonMainPicked = pickedUserIds.filter(uid => uid !== preselectedMainUid);
+          const searchOrder = nonMainPicked.length > 0 ? nonMainPicked : pickedUserIds;
+
+          const capableUnassigned = shuffleArray(searchOrder).filter(uid => {
             if (assignedUsers.has(uid)) return false;
             const roster = userCharactersMap[uid] || [];
             return roster.some(cid => {
@@ -2125,8 +2148,7 @@
             assignedUsers.add(chosenUid);
             userRequiredElementMap[chosenUid] = reqEl;
           } else {
-            // Dự phòng: chọn ngẫu nhiên 1 người chưa bị gán nếu không ai có nhân vật hệ đó
-            const fallbackUnassigned = shuffleArray(pickedUserIds).filter(uid => !assignedUsers.has(uid));
+            const fallbackUnassigned = shuffleArray(searchOrder).filter(uid => !assignedUsers.has(uid));
             if (fallbackUnassigned.length > 0) {
               const chosenUid = fallbackUnassigned[0];
               assignedUsers.add(chosenUid);
@@ -2136,7 +2158,7 @@
         });
       }
 
-      // 3. Ưu tiên bốc trước cho người có ràng buộc nguyên tố, sau đó xếp theo số lượng nhân vật tăng dần
+      // 3. Bốc nhân vật (vẫn bốc 1 nhân vật dự phòng cho người cầm Main để có thể Hủy dùng Main bất cứ lúc nào)
       const pickOrder = [...pickedUserIds].sort((a, b) => {
         const aReq = userRequiredElementMap[a] ? 0 : 1;
         const bReq = userRequiredElementMap[b] ? 0 : 1;
@@ -2158,9 +2180,7 @@
             const c = allCharacters.find(ch => ch.id === cid);
             return c && String(c.element || '').trim().toLowerCase() === targetEl;
           });
-          if (matchingElRoster.length > 0) {
-            candidatePool = matchingElRoster;
-          }
+          if (matchingElRoster.length > 0) candidatePool = matchingElRoster;
         }
 
         const available = candidatePool.filter(charId => !usedCharacterIds.has(charId));
@@ -2182,24 +2202,30 @@
           element: charObj ? (charObj.element || null) : null,
           icon_url: getCharacterIconUrl(charObj),
           required_element: reqEl,
-          random_number: originalIndex + 1
+          random_number: originalIndex + 1,
+          forced_main: uid === preselectedMainUid
         };
       });
 
       const results = pickedUserIds.map(uid => pickedMap[uid]);
+      const lobbyPatch = {
+        results_json: results,
+        updated_by: currentUser.id,
+        updated_at: new Date().toISOString()
+      };
 
-      // 4. Hiển thị ngay lập tức
+      // Nếu người được chọn Main trước đó không nằm trong lượt quay này thì xóa trạng thái main_player cũ
+      if (activeBoss && activeBoss.main_player && !preselectedMainUid) {
+        delete activeBoss.main_player;
+        lobbyPatch.current_boss_json = activeBoss;
+      }
+
       const me = allUsers.find(u => u.id === currentUser.id);
       renderLobbyCards(results, me ? me.username : '', true);
 
-      // 5. Đồng bộ ngầm lên Supabase
       supabaseClient
         .from('random_lobby')
-        .update({
-          results_json: results,
-          updated_by: currentUser.id,
-          updated_at: new Date().toISOString()
-        })
+        .update(lobbyPatch)
         .eq('id', 1)
         .then(({ error }) => {
           if (error) console.error('Lỗi đồng bộ kết quả quay:', error.message);
@@ -2207,10 +2233,109 @@
     }
 
     function spinMainPlayer() {
-      if (!Array.isArray(lastLobbyResults) || lastLobbyResults.length === 0) {
-        alert('Hãy quay nhân vật cho các thành viên trước!');
+      if (!activeBoss) {
+        alert('Hãy quay và xác nhận Boss trước!');
         return;
       }
+
+      const me = allUsers.find(u => u.id === currentUser.id);
+      const hasLobbyResults = Array.isArray(lastLobbyResults) && lastLobbyResults.length > 0;
+
+      // Trường hợp 1: Đã quay nhân vật rồi -> Chọn ngẫu nhiên 1 người trong đội hình hiện tại đổi sang Main
+      if (hasLobbyResults) {
+        const chosenIndex = Math.floor(Math.random() * lastLobbyResults.length);
+        const updatedResults = lastLobbyResults.map((item, idx) => ({
+          ...item,
+          forced_main: idx === chosenIndex
+        }));
+
+        const chosenItem = updatedResults[chosenIndex];
+        activeBoss = {
+          ...activeBoss,
+          main_player: { user_id: chosenItem.user_id, username: chosenItem.username }
+        };
+
+        renderLobbyCards(updatedResults, me ? me.username : '', true);
+
+        supabaseClient
+          .from('random_lobby')
+          .update({
+            results_json: updatedResults,
+            current_boss_json: activeBoss,
+            updated_by: currentUser.id,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', 1)
+          .then(({ error }) => {
+            if (error) console.error('Lỗi đồng bộ người chơi Main:', error.message);
+          });
+        return;
+      }
+
+      // Trường hợp 2: Vừa random xong Boss (chưa quay nhân vật) -> Chọn ngẫu nhiên 1 thành viên đang tham gia
+      const checkedIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
+      const candidateUsers = checkedIds.length > 0
+        ? allUsers.filter(u => checkedIds.includes(u.id))
+        : allUsers;
+
+      if (candidateUsers.length === 0) {
+        alert('Chưa có thành viên nào để chọn!');
+        return;
+      }
+
+      const chosenUser = candidateUsers[Math.floor(Math.random() * candidateUsers.length)];
+      activeBoss = {
+        ...activeBoss,
+        main_player: { user_id: chosenUser.id, username: chosenUser.username }
+      };
+
+      updateMainActionVisibility();
+
+      supabaseClient
+        .from('random_lobby')
+        .update({
+          current_boss_json: activeBoss,
+          updated_by: currentUser.id,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', 1)
+        .then(({ error }) => {
+          if (error) console.error('Lỗi đồng bộ người chơi Main:', error.message);
+        });
+    }
+
+    function clearMainPlayer() {
+      if (!activeBoss) return;
+      const { main_player, ...restBoss } = activeBoss;
+      activeBoss = restBoss;
+
+      const me = allUsers.find(u => u.id === currentUser.id);
+      const hasLobbyResults = Array.isArray(lastLobbyResults) && lastLobbyResults.length > 0;
+      const lobbyPatch = {
+        current_boss_json: activeBoss,
+        updated_at: new Date().toISOString()
+      };
+
+      if (hasLobbyResults) {
+        const restoredResults = lastLobbyResults.map(item => ({
+          ...item,
+          forced_main: false
+        }));
+        lobbyPatch.results_json = restoredResults;
+        lobbyPatch.updated_by = currentUser.id;
+        renderLobbyCards(restoredResults, me ? me.username : '', true);
+      } else {
+        updateMainActionVisibility();
+      }
+
+      supabaseClient
+        .from('random_lobby')
+        .update(lobbyPatch)
+        .eq('id', 1)
+        .then(({ error }) => {
+          if (error) console.error('Lỗi hủy trạng thái Main:', error.message);
+        });
+    }
 
       const chosenIndex = Math.floor(Math.random() * lastLobbyResults.length);
       const updatedResults = lastLobbyResults.map((item, idx) => ({
