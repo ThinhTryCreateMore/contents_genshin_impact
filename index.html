@@ -43,7 +43,7 @@
     }
 
     /* Bầu trời sao */
-    body::before {
+    body::before, #door-gate::before {
       content: "";
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background-image:
@@ -315,9 +315,141 @@
     /* ---------- Hiệu ứng chuyển cảnh ---------- */
     .fade-in { animation: fadeIn .5s ease both; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* =====================================================================
+       INTRO: SPLASH  ->  ĐĂNG NHẬP  ->  CÁNH CỬA
+       ===================================================================== */
+    #splash {
+      position: fixed; inset: 0; z-index: 100; background: #000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; transition: opacity .9s ease;
+    }
+    #splash.out { opacity: 0; pointer-events: none; }
+    .splash-word {
+      font-size: clamp(26px, 6vw, 54px); font-weight: 300; color: #fff;
+      letter-spacing: .42em; padding-left: .42em;
+      text-shadow: 0 0 28px rgba(255,255,255,.35);
+      opacity: 0; animation: splashWord 3.5s ease forwards;
+    }
+    .splash-sub {
+      margin-top: 18px; font-size: 11px; letter-spacing: .4em; text-transform: uppercase;
+      color: rgba(255,255,255,.45); opacity: 0; animation: splashSub 3.5s ease forwards;
+    }
+    @keyframes splashWord {
+      0%   { opacity: 0; letter-spacing: .7em; filter: blur(8px); }
+      30%  { opacity: 1; letter-spacing: .42em; filter: blur(0); }
+      72%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes splashSub {
+      0%, 25% { opacity: 0; }
+      45%, 70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Khung đăng nhập mờ dần khi vào thành công */
+    .auth-leaving { animation: authLeave .75s ease forwards; pointer-events: none; }
+    @keyframes authLeave {
+      to { opacity: 0; filter: blur(14px); transform: scale(.95) translateY(-8px); }
+    }
+
+    /* Cánh cửa */
+    #door-gate {
+      position: fixed; inset: 0; z-index: 60;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background:
+        radial-gradient(900px 500px at 50% 40%, rgba(70, 86, 170, .28), transparent 65%),
+        radial-gradient(700px 400px at 50% 110%, rgba(184, 145, 74, .2), transparent 60%),
+        #04070f;
+      opacity: 0; transition: opacity 1.2s ease; cursor: pointer;
+    }
+    #door-gate.show { opacity: 1; }
+    #door-gate.leaving { opacity: 0; transition: opacity 1s ease; pointer-events: none; }
+    #door-gate > * { position: relative; z-index: 1; }
+
+    .door-frame {
+      position: relative; width: min(78vw, 340px); height: min(60vh, 480px);
+      border-radius: 999px 999px 0 0; overflow: hidden; perspective: 1500px;
+      border: 2px solid var(--gold-deep);
+      box-shadow: 0 0 60px -8px rgba(227,194,122,.45), inset 0 0 40px rgba(0,0,0,.8);
+      transition: transform 2.4s cubic-bezier(.4,.1,.2,1);
+    }
+    .door-light {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(60% 55% at 50% 55%, #fffbea 0%, #f6dfa4 28%, rgba(227,194,122,.35) 60%, transparent 85%),
+        #1a1630;
+      opacity: .4; transform: scale(1); transition: opacity 1.4s ease, transform 2.2s ease;
+    }
+    .leaf {
+      position: absolute; top: 0; bottom: 0; width: 50%;
+      background:
+        repeating-linear-gradient(90deg, rgba(227,194,122,.05) 0 1px, transparent 1px 24px),
+        linear-gradient(160deg, #1d2a52 0%, #0e1630 55%, #0a1022 100%);
+      transition: transform 1.6s cubic-bezier(.6,.05,.2,1);
+      backface-visibility: hidden; overflow: hidden;
+    }
+    .leaf.l { left: 0;  transform-origin: left center;  border-right: 1px solid rgba(227,194,122,.55); }
+    .leaf.r { right: 0; transform-origin: right center; border-left: 1px solid rgba(227,194,122,.55); }
+    .leaf::before {
+      content: ""; position: absolute; inset: 14px; pointer-events: none;
+      border: 1px solid rgba(227,194,122,.35);
+    }
+    .leaf.l::before { border-top-left-radius: 150px; }
+    .leaf.r::before { border-top-right-radius: 150px; }
+    /* Nửa hoa văn tròn ghép lại ở giữa hai cánh */
+    .leaf::after {
+      content: ""; position: absolute; top: 42%; width: 84px; height: 84px; margin-top: -42px;
+      border-radius: 50%; border: 1px solid var(--gold);
+      background: radial-gradient(circle, rgba(246,223,164,.22) 0 30%, transparent 31%);
+      box-shadow: 0 0 22px rgba(227,194,122,.35), inset 0 0 0 10px rgba(7,11,22,.5), inset 0 0 0 11px rgba(227,194,122,.4);
+    }
+    .leaf.l::after { right: -42px; }
+    .leaf.r::after { left: -42px; }
+
+    #door-gate.opening .leaf.l { transform: rotateY(78deg); }
+    #door-gate.opening .leaf.r { transform: rotateY(-78deg); }
+    #door-gate.opening .door-light { opacity: 1; transform: scale(1.5); }
+    #door-gate.opening .door-frame { transform: scale(1.18); box-shadow: 0 0 140px 20px rgba(246,223,164,.55), inset 0 0 40px rgba(0,0,0,.4); }
+
+    .door-title { text-align: center; margin-bottom: 28px; transition: opacity .6s ease; }
+    .door-greet { margin-top: 6px; }
+    .door-hint {
+      margin-top: 32px; font-size: 12px; letter-spacing: .38em; text-transform: uppercase;
+      color: var(--gold); padding-left: .38em; opacity: 0; transition: opacity .8s ease;
+    }
+    #door-gate.ready .door-hint { opacity: 1; animation: hintPulse 2.4s ease-in-out infinite; }
+    #door-gate.opening .door-hint, #door-gate.opening .door-title { opacity: 0 !important; animation: none; }
+    @keyframes hintPulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::before, #door-gate::before { animation: none; }
+      .splash-word, .splash-sub { animation-duration: 1.2s; }
+    }
   </style>
 </head>
 <body class="min-h-screen">
+
+<!-- MÀN HÌNH MỞ ĐẦU (SPLASH) -->
+<div id="splash">
+  <div class="splash-word">HOYOVERSE</div>
+  <div class="splash-sub">Fan-made co-op tool</div>
+</div>
+
+<!-- CÁNH CỬA: HIỆN SAU KHI ĐĂNG NHẬP -->
+<div id="door-gate" class="hidden">
+  <div class="door-title">
+    <div class="eyebrow">Teyvat đang chờ bạn</div>
+    <div id="door-greet" class="door-greet font-display text-3xl font-bold title-gold"></div>
+  </div>
+  <div class="door-frame">
+    <div class="door-light"></div>
+    <div class="leaf l"></div>
+    <div class="leaf r"></div>
+  </div>
+  <div class="door-hint">Nhấn bất kỳ để vào</div>
+</div>
+
 <div id="page" class="min-h-screen p-4 md:p-8">
 
   <!-- HEADER -->
@@ -340,7 +472,7 @@
   </header>
 
   <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ -->
-  <section id="auth-section" class="panel panel-gold max-w-md mx-auto p-7 md:p-9 mt-8 fade-in">
+  <section id="auth-section" class="hidden panel panel-gold max-w-md mx-auto p-7 md:p-9 mt-8 fade-in">
     <div class="text-center mb-7">
       <div class="eyebrow mb-2">Chào mừng, Lữ khách</div>
       <h2 class="font-display text-3xl font-bold title-gold">Bước vào Teyvat</h2>
@@ -542,6 +674,21 @@
       }
     }
 
+    function showAuthMsg(text, type) {
+      const box = document.getElementById('auth-error');
+      box.textContent = text;
+      if (type === 'info') {
+        box.style.color = '#bfe9d7';
+        box.style.background = 'rgba(127,209,176,.1)';
+        box.style.border = '1px solid rgba(127,209,176,.3)';
+      } else {
+        box.style.color = '#ffb4bf';
+        box.style.background = 'rgba(244,63,94,.1)';
+        box.style.border = '1px solid rgba(244,63,94,.3)';
+      }
+      box.classList.remove('hidden');
+    }
+
     async function handleAuth(e) {
       e.preventDefault();
       const email = document.getElementById('auth-email').value.trim();
@@ -563,13 +710,17 @@
               .insert([{ id: data.user.id, username, uid }]);
             if (profileError) throw profileError;
           }
+
+          // Nếu dự án yêu cầu xác nhận email thì chưa có phiên đăng nhập
+          if (!data.session) {
+            showAuthMsg('Đã tạo tài khoản. Hãy kiểm tra email để xác nhận, sau đó đăng nhập.', 'info');
+          }
         } else {
           const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
           if (error) throw error;
         }
       } catch (err) {
-        errorBox.textContent = 'Lỗi: ' + (err.message || 'Không thể xác thực.');
-        errorBox.classList.remove('hidden');
+        showAuthMsg('Lỗi: ' + (err.message || 'Không thể xác thực.'), 'error');
       }
     }
 
@@ -577,20 +728,142 @@
       await supabaseClient.auth.signOut();
     }
 
+    // =========================================================================
+    // 1b. HIỆU ỨNG MỞ ĐẦU: SPLASH -> ĐĂNG NHẬP -> CÁNH CỬA -> VÀO APP
+    // =========================================================================
+    const $ = id => document.getElementById(id);
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    let entered = false;       // đã đi qua cánh cửa chưa
+    let gateShown = false;     // cánh cửa đã được bật chưa
+    let gateState = 'idle';    // idle | closed | ready | opening | done
+    let dataReady = Promise.resolve();
+    let realtimeChannel = null;
+
+    let splashResolved;
+    const splashDone = new Promise(r => { splashResolved = r; });
+
+    (function runSplash() {
+      const splash = $('splash');
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        splash.classList.add('out');
+        setTimeout(() => { splash.remove(); splashResolved(); }, 900);
+      };
+      setTimeout(finish, 3600);
+      splash.addEventListener('click', finish); // chạm để bỏ qua
+    })();
+
+    function showAuth() {
+      const a = $('auth-section');
+      a.classList.remove('hidden', 'auth-leaving', 'fade-in');
+      void a.offsetWidth; // chạy lại animation xuất hiện
+      a.classList.add('fade-in');
+    }
+
+    // Sau splash: nếu chưa đăng nhập thì hiện form đăng nhập
+    splashDone.then(() => { if (!currentUser) showAuth(); });
+
+    async function showDoor() {
+      if (gateShown) return;
+      gateShown = true;
+      const door = $('door-gate');
+
+      // 1) Làm mờ khung đăng nhập / đăng ký
+      const auth = $('auth-section');
+      if (!auth.classList.contains('hidden')) {
+        auth.classList.add('auth-leaving');
+        await sleep(750);
+        auth.classList.add('hidden');
+      }
+      if (!currentUser) return;
+
+      // 2) Hiện cánh cửa
+      $('door-greet').textContent = '';
+      dataReady.then(() => {
+        const me = allUsers.find(u => u.id === currentUser?.id);
+        if (me) $('door-greet').textContent = 'Chào mừng, ' + me.username;
+      });
+      gateState = 'closed';
+      door.classList.remove('hidden');
+      requestAnimationFrame(() => requestAnimationFrame(() => door.classList.add('show')));
+
+      // 3) Sau khi cửa hiện xong mới cho phép nhấn để vào
+      await sleep(1300);
+      if (!currentUser) return;
+      gateState = 'ready';
+      door.classList.add('ready');
+    }
+
+    async function openDoor() {
+      if (gateState !== 'ready') return;
+      gateState = 'opening';
+      const door = $('door-gate');
+      door.classList.add('opening');
+
+      await sleep(1300);
+      if (!currentUser) return;
+      $('app-section').classList.remove('hidden');
+      $('user-nav').classList.remove('hidden');
+
+      await sleep(500);
+      door.classList.add('leaving');
+      await sleep(1000);
+
+      door.classList.add('hidden');
+      door.classList.remove('show', 'ready', 'opening', 'leaving');
+      entered = true;
+      gateState = 'done';
+    }
+
+    $('door-gate').addEventListener('click', openDoor);
+    document.addEventListener('keydown', () => { if (gateState === 'ready') openDoor(); });
+
+    function resetToLogin() {
+      entered = false;
+      gateShown = false;
+      gateState = 'idle';
+      dataReady = Promise.resolve();
+      if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
+
+      const door = $('door-gate');
+      door.classList.add('hidden');
+      door.classList.remove('show', 'ready', 'opening', 'leaving');
+      $('app-section').classList.add('hidden');
+      $('user-nav').classList.add('hidden');
+      $('auth-password').value = '';
+      $('auth-error').classList.add('hidden');
+      splashDone.then(showAuth);
+    }
+
     // Theo dõi trạng thái đăng nhập
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
+        const isNewUser = !currentUser || currentUser.id !== session.user.id;
         currentUser = session.user;
-        document.getElementById('auth-section').classList.add('hidden');
-        document.getElementById('app-section').classList.remove('hidden');
-        document.getElementById('user-nav').classList.remove('hidden');
-        await initAppData();
-        setupRealtimeSubscriptions();
+
+        if (isNewUser) {
+          // Tải dữ liệu ngầm (tách khỏi callback để tránh khoá luồng auth)
+          dataReady = new Promise(resolve => {
+            setTimeout(async () => {
+              try {
+                await initAppData();
+                setupRealtimeSubscriptions();
+              } catch (err) {
+                console.error('Lỗi tải dữ liệu:', err);
+              }
+              resolve();
+            }, 0);
+          });
+        }
+
+        // Chờ splash xong rồi mới mờ khung đăng nhập và hiện cánh cửa
+        splashDone.then(() => { if (!entered) showDoor(); });
       } else {
         currentUser = null;
-        document.getElementById('auth-section').classList.remove('hidden');
-        document.getElementById('app-section').classList.add('hidden');
-        document.getElementById('user-nav').classList.add('hidden');
+        resetToLogin();
       }
     });
 
@@ -678,7 +951,8 @@
     }
 
     function setupRealtimeSubscriptions() {
-      supabaseClient.channel('genshin-sync-channel')
+      if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+      realtimeChannel = supabaseClient.channel('genshin-sync-channel')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'user_characters' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'random_lobby' }, () => refreshLobbyResult())
