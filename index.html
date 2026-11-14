@@ -827,6 +827,7 @@
       gateShown = false;
       gateState = 'idle';
       dataReady = Promise.resolve();
+      stopPolling();
       if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
 
       const door = $('door-gate');
@@ -851,10 +852,11 @@
             setTimeout(async () => {
               try {
                 await initAppData();
-                setupRealtimeSubscriptions();
               } catch (err) {
                 console.error('Lỗi tải dữ liệu:', err);
               }
+              // Luôn bật đồng bộ, kể cả khi lần tải đầu bị lỗi
+              if (currentUser) setupRealtimeSubscriptions();
               resolve();
             }, 0);
           });
@@ -951,13 +953,35 @@
       renderLobbyCards(lobby.results_json || [], spinner ? spinner.username : '');
     }
 
+    // Dự phòng: nếu kết nối realtime (WebSocket) không lên được thì tự làm mới mỗi 5 giây
+    let pollTimer = null;
+    function startPolling() {
+      if (pollTimer) return;
+      pollTimer = setInterval(() => {
+        if (!currentUser) return;
+        refreshUsersAndRosters();
+        refreshLobbyResult();
+      }, 5000);
+    }
+    function stopPolling() {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+
     function setupRealtimeSubscriptions() {
       if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
       realtimeChannel = supabaseClient.channel('genshin-sync-channel')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'user_characters' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'random_lobby' }, () => refreshLobbyResult())
-        .subscribe();
+        .subscribe((status, err) => {
+          console.log('[Realtime]', status, err || '');
+          if (status === 'SUBSCRIBED') {
+            stopPolling();
+          } else if (['CHANNEL_ERROR', 'TIMED_OUT', 'CLOSED'].includes(status) && currentUser) {
+            startPolling();
+          }
+        });
     }
 
     // =========================================================================
