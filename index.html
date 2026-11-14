@@ -317,7 +317,7 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
     /* =====================================================================
-       INTRO: SPLASH  ->  ĐĂNG NHẬP  ->  CÁNH CỬA TEYVAT TRÊN MÂY
+       INTRO: SPLASH  ->  ĐĂNG NHẬP  ->  CÁNH CỬA CELESTIA TRÊN MÂY (SVG)
        ===================================================================== */
     #splash {
       position: fixed; inset: 0; z-index: 100; background: #000;
@@ -353,160 +353,100 @@
       to { opacity: 0; filter: blur(14px); transform: scale(.95) translateY(-8px); }
     }
 
-    /* Cánh cửa Teyvat trên mây (Genshin Style) */
+    /* Cánh cửa Celestia trên mây (Genshin Impact Login Scene) */
     #door-gate {
       position: fixed; inset: 0; z-index: 60;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: linear-gradient(180deg, #5b84b1 0%, #3a5c83 45%, #182848 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: clamp(24px, 5vh, 48px) 16px;
+      background: radial-gradient(120% 90% at 50% 42%, #88b5da 0%, #5c8db9 45%, #37618d 100%);
       opacity: 0; transition: opacity 1.2s ease; cursor: pointer;
       overflow: hidden;
     }
     #door-gate.hidden { display: none; }
     #door-gate.show { opacity: 1; }
     #door-gate.leaving { opacity: 0; transition: opacity 1s ease; pointer-events: none; }
-    #door-gate > * { position: relative; z-index: 2; }
 
-    /* Lớp mây cuộn cảnh nền và tiền cảnh */
-    .sky-clouds {
-      position: absolute; inset: 0; z-index: 1; pointer-events: none;
-      background-image:
-        radial-gradient(1500px 600px at 50% 12%, rgba(255,255,255,0.18), transparent 70%),
-        radial-gradient(600px 400px at 50% 100%, rgba(255,255,255,0.28), transparent 60%);
-    }
-    .sky-clouds::before, .sky-clouds::after {
-      content: ""; position: absolute; left: 0; right: 0; height: 35vh; bottom: 0;
-      background-repeat: repeat-x; background-size: 1200px 100%;
-      opacity: 0.85;
-    }
-    .sky-clouds::before {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,80 C150,110 350,70 500,90 C650,110 850,80 1000,100 C1150,120 1200,80 1200,80 L1200,120 L0,120 Z' fill='%2389a6c7' opacity='0.45'/%3E%3C/svg%3E");
-      animation: drift 50s linear infinite;
-    }
-    .sky-clouds::after {
-      height: 24vh;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C200,40 400,90 600,60 C800,30 1000,80 1200,60 L1200,120 L0,120 Z' fill='%23b5cae2' opacity='0.75'/%3E%3C/svg%3E");
-      animation: drift 30s linear infinite reverse;
-    }
-    @keyframes drift { from { background-position-x: 0px; } to { background-position-x: 1200px; } }
-
-    /* Cảnh vật: Cánh cổng & Các cột đá */
-    .scenery {
-      position: relative; display: flex; align-items: flex-end; justify-content: center;
-      width: 100%; max-width: 900px; height: min(60vh, 480px); margin-bottom: 12px;
+    /* Hào quang sáng phía sau cánh cổng */
+    .celestia-aura {
+      position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%);
+      width: min(85vw, 720px); height: min(85vw, 720px);
+      background: radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(203,234,255,0.35) 35%, transparent 70%);
+      pointer-events: none; z-index: 1;
+      transition: transform 2s ease, opacity 1.6s ease;
     }
 
-    /* Các cây cột đá cổ kính */
-    .pillar {
-      position: absolute; bottom: 0; width: 64px; height: min(45vh, 320px);
-      background: linear-gradient(180deg, #98b0cb 0%, #526f8d 100%);
-      border-radius: 6px 6px 0 0; opacity: 0.88;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.3), 0 0 30px rgba(139,163,190,0.18);
-      border-left: 2px solid rgba(255,255,255,0.22);
-      transition: transform 1.6s ease, opacity 1.4s ease;
+    /* Khung chứa toàn bộ cảnh SVG Celestia */
+    .celestia-scene {
+      position: relative; z-index: 2;
+      width: min(96vw, 1100px);
+      height: min(66vh, 620px);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 2.4s cubic-bezier(.4,.1,.2,1);
     }
-    .pillar::before {
-      content: ""; position: absolute; top: 0; left: -6px; right: -6px; height: 32px;
-      background: #aec2d8; border-radius: 4px; border-bottom: 4px solid #415a77;
-    }
-    .pillar::after {
-      content: ""; position: absolute; top: 44px; left: 8px; right: 8px; height: 14px;
-      border-top: 2px solid rgba(255,255,255,0.25);
-      border-bottom: 2px solid rgba(255,255,255,0.25);
-    }
-    .pillar.left { left: 12%; height: min(48vh, 350px); }
-    .pillar.right { right: 15%; height: min(34vh, 230px); width: 48px; }
-    .pillar.right::before { height: 24px; left: -4px; right: -4px; }
-
-    /* Cánh cửa vòm Genshin */
-    .door-frame {
-      position: relative; width: min(60vw, 290px); height: min(58vh, 450px);
-      background: linear-gradient(180deg, #7d99b9 0%, #46607e 100%);
-      border-radius: 90px 90px 0 0;
-      box-shadow: 0 0 80px rgba(181,202,226,0.45), inset 0 0 50px rgba(0,0,0,0.6);
-      border: 4px solid #b5cae2; border-bottom: 0;
-      perspective: 1500px;
-      transition: transform 2.4s cubic-bezier(.4,.1,.2,1), box-shadow 1.6s ease;
+    .celestia-svg {
+      width: 100%; height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 12px 32px rgba(24, 52, 84, 0.25));
     }
 
-    /* Ngôi sao 4 cánh lấp lánh trên đỉnh vòm */
-    .primogem-star {
-      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
-      width: 44px; height: 44px; z-index: 5;
-      background-image: radial-gradient(circle, #fff 20%, transparent 60%);
-      animation: starTwinkle 2s infinite ease-in-out;
-    }
-    .primogem-star::before, .primogem-star::after {
-      content: ""; position: absolute; top: 50%; left: 50%;
-      background: #ffffff;
-      transform: translate(-50%, -50%) rotate(45deg);
-    }
-    .primogem-star::before { width: 6px; height: 34px; border-radius: 50% / 20%; }
-    .primogem-star::after { width: 34px; height: 6px; border-radius: 20% / 50%; }
-
-    @keyframes starTwinkle {
-      0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(0.92); filter: drop-shadow(0 0 4px #fff); }
-      50% { opacity: 1; transform: translateX(-50%) scale(1.12); filter: drop-shadow(0 0 14px #fff) drop-shadow(0 0 24px #f6dfa4); }
-    }
-
-    .door-light {
-      position: absolute; inset: 0; border-radius: 86px 86px 0 0;
-      background: radial-gradient(circle at 50% 50%, #fff 15%, #e8f1fc 45%, rgba(139,163,190,0.4) 85%);
-      opacity: 0.22; transform: scale(1); transition: opacity 1.4s ease, transform 2.2s ease;
-      z-index: 1;
-    }
-
-    /* Hai cánh cổng đóng khép với hoa văn đối xứng trắng/bạc */
-    .leaf {
-      position: absolute; top: 0; bottom: 0; width: 50%; z-index: 2;
-      background: linear-gradient(180deg, #4b688a 0%, #334a66 100%);
-      border-top: 2px solid rgba(255,255,255,0.25);
+    /* Hiệu ứng SVG khi mở cổng */
+    #svg-leaf-left {
+      transform-box: fill-box;
+      transform-origin: left center;
       transition: transform 1.8s cubic-bezier(.6,.05,.2,1);
-      backface-visibility: hidden; overflow: hidden;
     }
-    .leaf.l { left: 0; transform-origin: left center; border-right: 2px solid #b5cae2; border-top-left-radius: 84px; }
-    .leaf.r { right: 0; transform-origin: right center; border-left: 2px solid #b5cae2; border-top-right-radius: 84px; }
-
-    /* Hoa văn chạm khắc trên cánh cổng */
-    .leaf::before {
-      content: ""; position: absolute; inset: 12px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-bottom: 0;
+    #svg-leaf-right {
+      transform-box: fill-box;
+      transform-origin: right center;
+      transition: transform 1.8s cubic-bezier(.6,.05,.2,1);
     }
-    .leaf.l::before { border-top-left-radius: 72px; border-right: 0; }
-    .leaf.r::before { border-top-right-radius: 72px; border-left: 0; }
-
-    /* Các đường vát trang trí đối xứng ở tâm hai cánh cổng */
-    .leaf::after {
-      content: ""; position: absolute; top: 18%; width: 170%; height: 58%;
-      border: 3px solid rgba(255,255,255,0.45);
-      border-radius: 50% 50% 0 0;
-      opacity: 0.85; filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
+    #svg-door-glow {
+      opacity: 0.25;
+      transition: opacity 1.4s ease;
     }
-    .leaf.l::after { right: -85%; border-left: 0; border-top-left-radius: 0; }
-    .leaf.r::after { left: -85%; border-right: 0; border-top-right-radius: 0; }
+    #svg-top-star {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: starPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes starPulse {
+      0%, 100% { transform: scale(0.92); opacity: 0.85; filter: drop-shadow(0 0 6px #fff); }
+      50% { transform: scale(1.14); opacity: 1; filter: drop-shadow(0 0 18px #fff) drop-shadow(0 0 28px #e8f6ff); }
+    }
 
-    /* Hiệu ứng mở cổng */
-    #door-gate.opening .leaf.l { transform: rotateY(85deg); }
-    #door-gate.opening .leaf.r { transform: rotateY(-85deg); }
-    #door-gate.opening .door-light { opacity: 1; transform: scale(1.5); }
-    #door-gate.opening .door-frame { transform: scale(1.12); box-shadow: 0 0 150px rgba(255,255,255,0.75); }
-    #door-gate.opening .pillar.left { transform: translateX(-50px) scale(0.92); opacity: 0.4; }
-    #door-gate.opening .pillar.right { transform: translateX(50px) scale(0.92); opacity: 0.4; }
+    #svg-clouds-back { animation: cloudFloatSlow 14s ease-in-out infinite alternate; }
+    #svg-clouds-front { animation: cloudFloatFast 9s ease-in-out infinite alternate; }
+    @keyframes cloudFloatSlow {
+      from { transform: translateX(-12px); }
+      to   { transform: translateX(12px); }
+    }
+    @keyframes cloudFloatFast {
+      from { transform: translateX(14px) translateY(2px); }
+      to   { transform: translateX(-14px) translateY(-2px); }
+    }
 
-    .door-title { text-align: center; margin-bottom: 18px; transition: opacity .6s ease; }
-    .door-title .eyebrow { color: #dbe8f6; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
-    .door-greet { margin-top: 6px; text-shadow: 0 4px 18px rgba(0,0,0,0.4); }
+    #door-gate.opening #svg-leaf-left { transform: scaleX(0.14) skewY(-8deg); }
+    #door-gate.opening #svg-leaf-right { transform: scaleX(0.14) skewY(8deg); }
+    #door-gate.opening #svg-door-glow { opacity: 1; }
+    #door-gate.opening .celestia-aura { transform: translate(-50%, -50%) scale(1.9); opacity: 1; }
+    #door-gate.opening .celestia-scene { transform: scale(1.14); }
+
+    .door-title { position: relative; z-index: 3; text-align: center; transition: opacity .6s ease; }
+    .door-title .eyebrow { color: #eef7ff; text-shadow: 0 2px 10px rgba(23, 52, 86, 0.45); }
+    .door-greet { margin-top: 6px; text-shadow: 0 4px 20px rgba(20, 44, 74, 0.45); }
     .door-hint {
-      margin-top: 22px; font-size: 12px; letter-spacing: .38em; text-transform: uppercase;
-      color: #f0f6fc; text-shadow: 0 0 12px rgba(255,255,255,0.7); padding-left: .38em;
+      position: relative; z-index: 3;
+      font-size: 13px; letter-spacing: .38em; text-transform: uppercase;
+      color: #ffffff; text-shadow: 0 2px 14px rgba(26, 62, 102, 0.7), 0 0 16px rgba(255,255,255,0.8);
+      padding-left: .38em;
       opacity: 0; transition: opacity .8s ease;
     }
     #door-gate.ready .door-hint { opacity: 1; animation: hintPulse 2s ease-in-out infinite; }
     #door-gate.opening .door-hint, #door-gate.opening .door-title { opacity: 0 !important; animation: none; }
-    @keyframes hintPulse { 0%, 100% { opacity: .45; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
+    @keyframes hintPulse { 0%, 100% { opacity: .5; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
 
     @media (prefers-reduced-motion: reduce) {
-      body::before, #door-gate::before, .sky-clouds::before, .sky-clouds::after { animation: none; }
+      body::before, #door-gate::before, #svg-clouds-back, #svg-clouds-front, #svg-top-star { animation: none; }
       .splash-word, .splash-sub { animation-duration: 1.2s; }
     }
   </style>
@@ -519,24 +459,211 @@
   <div class="splash-sub">Fan-made co-op tool</div>
 </div>
 
-<!-- CÁNH CỬA: HIỆN SAU KHI ĐĂNG NHẬP (GENSHIN STYLE) -->
+<!-- CÁNH CỬA: HIỆN SAU KHI ĐĂNG NHẬP (CELESTIA SVG SCENE) -->
 <div id="door-gate" class="hidden">
-  <div class="sky-clouds"></div>
+  <div class="celestia-aura"></div>
 
   <div class="door-title">
     <div class="eyebrow">Teyvat đang chờ bạn</div>
     <div id="door-greet" class="door-greet font-display text-3xl md:text-4xl font-bold title-gold"></div>
   </div>
 
-  <div class="scenery">
-    <div class="pillar left"></div>
-    <div class="door-frame">
-      <div class="primogem-star"></div>
-      <div class="door-light"></div>
-      <div class="leaf l"></div>
-      <div class="leaf r"></div>
-    </div>
-    <div class="pillar right"></div>
+  <!-- CẢNH CỔNG CELESTIA, TRỤ CỘT LA MÃ & MÂY CUỘN VECTOR SVG -->
+  <div class="celestia-scene">
+    <svg class="celestia-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Gradient bầu trời & ánh sáng bên trong cánh cổng -->
+        <linearGradient id="portalInnerGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#608db6" />
+          <stop offset="55%" stop-color="#87b8d8" />
+          <stop offset="100%" stop-color="#c9edfa" />
+        </linearGradient>
+
+        <radialGradient id="portalOpenGlow" cx="50%" cy="55%" r="55%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+          <stop offset="55%" stop-color="#e3f6ff" stop-opacity="0.92" />
+          <stop offset="100%" stop-color="#a5d5f2" stop-opacity="0.4" />
+        </radialGradient>
+
+        <!-- Gradient khung viền đá cẩm thạch trắng xanh -->
+        <linearGradient id="archFrameGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f2f8fd" />
+          <stop offset="50%" stop-color="#d2e2f0" />
+          <stop offset="100%" stop-color="#b4cde3" />
+        </linearGradient>
+
+        <linearGradient id="archInnerRim" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#9cb8d1" />
+          <stop offset="100%" stop-color="#7fa2c2" />
+        </linearGradient>
+
+        <!-- Gradient cột đá La Mã -->
+        <linearGradient id="pillarGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#dbe8f4" />
+          <stop offset="55%" stop-color="#b6cde2" />
+          <stop offset="100%" stop-color="#91b0cd" />
+        </linearGradient>
+
+        <!-- Gradient mây xoáy -->
+        <linearGradient id="cloudSwirl1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#e9f4fc" stop-opacity="0.92" />
+          <stop offset="100%" stop-color="#b8d3ea" stop-opacity="0.88" />
+        </linearGradient>
+
+        <linearGradient id="cloudSwirl2" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#cde2f4" stop-opacity="0.72" />
+          <stop offset="50%" stop-color="#f2f9ff" stop-opacity="0.95" />
+          <stop offset="100%" stop-color="#bfd8ee" stop-opacity="0.78" />
+        </linearGradient>
+
+        <!-- Clip path lòng cánh cổng -->
+        <clipPath id="portalClip">
+          <path d="M 392 520 L 392 222 Q 406 212 406 188 Q 452 162 500 132 Q 548 162 594 188 Q 594 212 608 222 L 608 520 Z" />
+        </clipPath>
+      </defs>
+
+      <!-- 1. DẢI MÂY XOÁY PHÍA SAU (TRÊN & HAI BÊN) -->
+      <g id="svg-clouds-back" opacity="0.65">
+        <!-- Dải mây uốn trên góc trái -->
+        <path d="M 160 10 C 210 55, 290 75, 270 118 C 258 142, 224 134, 226 112 C 228 96, 246 96, 248 108 C 240 102, 232 108, 235 117 C 242 126, 258 122, 260 106 C 264 78, 195 55, 130 10 Z" fill="#b4d0e8" opacity="0.55" />
+        <!-- Luồng gió mây uốn lượn lớn bên phải -->
+        <path d="M 760 20 C 860 140, 880 310, 740 460 C 820 330, 815 170, 720 40 Z" fill="#b8d4ec" opacity="0.45" />
+        <path d="M 810 80 C 920 210, 910 380, 770 490 C 855 370, 865 230, 775 110 Z" fill="#cbe0f3" opacity="0.4" />
+        <!-- Cụm mây bồng bềnh tầng xa -->
+        <path d="M 80 465 Q 190 415 320 455 Q 450 420 580 455 Q 720 410 890 460 L 940 560 L 60 560 Z" fill="#9fc0de" opacity="0.55" />
+      </g>
+
+      <!-- 2. TRỤ CỘT ĐÁ TRÁI (LỚN) -->
+      <g id="pillar-left" transform="translate(185, 225)">
+        <!-- Đỉnh cột răng cưa cổ điển -->
+        <rect x="0" y="0" width="84" height="14" rx="3" fill="url(#pillarGrad)" />
+        <path d="M 4 14 L 80 14 L 74 28 L 10 28 Z" fill="#9dbad5" />
+        <!-- Răng cưa trang trí -->
+        <rect x="10" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
+        <rect x="36" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
+        <rect x="62" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
+        <!-- Cổ cột -->
+        <rect x="14" y="28" width="56" height="10" rx="2" fill="#cde0f0" />
+        <rect x="18" y="38" width="48" height="32" fill="url(#pillarGrad)" />
+        <!-- Khe rãnh cổ cột -->
+        <rect x="25" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
+        <rect x="39" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
+        <rect x="53" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
+        <!-- Vòng gờ giữa cột -->
+        <rect x="12" y="70" width="60" height="8" rx="3" fill="#e3eff9" />
+        <rect x="15" y="78" width="54" height="7" rx="2" fill="#9ab8d4" />
+        <rect x="12" y="85" width="60" height="8" rx="3" fill="#d3e4f3" />
+        <!-- Thân cột chính -->
+        <rect x="19" y="93" width="46" height="185" fill="url(#pillarGrad)" />
+        <line x1="28" y1="98" x2="28" y2="270" stroke="#e8f3fc" stroke-width="2" opacity="0.55" />
+        <line x1="54" y1="98" x2="54" y2="270" stroke="#7c9ec0" stroke-width="2" opacity="0.45" />
+      </g>
+
+      <!-- 3. TRỤ CỘT ĐÁ PHẢI (NHỎ & XA HƠN) -->
+      <g id="pillar-right" transform="translate(738, 330) scale(0.68)">
+        <rect x="0" y="0" width="84" height="14" rx="3" fill="url(#pillarGrad)" />
+        <path d="M 4 14 L 80 14 L 74 28 L 10 28 Z" fill="#9dbad5" />
+        <rect x="10" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
+        <rect x="36" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
+        <rect x="62" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
+        <rect x="14" y="28" width="56" height="10" rx="2" fill="#cde0f0" />
+        <rect x="18" y="38" width="48" height="32" fill="url(#pillarGrad)" />
+        <rect x="25" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
+        <rect x="39" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
+        <rect x="53" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
+        <rect x="12" y="70" width="60" height="8" rx="3" fill="#e3eff9" />
+        <rect x="15" y="78" width="54" height="7" rx="2" fill="#9ab8d4" />
+        <rect x="19" y="85" width="46" height="175" fill="url(#pillarGrad)" />
+      </g>
+
+      <!-- 4. CÁNH CỔNG CHÍNH CELESTIA Ở TRUNG TÂM -->
+      <g id="celestia-gate">
+        <!-- Khung viền ngoài cùng bậc cấp đặc trưng của Genshin -->
+        <path d="M 366 520 L 366 206 Q 386 196 386 168 Q 445 138 500 100 Q 555 138 614 168 Q 614 196 634 206 L 634 520 Z"
+              fill="url(#archFrameGrad)" />
+
+        <!-- Lớp viền chìm thứ hai tạo chiều sâu kiến trúc -->
+        <path d="M 380 520 L 380 214 Q 398 204 398 178 Q 450 150 500 116 Q 550 150 602 178 Q 602 204 620 214 L 620 520 Z"
+              fill="url(#archInnerRim)" />
+
+        <!-- Lòng cổng (chứa 2 cánh cửa & ánh sáng mở cổng) -->
+        <g clip-path="url(#portalClip)">
+          <!-- Nền xanh chuyển sắc bên trong cổng -->
+          <rect x="390" y="130" width="220" height="395" fill="url(#portalInnerGrad)" />
+
+          <!-- Luồng hào quang trắng rực sáng lên khi mở cổng -->
+          <rect id="svg-door-glow" x="390" y="130" width="220" height="395" fill="url(#portalOpenGlow)" />
+
+          <!-- CÁNH CỬA TRÁI (CÓ HOA VĂN CHẠM KHẮC CELESTIA) -->
+          <g id="svg-leaf-left">
+            <rect x="392" y="132" width="108" height="388" fill="url(#portalInnerGrad)" fill-opacity="0.88" />
+            <!-- Khe giữa cánh cổng -->
+            <line x1="499" y1="132" x2="499" y2="520" stroke="#dcebf7" stroke-width="2" />
+            <!-- Đường viền chỉ bạc chạy dọc khung trong -->
+            <path d="M 405 510 L 405 228 Q 418 218 418 196 Q 458 172 498 148"
+                  fill="none" stroke="#e4f1fb" stroke-width="3.5" stroke-linecap="round" />
+            <!-- Hoa văn vòm nhọn & nút thắt đối xứng nửa trái -->
+            <path d="M 498 188 C 468 208, 438 238, 428 282 C 452 272, 476 284, 498 310"
+                  fill="none" stroke="#e4f1fb" stroke-width="4" stroke-linejoin="round" />
+            <path d="M 428 282 C 425 322, 452 345, 498 345"
+                  fill="none" stroke="#e4f1fb" stroke-width="3.5" />
+            <!-- Họa tiết hoa văn dưới trung tâm cánh trái -->
+            <path d="M 498 358 L 468 378 L 484 396 L 460 416 L 498 432"
+                  fill="none" stroke="#e4f1fb" stroke-width="3.5" stroke-linejoin="round" />
+            <path d="M 498 446 C 472 456, 456 476, 456 505"
+                  fill="none" stroke="#e4f1fb" stroke-width="3" />
+          </g>
+
+          <!-- CÁNH CỬA PHẢI (ĐỐI XỨNG GƯƠNG HOÀN HẢO) -->
+          <g id="svg-leaf-right">
+            <rect x="500" y="132" width="108" height="388" fill="url(#portalInnerGrad)" fill-opacity="0.88" />
+            <line x1="501" y1="132" x2="501" y2="520" stroke="#dcebf7" stroke-width="2" />
+            <!-- Đường viền chỉ bạc chạy dọc khung trong -->
+            <path d="M 595 510 L 595 228 Q 582 218 582 196 Q 542 172 502 148"
+                  fill="none" stroke="#e4f1fb" stroke-width="3.5" stroke-linecap="round" />
+            <!-- Hoa văn vòm nhọn & nút thắt đối xứng nửa phải -->
+            <path d="M 502 188 C 532 208, 562 238, 572 282 C 548 272, 524 284, 502 310"
+                  fill="none" stroke="#e4f1fb" stroke-width="4" stroke-linejoin="round" />
+            <path d="M 572 282 C 575 322, 548 345, 502 345"
+                  fill="none" stroke="#e4f1fb" stroke-width="3.5" />
+            <!-- Họa tiết hoa văn dưới trung tâm cánh phải -->
+            <path d="M 502 358 L 532 378 L 516 396 L 540 416 L 502 432"
+                  fill="none" stroke="#e4f1fb" stroke-width="3.5" stroke-linejoin="round" />
+            <path d="M 502 446 C 528 456, 544 476, 544 505"
+                  fill="none" stroke="#e4f1fb" stroke-width="3" />
+          </g>
+        </g>
+
+        <!-- NGÔI SAO 4 CÁNH ĐẶC TRƯNG TRÊN ĐỈNH VÒM CỔNG -->
+        <g id="svg-top-star" transform="translate(500, 112)">
+          <!-- Hào quang tròn sau ngôi sao -->
+          <circle cx="0" cy="0" r="24" fill="#ffffff" opacity="0.35" />
+          <!-- Ngôi sao 4 cánh sắc nét -->
+          <path d="M 0 -24 Q 3 -3 24 0 Q 3 3 0 24 Q -3 3 -24 0 Q -3 -3 0 -24 Z" fill="#ffffff" />
+          <circle cx="0" cy="0" r="4" fill="#eef8ff" />
+        </g>
+      </g>
+
+      <!-- 5. BIỂN MÂY CUỘN XOÁY TIỀN CẢNH (CHE CHÂN CỔNG & CỘT) -->
+      <g id="svg-clouds-front">
+        <!-- Dải mây xoắn ốc lớn tràn từ phải sang trái -->
+        <path d="M 980 280 C 900 390, 770 465, 580 492 C 420 515, 290 480, 170 498 C 100 508, 40 535, 0 565 L 0 620 L 1000 620 L 1000 280 Z"
+              fill="url(#cloudSwirl1)" />
+
+        <!-- Đường sóng mây uốn lượn sáng nổi khối phía trước -->
+        <path d="M 0 475 C 95 455, 195 505, 310 495 C 430 485, 515 445, 650 468 C 785 490, 895 435, 1000 410 L 1000 620 L 0 620 Z"
+              fill="url(#cloudSwirl2)" />
+
+        <!-- Mây xoắn ốc nhỏ góc trái dưới -->
+        <path d="M 105 492 C 72 475, 45 435, 76 406 C 98 386, 134 402, 128 428 C 124 446, 102 448, 98 434 C 95 424, 106 418, 112 424 C 106 422, 102 428, 105 433 C 110 439, 120 436, 121 426 C 123 409, 98 398, 84 414 C 65 435, 88 468, 132 486 Z"
+              fill="#e4f2fc" opacity="0.88" />
+
+        <!-- Các mảnh tinh thể/lông vũ ánh sáng nhỏ bay quanh chân mây -->
+        <polygon points="222,462 232,456 228,468" fill="#ffffff" opacity="0.85" />
+        <polygon points="244,474 252,469 249,478" fill="#ffffff" opacity="0.7" />
+        <polygon points="622,482 642,474 635,490 616,492" fill="#ffffff" opacity="0.9" />
+      </g>
+    </svg>
   </div>
 
   <div class="door-hint">✦ Nhấn bất kỳ để vào ✦</div>
