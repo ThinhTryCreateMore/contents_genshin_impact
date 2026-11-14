@@ -317,7 +317,7 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
     /* =====================================================================
-       INTRO: SPLASH  ->  ĐĂNG NHẬP  ->  CÁNH CỬA
+       INTRO: SPLASH  ->  ĐĂNG NHẬP  ->  CÁNH CỬA TEYVAT TRÊN MÂY
        ===================================================================== */
     #splash {
       position: fixed; inset: 0; z-index: 100; background: #000;
@@ -353,77 +353,160 @@
       to { opacity: 0; filter: blur(14px); transform: scale(.95) translateY(-8px); }
     }
 
-    /* Cánh cửa */
+    /* Cánh cửa Teyvat trên mây (Genshin Style) */
     #door-gate {
       position: fixed; inset: 0; z-index: 60;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background:
-        radial-gradient(900px 500px at 50% 40%, rgba(70, 86, 170, .28), transparent 65%),
-        radial-gradient(700px 400px at 50% 110%, rgba(184, 145, 74, .2), transparent 60%),
-        #04070f;
+      background: linear-gradient(180deg, #5b84b1 0%, #3a5c83 45%, #182848 100%);
       opacity: 0; transition: opacity 1.2s ease; cursor: pointer;
+      overflow: hidden;
     }
+    #door-gate.hidden { display: none; }
     #door-gate.show { opacity: 1; }
     #door-gate.leaving { opacity: 0; transition: opacity 1s ease; pointer-events: none; }
-    #door-gate > * { position: relative; z-index: 1; }
+    #door-gate > * { position: relative; z-index: 2; }
 
+    /* Lớp mây cuộn cảnh nền và tiền cảnh */
+    .sky-clouds {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background-image:
+        radial-gradient(1500px 600px at 50% 12%, rgba(255,255,255,0.18), transparent 70%),
+        radial-gradient(600px 400px at 50% 100%, rgba(255,255,255,0.28), transparent 60%);
+    }
+    .sky-clouds::before, .sky-clouds::after {
+      content: ""; position: absolute; left: 0; right: 0; height: 35vh; bottom: 0;
+      background-repeat: repeat-x; background-size: 1200px 100%;
+      opacity: 0.85;
+    }
+    .sky-clouds::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,80 C150,110 350,70 500,90 C650,110 850,80 1000,100 C1150,120 1200,80 1200,80 L1200,120 L0,120 Z' fill='%2389a6c7' opacity='0.45'/%3E%3C/svg%3E");
+      animation: drift 50s linear infinite;
+    }
+    .sky-clouds::after {
+      height: 24vh;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C200,40 400,90 600,60 C800,30 1000,80 1200,60 L1200,120 L0,120 Z' fill='%23b5cae2' opacity='0.75'/%3E%3C/svg%3E");
+      animation: drift 30s linear infinite reverse;
+    }
+    @keyframes drift { from { background-position-x: 0px; } to { background-position-x: 1200px; } }
+
+    /* Cảnh vật: Cánh cổng & Các cột đá */
+    .scenery {
+      position: relative; display: flex; align-items: flex-end; justify-content: center;
+      width: 100%; max-width: 900px; height: min(60vh, 480px); margin-bottom: 12px;
+    }
+
+    /* Các cây cột đá cổ kính */
+    .pillar {
+      position: absolute; bottom: 0; width: 64px; height: min(45vh, 320px);
+      background: linear-gradient(180deg, #98b0cb 0%, #526f8d 100%);
+      border-radius: 6px 6px 0 0; opacity: 0.88;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3), 0 0 30px rgba(139,163,190,0.18);
+      border-left: 2px solid rgba(255,255,255,0.22);
+      transition: transform 1.6s ease, opacity 1.4s ease;
+    }
+    .pillar::before {
+      content: ""; position: absolute; top: 0; left: -6px; right: -6px; height: 32px;
+      background: #aec2d8; border-radius: 4px; border-bottom: 4px solid #415a77;
+    }
+    .pillar::after {
+      content: ""; position: absolute; top: 44px; left: 8px; right: 8px; height: 14px;
+      border-top: 2px solid rgba(255,255,255,0.25);
+      border-bottom: 2px solid rgba(255,255,255,0.25);
+    }
+    .pillar.left { left: 12%; height: min(48vh, 350px); }
+    .pillar.right { right: 15%; height: min(34vh, 230px); width: 48px; }
+    .pillar.right::before { height: 24px; left: -4px; right: -4px; }
+
+    /* Cánh cửa vòm Genshin */
     .door-frame {
-      position: relative; width: min(78vw, 340px); height: min(60vh, 480px);
-      border-radius: 999px 999px 0 0; overflow: hidden; perspective: 1500px;
-      border: 2px solid var(--gold-deep);
-      box-shadow: 0 0 60px -8px rgba(227,194,122,.45), inset 0 0 40px rgba(0,0,0,.8);
-      transition: transform 2.4s cubic-bezier(.4,.1,.2,1);
+      position: relative; width: min(60vw, 290px); height: min(58vh, 450px);
+      background: linear-gradient(180deg, #7d99b9 0%, #46607e 100%);
+      border-radius: 90px 90px 0 0;
+      box-shadow: 0 0 80px rgba(181,202,226,0.45), inset 0 0 50px rgba(0,0,0,0.6);
+      border: 4px solid #b5cae2; border-bottom: 0;
+      perspective: 1500px;
+      transition: transform 2.4s cubic-bezier(.4,.1,.2,1), box-shadow 1.6s ease;
     }
+
+    /* Ngôi sao 4 cánh lấp lánh trên đỉnh vòm */
+    .primogem-star {
+      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+      width: 44px; height: 44px; z-index: 5;
+      background-image: radial-gradient(circle, #fff 20%, transparent 60%);
+      animation: starTwinkle 2s infinite ease-in-out;
+    }
+    .primogem-star::before, .primogem-star::after {
+      content: ""; position: absolute; top: 50%; left: 50%;
+      background: #ffffff;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    .primogem-star::before { width: 6px; height: 34px; border-radius: 50% / 20%; }
+    .primogem-star::after { width: 34px; height: 6px; border-radius: 20% / 50%; }
+
+    @keyframes starTwinkle {
+      0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(0.92); filter: drop-shadow(0 0 4px #fff); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.12); filter: drop-shadow(0 0 14px #fff) drop-shadow(0 0 24px #f6dfa4); }
+    }
+
     .door-light {
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(60% 55% at 50% 55%, #fffbea 0%, #f6dfa4 28%, rgba(227,194,122,.35) 60%, transparent 85%),
-        #1a1630;
-      opacity: .4; transform: scale(1); transition: opacity 1.4s ease, transform 2.2s ease;
+      position: absolute; inset: 0; border-radius: 86px 86px 0 0;
+      background: radial-gradient(circle at 50% 50%, #fff 15%, #e8f1fc 45%, rgba(139,163,190,0.4) 85%);
+      opacity: 0.22; transform: scale(1); transition: opacity 1.4s ease, transform 2.2s ease;
+      z-index: 1;
     }
+
+    /* Hai cánh cổng đóng khép với hoa văn đối xứng trắng/bạc */
     .leaf {
-      position: absolute; top: 0; bottom: 0; width: 50%;
-      background:
-        repeating-linear-gradient(90deg, rgba(227,194,122,.05) 0 1px, transparent 1px 24px),
-        linear-gradient(160deg, #1d2a52 0%, #0e1630 55%, #0a1022 100%);
-      transition: transform 1.6s cubic-bezier(.6,.05,.2,1);
+      position: absolute; top: 0; bottom: 0; width: 50%; z-index: 2;
+      background: linear-gradient(180deg, #4b688a 0%, #334a66 100%);
+      border-top: 2px solid rgba(255,255,255,0.25);
+      transition: transform 1.8s cubic-bezier(.6,.05,.2,1);
       backface-visibility: hidden; overflow: hidden;
     }
-    .leaf.l { left: 0;  transform-origin: left center;  border-right: 1px solid rgba(227,194,122,.55); }
-    .leaf.r { right: 0; transform-origin: right center; border-left: 1px solid rgba(227,194,122,.55); }
+    .leaf.l { left: 0; transform-origin: left center; border-right: 2px solid #b5cae2; border-top-left-radius: 84px; }
+    .leaf.r { right: 0; transform-origin: right center; border-left: 2px solid #b5cae2; border-top-right-radius: 84px; }
+
+    /* Hoa văn chạm khắc trên cánh cổng */
     .leaf::before {
-      content: ""; position: absolute; inset: 14px; pointer-events: none;
-      border: 1px solid rgba(227,194,122,.35);
+      content: ""; position: absolute; inset: 12px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-bottom: 0;
     }
-    .leaf.l::before { border-top-left-radius: 150px; }
-    .leaf.r::before { border-top-right-radius: 150px; }
-    /* Nửa hoa văn tròn ghép lại ở giữa hai cánh */
+    .leaf.l::before { border-top-left-radius: 72px; border-right: 0; }
+    .leaf.r::before { border-top-right-radius: 72px; border-left: 0; }
+
+    /* Các đường vát trang trí đối xứng ở tâm hai cánh cổng */
     .leaf::after {
-      content: ""; position: absolute; top: 42%; width: 84px; height: 84px; margin-top: -42px;
-      border-radius: 50%; border: 1px solid var(--gold);
-      background: radial-gradient(circle, rgba(246,223,164,.22) 0 30%, transparent 31%);
-      box-shadow: 0 0 22px rgba(227,194,122,.35), inset 0 0 0 10px rgba(7,11,22,.5), inset 0 0 0 11px rgba(227,194,122,.4);
+      content: ""; position: absolute; top: 18%; width: 170%; height: 58%;
+      border: 3px solid rgba(255,255,255,0.45);
+      border-radius: 50% 50% 0 0;
+      opacity: 0.85; filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
     }
-    .leaf.l::after { right: -42px; }
-    .leaf.r::after { left: -42px; }
+    .leaf.l::after { right: -85%; border-left: 0; border-top-left-radius: 0; }
+    .leaf.r::after { left: -85%; border-right: 0; border-top-right-radius: 0; }
 
-    #door-gate.opening .leaf.l { transform: rotateY(78deg); }
-    #door-gate.opening .leaf.r { transform: rotateY(-78deg); }
+    /* Hiệu ứng mở cổng */
+    #door-gate.opening .leaf.l { transform: rotateY(85deg); }
+    #door-gate.opening .leaf.r { transform: rotateY(-85deg); }
     #door-gate.opening .door-light { opacity: 1; transform: scale(1.5); }
-    #door-gate.opening .door-frame { transform: scale(1.18); box-shadow: 0 0 140px 20px rgba(246,223,164,.55), inset 0 0 40px rgba(0,0,0,.4); }
+    #door-gate.opening .door-frame { transform: scale(1.12); box-shadow: 0 0 150px rgba(255,255,255,0.75); }
+    #door-gate.opening .pillar.left { transform: translateX(-50px) scale(0.92); opacity: 0.4; }
+    #door-gate.opening .pillar.right { transform: translateX(50px) scale(0.92); opacity: 0.4; }
 
-    .door-title { text-align: center; margin-bottom: 28px; transition: opacity .6s ease; }
-    .door-greet { margin-top: 6px; }
+    .door-title { text-align: center; margin-bottom: 18px; transition: opacity .6s ease; }
+    .door-title .eyebrow { color: #dbe8f6; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+    .door-greet { margin-top: 6px; text-shadow: 0 4px 18px rgba(0,0,0,0.4); }
     .door-hint {
-      margin-top: 32px; font-size: 12px; letter-spacing: .38em; text-transform: uppercase;
-      color: var(--gold); padding-left: .38em; opacity: 0; transition: opacity .8s ease;
+      margin-top: 22px; font-size: 12px; letter-spacing: .38em; text-transform: uppercase;
+      color: #f0f6fc; text-shadow: 0 0 12px rgba(255,255,255,0.7); padding-left: .38em;
+      opacity: 0; transition: opacity .8s ease;
     }
-    #door-gate.ready .door-hint { opacity: 1; animation: hintPulse 2.4s ease-in-out infinite; }
+    #door-gate.ready .door-hint { opacity: 1; animation: hintPulse 2s ease-in-out infinite; }
     #door-gate.opening .door-hint, #door-gate.opening .door-title { opacity: 0 !important; animation: none; }
-    @keyframes hintPulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+    @keyframes hintPulse { 0%, 100% { opacity: .45; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
 
     @media (prefers-reduced-motion: reduce) {
-      body::before, #door-gate::before { animation: none; }
+      body::before, #door-gate::before, .sky-clouds::before, .sky-clouds::after { animation: none; }
       .splash-word, .splash-sub { animation-duration: 1.2s; }
     }
   </style>
@@ -436,18 +519,27 @@
   <div class="splash-sub">Fan-made co-op tool</div>
 </div>
 
-<!-- CÁNH CỬA: HIỆN SAU KHI ĐĂNG NHẬP -->
+<!-- CÁNH CỬA: HIỆN SAU KHI ĐĂNG NHẬP (GENSHIN STYLE) -->
 <div id="door-gate" class="hidden">
+  <div class="sky-clouds"></div>
+
   <div class="door-title">
     <div class="eyebrow">Teyvat đang chờ bạn</div>
-    <div id="door-greet" class="door-greet font-display text-3xl font-bold title-gold"></div>
+    <div id="door-greet" class="door-greet font-display text-3xl md:text-4xl font-bold title-gold"></div>
   </div>
-  <div class="door-frame">
-    <div class="door-light"></div>
-    <div class="leaf l"></div>
-    <div class="leaf r"></div>
+
+  <div class="scenery">
+    <div class="pillar left"></div>
+    <div class="door-frame">
+      <div class="primogem-star"></div>
+      <div class="door-light"></div>
+      <div class="leaf l"></div>
+      <div class="leaf r"></div>
+    </div>
+    <div class="pillar right"></div>
   </div>
-  <div class="door-hint">Nhấn bất kỳ để vào</div>
+
+  <div class="door-hint">✦ Nhấn bất kỳ để vào ✦</div>
 </div>
 
 <div id="page" class="min-h-screen p-4 md:p-8">
@@ -595,9 +687,7 @@
                 <th class="py-4 px-5">Danh sách nhân vật sở hữu</th>
               </tr>
             </thead>
-            <tbody id="board-tbody" class="text-sm">
-              <!-- Dữ liệu render tự động -->
-            </tbody>
+            <tbody id="board-tbody" class="text-sm"></tbody>
           </table>
         </div>
       </div>
@@ -613,9 +703,7 @@
             class="field sm:!w-72" />
         </div>
 
-        <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[560px] overflow-y-auto pr-2">
-          <!-- Render nhân vật -->
-        </div>
+        <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[560px] overflow-y-auto pr-2"></div>
       </div>
     </div>
 
@@ -624,7 +712,7 @@
 
   <script>
     // =========================================================================
-    // CẤU HÌNH KẾT NỐI SUPABASE (DÁN ANON KEY CỦA BẠN VÀO DÒNG DƯỚI)
+    // CẤU HÌNH KẾT NỐI SUPABASE
     // =========================================================================
     const SUPABASE_URL = 'https://contentsgenshinimpact.vercel.app/supabase';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dWdwY3FubWdyaXFtYndrdHBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NDIwODQsImV4cCI6MjExMDIxODA4NH0.DvugX1F8WA1xleFzgHNWxmD2LC_xffIZ8bxA69DKQGI';
@@ -634,12 +722,11 @@
     // Biến trạng thái toàn cục
     let currentUser = null;
     let authMode = 'login';
-    let allCharacters = [];      // Danh sách nhân vật từ DB
-    let allUsers = [];           // Danh sách thành viên
-    let userCharactersMap = {};  // { user_id: [char_id_1, char_id_2, ...] }
+    let allCharacters = [];
+    let allUsers = [];
+    let userCharactersMap = {};
     let myCharacterIds = new Set();
 
-    // Chống chèn HTML khi hiển thị tên người dùng / nhân vật
     function esc(str) {
       return String(str ?? '').replace(/[&<>"']/g, ch => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -711,7 +798,6 @@
             if (profileError) throw profileError;
           }
 
-          // Nếu dự án yêu cầu xác nhận email thì chưa có phiên đăng nhập
           if (!data.session) {
             showAuthMsg('Đã tạo tài khoản. Hãy kiểm tra email để xác nhận, sau đó đăng nhập.', 'info');
           }
@@ -734,9 +820,9 @@
     const $ = id => document.getElementById(id);
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-    let entered = false;       // đã đi qua cánh cửa chưa
-    let gateShown = false;     // cánh cửa đã được bật chưa
-    let gateState = 'idle';    // idle | closed | ready | opening | done
+    let entered = false;
+    let gateShown = false;
+    let gateState = 'idle';
     let dataReady = Promise.resolve();
     let realtimeChannel = null;
 
@@ -753,17 +839,16 @@
         setTimeout(() => { splash.remove(); splashResolved(); }, 900);
       };
       setTimeout(finish, 3600);
-      splash.addEventListener('click', finish); // chạm để bỏ qua
+      splash.addEventListener('click', finish);
     })();
 
     function showAuth() {
       const a = $('auth-section');
       a.classList.remove('hidden', 'auth-leaving', 'fade-in');
-      void a.offsetWidth; // chạy lại animation xuất hiện
+      void a.offsetWidth;
       a.classList.add('fade-in');
     }
 
-    // Sau splash: nếu chưa đăng nhập thì hiện form đăng nhập
     splashDone.then(() => { if (!currentUser) showAuth(); });
 
     async function showDoor() {
@@ -771,7 +856,6 @@
       gateShown = true;
       const door = $('door-gate');
 
-      // 1) Làm mờ khung đăng nhập / đăng ký
       const auth = $('auth-section');
       if (!auth.classList.contains('hidden')) {
         auth.classList.add('auth-leaving');
@@ -780,7 +864,6 @@
       }
       if (!currentUser) return;
 
-      // 2) Hiện cánh cửa
       $('door-greet').textContent = '';
       dataReady.then(() => {
         const me = allUsers.find(u => u.id === currentUser?.id);
@@ -790,7 +873,6 @@
       door.classList.remove('hidden');
       requestAnimationFrame(() => requestAnimationFrame(() => door.classList.add('show')));
 
-      // 3) Sau khi cửa hiện xong mới cho phép nhấn để vào
       await sleep(1300);
       if (!currentUser) return;
       gateState = 'ready';
@@ -826,6 +908,7 @@
       gateShown = false;
       gateState = 'idle';
       dataReady = Promise.resolve();
+      stopPolling();
       if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
 
       const door = $('door-gate');
@@ -838,28 +921,25 @@
       splashDone.then(showAuth);
     }
 
-    // Theo dõi trạng thái đăng nhập
     supabaseClient.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         const isNewUser = !currentUser || currentUser.id !== session.user.id;
         currentUser = session.user;
 
         if (isNewUser) {
-          // Tải dữ liệu ngầm (tách khỏi callback để tránh khoá luồng auth)
           dataReady = new Promise(resolve => {
             setTimeout(async () => {
               try {
                 await initAppData();
-                setupRealtimeSubscriptions();
               } catch (err) {
                 console.error('Lỗi tải dữ liệu:', err);
               }
+              if (currentUser) setupRealtimeSubscriptions();
               resolve();
             }, 0);
           });
         }
 
-        // Chờ splash xong rồi mới mờ khung đăng nhập và hiện cánh cửa
         splashDone.then(() => { if (!entered) showDoor(); });
       } else {
         currentUser = null;
@@ -868,7 +948,7 @@
     });
 
     // =========================================================================
-    // 2. TẢI DỮ LIỆU & ĐỒNG BỘ REALTIME
+    // 2. TẢI DỮ LIỆU & ĐỒNG BỘ REALTIME + SMART POLLING
     // =========================================================================
     async function initAppData() {
       const { data: chars } = await supabaseClient.from('characters').select('*').order('name');
@@ -883,14 +963,12 @@
       const { data: users } = await supabaseClient.from('users').select('*').order('stt');
       allUsers = users || [];
 
-      // Hiển thị tên user hiện tại trên thanh Header
       const me = allUsers.find(u => u.id === currentUser.id);
       if (me) {
         document.getElementById('nav-username').textContent = me.username;
         document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
       }
 
-      // Tải toàn bộ liên kết nhân vật của các user
       const { data: uChars } = await supabaseClient.from('user_characters').select('*');
       userCharactersMap = {};
       myCharacterIds.clear();
@@ -908,9 +986,18 @@
       renderBoardTable();
     }
 
-    function renderLobbyCards(results, spinnerName) {
+    let lastLobbySig = null;
+
+    function renderLobbyCards(results, spinnerName, force = false) {
       const resultDiv = document.getElementById('lobby-result');
       const metaDiv = document.getElementById('lobby-meta');
+
+      const sig = JSON.stringify((results || []).map(r => [r.user_id, r.character_id, r.random_number]));
+      if (!force && sig === lastLobbySig) {
+        metaDiv.textContent = (results && results.length && spinnerName) ? `Quay bởi: ${spinnerName}` : '';
+        return;
+      }
+      lastLobbySig = sig;
 
       if (!results || results.length === 0) {
         resultDiv.innerHTML = `<div class="col-span-full text-center italic py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>`;
@@ -918,7 +1005,6 @@
         return;
       }
 
-      // Đếm số lần xuất hiện của từng nhân vật để đánh dấu nếu trùng
       const charCounts = {};
       results.forEach(item => {
         charCounts[item.character_name] = (charCounts[item.character_name] || 0) + 1;
@@ -950,13 +1036,31 @@
       renderLobbyCards(lobby.results_json || [], spinner ? spinner.username : '');
     }
 
+    // Đồng bộ HTTP định kỳ 2.5s song song với Realtime (đảm bảo chạy qua Vercel Proxy)
+    let pollTimer = null;
+    function startPolling() {
+      if (pollTimer) return;
+      pollTimer = setInterval(() => {
+        if (!currentUser) return;
+        refreshUsersAndRosters();
+        refreshLobbyResult();
+      }, 2500);
+    }
+    function stopPolling() {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+
     function setupRealtimeSubscriptions() {
+      startPolling();
       if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
       realtimeChannel = supabaseClient.channel('genshin-sync-channel')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'user_characters' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'random_lobby' }, () => refreshLobbyResult())
-        .subscribe();
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') stopPolling();
+        });
     }
 
     // =========================================================================
@@ -986,7 +1090,6 @@
     async function toggleCharacter(charId) {
       const isOwned = myCharacterIds.has(charId);
 
-      // Cập nhật giao diện tức thì (Optimistic UI)
       if (isOwned) {
         myCharacterIds.delete(charId);
       } else {
@@ -995,7 +1098,6 @@
       document.getElementById('my-char-count').textContent = myCharacterIds.size;
       renderCharacterGrid();
 
-      // Đồng bộ lên Supabase
       if (isOwned) {
         await supabaseClient.from('user_characters')
           .delete()
@@ -1007,7 +1109,7 @@
     }
 
     // =========================================================================
-    // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM
+    // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM (KHÔNG TRÙNG NHÂN VẬT)
     // =========================================================================
     function renderBoardTable() {
       const tbody = document.getElementById('board-tbody');
@@ -1043,7 +1145,6 @@
 
     function renderParticipantCheckboxes() {
       const container = document.getElementById('participant-checkboxes');
-      // Giữ nguyên trạng thái đã chọn khi dữ liệu được làm mới
       const previouslyChecked = new Set(
         Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value)
       );
@@ -1077,7 +1178,7 @@
         return;
       }
 
-      // Trộn ngẫu nhiên danh sách người chơi (Fisher-Yates shuffle) và lấy tối đa desiredCount người
+      // 1. Trộn ngẫu nhiên danh sách người chơi và lấy tối đa desiredCount người
       const shuffledUsers = [...validUsers];
       for (let i = shuffledUsers.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -1085,28 +1186,42 @@
       }
       const pickedUserIds = shuffledUsers.slice(0, Math.min(desiredCount, shuffledUsers.length));
 
-      // Với mỗi người chơi được chọn, random độc lập 1 nhân vật trong kho của họ (cho phép trùng giữa các người chơi)
-      const results = pickedUserIds.map(uid => {
-        const userObj = allUsers.find(u => u.id === uid);
-        const roster = userCharactersMap[uid];
-        const randomCharIndex = Math.floor(Math.random() * roster.length);
-        const charId = roster[randomCharIndex];
-        const charObj = allCharacters.find(c => c.id === charId);
+      // 2. Sắp xếp thứ tự bốc theo số lượng nhân vật tăng dần để tránh kẹt khi loại trừ trùng
+      const pickOrder = [...pickedUserIds].sort(
+        (a, b) => (userCharactersMap[a] || []).length - (userCharactersMap[b] || []).length
+      );
 
-        return {
+      const usedCharacterIds = new Set();
+      const pickedMap = {};
+
+      pickOrder.forEach(uid => {
+        const roster = userCharactersMap[uid] || [];
+        const available = roster.filter(charId => !usedCharacterIds.has(charId));
+        const pool = available.length > 0 ? available : roster;
+
+        const chosenCharId = pool[Math.floor(Math.random() * pool.length)];
+        usedCharacterIds.add(chosenCharId);
+
+        const originalIndex = roster.indexOf(chosenCharId);
+        const userObj = allUsers.find(u => u.id === uid);
+        const charObj = allCharacters.find(c => c.id === chosenCharId);
+
+        pickedMap[uid] = {
           user_id: uid,
           username: userObj ? userObj.username : 'Unknown',
-          character_id: charId,
+          character_id: chosenCharId,
           character_name: charObj ? charObj.name : 'Unknown',
-          random_number: randomCharIndex + 1
+          random_number: originalIndex + 1
         };
       });
 
-      // 1. HIỂN THỊ NGAY LẬP TỨC trên màn hình người bấm
-      const me = allUsers.find(u => u.id === currentUser.id);
-      renderLobbyCards(results, me ? me.username : '');
+      const results = pickedUserIds.map(uid => pickedMap[uid]);
 
-      // 2. Gửi đồng bộ ngầm lên Supabase cho các thành viên khác (không chặn giao diện)
+      // 3. Hiển thị ngay lập tức
+      const me = allUsers.find(u => u.id === currentUser.id);
+      renderLobbyCards(results, me ? me.username : '', true);
+
+      // 4. Đồng bộ ngầm lên Supabase
       supabaseClient
         .from('random_lobby')
         .update({
