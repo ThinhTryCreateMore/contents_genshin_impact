@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genshin Roster & Randomizer Sync</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .glass { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.15); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+  <!-- HEADER -->
+  <header class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 mb-8 pb-4 border-b border-slate-700">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
+        ✦ Genshin Roster & Co-op Randomizer
+      </h1>
+      <p class="text-slate-400 text-sm mt-1">Đồng bộ kho nhân vật & quay ngẫu nhiên thời gian thực</p>
+    </div>
+    <div id="user-nav" class="hidden flex items-center gap-4">
+      <div class="text-right">
+        <div id="nav-username" class="font-semibold text-amber-300"></div>
+        <div id="nav-uid" class="text-xs text-slate-400"></div>
+      </div>
+      <button onclick="handleLogout()" class="px-4 py-2 bg-rose-600/80 hover:bg-rose-600 rounded-lg text-sm font-medium transition">
+        Đăng xuất
+      </button>
+    </div>
+  </header>
+
+  <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ -->
+  <section id="auth-section" class="max-w-md mx-auto glass rounded-2xl p-6 md:p-8 shadow-2xl mt-10">
+    <div class="flex gap-2 mb-6 bg-slate-800/80 p-1 rounded-xl">
+      <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-lg font-medium bg-amber-500 text-slate-900 transition">Đăng nhập</button>
+      <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition">Đăng ký</button>
+    </div>
+
+    <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-300 mb-1">Email</label>
+        <input type="email" id="auth-email" required placeholder="player@gmail.com"
+          class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm text-slate-300 mb-1">Mật khẩu (tối thiểu 6 ký tự)</label>
+        <input type="password" id="auth-password" required minlength="6" placeholder="••••••••"
+          class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none" />
+      </div>
+
+      <!-- Trường mở rộng khi Đăng ký -->
+      <div id="register-fields" class="hidden space-y-4 pt-2 border-t border-slate-700">
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">Tên hiển thị (Player Name)</label>
+          <input type="text" id="auth-username" placeholder="VD: Tohru_sama, Pochiko..."
+            class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-sm text-slate-300 mb-1">UID Genshin Impact</label>
+          <input type="text" id="auth-uid" placeholder="VD: 868474609"
+            class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none" />
+        </div>
+      </div>
+
+      <div id="auth-error" class="text-rose-400 text-sm hidden"></div>
+
+      <button type="submit" id="auth-submit-btn"
+        class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-900 font-bold shadow-lg transition mt-2">
+        Đăng nhập ngay
+      </button>
+    </form>
+  </section>
+
+  <!-- MÀN HÌNH CHÍNH (SAU KHI ĐĂNG NHẬP) -->
+  <main id="app-section" class="hidden max-w-7xl mx-auto space-y-8">
+
+    <!-- KHU VỰC 1: VÒNG QUAY RANDOM ĐỒNG BỘ REALTIME -->
+    <div class="glass rounded-2xl p-6 shadow-xl border-amber-500/30">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+        <h2 class="text-xl font-bold text-amber-300 flex items-center gap-2">
+          🎲 Vòng Quay Ngẫu Nhiên (Đồng bộ trực tiếp)
+        </h2>
+        <span class="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          ● Realtime Sync Active
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+        <!-- Cột chọn người tham gia quay -->
+        <div class="lg:col-span-2 bg-slate-800/60 p-4 rounded-xl border border-slate-700">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-sm font-medium text-slate-300">Tích chọn thành viên tham gia quay:</span>
+            <div class="space-x-2 text-xs">
+              <button onclick="toggleAllPlayers(true)" class="text-amber-400 hover:underline">Chọn tất cả</button>
+              <span class="text-slate-600">|</span>
+              <button onclick="toggleAllPlayers(false)" class="text-slate-400 hover:underline">Bỏ chọn</button>
+            </div>
+          </div>
+          <div id="participant-checkboxes" class="flex flex-wrap gap-2">
+            <!-- Render danh sách checkbox thành viên -->
+          </div>
+        </div>
+
+        <!-- Cột hiển thị kết quả & Nút quay -->
+        <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-xl border border-amber-500/40 text-center flex flex-col justify-between">
+          <div class="text-xs uppercase tracking-wider text-slate-400 mb-2">Kết quả hiện tại</div>
+          <div id="lobby-result" class="my-2">
+            <div class="text-slate-500 italic text-sm">Chưa có lượt quay nào</div>
+          </div>
+          <div id="lobby-meta" class="text-xs text-slate-400 mb-4 h-4"></div>
+          <button onclick="spinRandom()" id="spin-btn"
+            class="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-extrabold text-base shadow-lg shadow-amber-500/20 transition transform active:scale-95">
+            QUAY NGẪU NHIÊN
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KHU VỰC 2: CHUYỂN TAB BẢNG TỔNG HỢP & KHO CÁ NHÂN -->
+    <div class="flex gap-3 border-b border-slate-700 pb-3">
+      <button id="btn-view-board" onclick="switchMainTab('board')"
+        class="px-5 py-2.5 rounded-xl font-semibold bg-amber-500 text-slate-900 transition">
+        📋 Bảng Nhân Vật Toàn Nhóm
+      </button>
+      <button id="btn-view-roster" onclick="switchMainTab('roster')"
+        class="px-5 py-2.5 rounded-xl font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+        🎒 Kho Nhân Vật Của Tôi (<span id="my-char-count">0</span>)
+      </button>
+    </div>
+
+    <!-- TAB A: BẢNG TỔNG HỢP TOÀN NHÓM -->
+    <div id="view-board" class="glass rounded-2xl overflow-hidden shadow-xl">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-800/90 text-amber-300 text-sm border-b border-slate-700">
+              <th class="py-3.5 px-4 w-16 text-center">STT</th>
+              <th class="py-3.5 px-4 w-44">Người chơi</th>
+              <th class="py-3.5 px-4 w-32">UID</th>
+              <th class="py-3.5 px-4">Danh sách nhân vật sở hữu</th>
+            </tr>
+          </thead>
+          <tbody id="board-tbody" class="divide-y divide-slate-800 text-sm">
+            <!-- Dữ liệu render tự động -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB B: QUẢN LÝ KHO NHÂN VẬT CÁ NHÂN (118 NHÂN VẬT) -->
+    <div id="view-roster" class="hidden glass rounded-2xl p-6 shadow-xl">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <div>
+          <h3 class="text-lg font-bold text-white">Chọn các nhân vật bạn đang sở hữu</h3>
+          <p class="text-xs text-slate-400">Hệ thống tự động lưu và đồng bộ ngay khi bạn bấm chọn/bỏ chọn.</p>
+        </div>
+        <input type="text" id="char-search" oninput="renderCharacterGrid()" placeholder="🔍 Tìm tên nhân vật..."
+          class="px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none text-sm w-full sm:w-64" />
+      </div>
+
+      <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 max-h-[550px] overflow-y-auto pr-2">
+        <!-- Render 118 nhân vật -->
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // CẤU HÌNH KẾT NỐI SUPABASE (DÁN ANON KEY CỦA BẠN VÀO DÒNG DƯỚI)
+    // =========================================================================
+    const SUPABASE_URL = 'https://lxugpcqnmqriqmbwktpn.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_j1xx0l8RJlp3tAp2F2z7ew_F76cyu6k';
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Biến trạng thái toàn cục
+    let currentUser = null;
+    let authMode = 'login';
+    let allCharacters = [];      // Danh sách 118 nhân vật từ DB
+    let allUsers = [];           // Danh sách thành viên
+    let userCharactersMap = {};  // { user_id: [char_id_1, char_id_2, ...] }
+    let myCharacterIds = new Set();
+
+    // =========================================================================
+    // 1. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ
+    // =========================================================================
+    function switchAuthTab(mode) {
+      authMode = mode;
+      const regFields = document.getElementById('register-fields');
+      const submitBtn = document.getElementById('auth-submit-btn');
+      const tabLogin = document.getElementById('tab-login');
+      const tabReg = document.getElementById('tab-register');
+      document.getElementById('auth-error').classList.add('hidden');
+
+      if (mode === 'register') {
+        regFields.classList.remove('hidden');
+        document.getElementById('auth-username').required = true;
+        document.getElementById('auth-uid').required = true;
+        submitBtn.textContent = 'Tạo tài khoản & Tham gia';
+        tabReg.className = 'flex-1 py-2 rounded-lg font-medium bg-amber-500 text-slate-900 transition';
+        tabLogin.className = 'flex-1 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition';
+      } else {
+        regFields.classList.add('hidden');
+        document.getElementById('auth-username').required = false;
+        document.getElementById('auth-uid').required = false;
+        submitBtn.textContent = 'Đăng nhập ngay';
+        tabLogin.className = 'flex-1 py-2 rounded-lg font-medium bg-amber-500 text-slate-900 transition';
+        tabReg.className = 'flex-1 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition';
+      }
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const errorBox = document.getElementById('auth-error');
+      errorBox.classList.add('hidden');
+
+      try {
+        if (authMode === 'register') {
+          const username = document.getElementById('auth-username').value.trim();
+          const uid = document.getElementById('auth-uid').value.trim();
+
+          const { data, error } = await supabaseClient.auth.signUp({ email, password });
+          if (error) throw error;
+
+          if (data.user) {
+            const { error: profileError } = await supabaseClient
+              .from('users')
+              .insert([{ id: data.user.id, username, uid }]);
+            if (profileError) throw profileError;
+          }
+        } else {
+          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+        }
+      } catch (err) {
+        errorBox.textContent = 'Lỗi: ' + (err.message || 'Không thể xác thực.');
+        errorBox.classList.remove('hidden');
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+    }
+
+    // Theo dõi trạng thái đăng nhập
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        currentUser = session.user;
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('app-section').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        await initAppData();
+        setupRealtimeSubscriptions();
+      } else {
+        currentUser = null;
+        document.getElementById('auth-section').classList.remove('hidden');
+        document.getElementById('app-section').classList.add('hidden');
+        document.getElementById('user-nav').classList.add('hidden');
+      }
+    });
+
+    // =========================================================================
+    // 2. TẢI DỮ LIỆU & ĐỒNG BỘ REALTIME
+    // =========================================================================
+    async function initAppData() {
+      // Tải danh sách 118 nhân vật
+      const { data: chars } = await supabaseClient.from('characters').select('*').order('name');
+      allCharacters = chars || [];
+
+      await refreshUsersAndRosters();
+      await refreshLobbyResult();
+      renderCharacterGrid();
+    }
+
+    async function refreshUsersAndRosters() {
+      const { data: users } = await supabaseClient.from('users').select('*').order('stt');
+      allUsers = users || [];
+
+      // Hiển thị tên user hiện tại trên thanh Header
+      const me = allUsers.find(u => u.id === currentUser.id);
+      if (me) {
+        document.getElementById('nav-username').textContent = me.username;
+        document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
+      }
+
+      // Tải toàn bộ liên kết nhân vật của các user
+      const { data: uChars } = await supabaseClient.from('user_characters').select('*');
+      userCharactersMap = {};
+      myCharacterIds.clear();
+
+      (uChars || []).forEach(row => {
+        if (!userCharactersMap[row.user_id]) userCharactersMap[row.user_id] = [];
+        userCharactersMap[row.user_id].push(row.character_id);
+        if (row.user_id === currentUser.id) {
+          myCharacterIds.add(row.character_id);
+        }
+      });
+
+      document.getElementById('my-char-count').textContent = myCharacterIds.size;
+      renderParticipantCheckboxes();
+      renderBoardTable();
+    }
+
+    async function refreshLobbyResult() {
+      const { data: lobby } = await supabaseClient.from('random_lobby').select('*').eq('id', 1).single();
+      const resultDiv = document.getElementById('lobby-result');
+      const metaDiv = document.getElementById('lobby-meta');
+
+      if (!lobby || !lobby.selected_user_id || !lobby.selected_character_id) {
+        resultDiv.innerHTML = `<div class="text-slate-500 italic text-sm">Chưa có lượt quay nào</div>`;
+        metaDiv.textContent = '';
+        return;
+      }
+
+      const selectedUser = allUsers.find(u => u.id === lobby.selected_user_id);
+      const selectedChar = allCharacters.find(c => c.id === lobby.selected_character_id);
+      const spinner = allUsers.find(u => u.id === lobby.updated_by);
+
+      resultDiv.innerHTML = `
+        <div class="text-lg font-bold text-amber-400">${selectedUser ? selectedUser.username : 'Unknown'}</div>
+        <div class="text-2xl font-extrabold text-white mt-0.5">✦ ${selectedChar ? selectedChar.name : 'Unknown'} ✦</div>
+        <div class="text-xs text-amber-200/80 mt-1">Số ngẫu nhiên: #${lobby.random_number || 1}</div>
+      `;
+      metaDiv.textContent = spinner ? `Quay bởi: ${spinner.username}` : '';
+    }
+
+    function setupRealtimeSubscriptions() {
+      supabaseClient.channel('genshin-sync-channel')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => refreshUsersAndRosters())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'user_characters' }, () => refreshUsersAndRosters())
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'random_lobby' }, () => refreshLobbyResult())
+        .subscribe();
+    }
+
+    // =========================================================================
+    // 3. QUẢN LÝ KHO NHÂN VẬT CÁ NHÂN
+    // =========================================================================
+    function renderCharacterGrid() {
+      const keyword = document.getElementById('char-search').value.toLowerCase().trim();
+      const grid = document.getElementById('character-grid');
+      const filtered = allCharacters.filter(c => c.name.toLowerCase().includes(keyword));
+
+      grid.innerHTML = filtered.map(char => {
+        const owned = myCharacterIds.has(char.id);
+        return `
+          <button onclick="toggleCharacter(${char.id})"
+            class="p-3 rounded-xl border text-left text-sm font-medium transition flex items-center justify-between
+            ${owned
+              ? 'bg-amber-500/20 border-amber-400 text-amber-200 shadow-sm'
+              : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200'}">
+            <span class="truncate pr-1">${char.name}</span>
+            <span class="text-xs">${owned ? '✔' : '+'}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    async function toggleCharacter(charId) {
+      const isOwned = myCharacterIds.has(charId);
+
+      // Cập nhật giao diện tức thì (Optimistic UI)
+      if (isOwned) {
+        myCharacterIds.delete(charId);
+      } else {
+        myCharacterIds.add(charId);
+      }
+      document.getElementById('my-char-count').textContent = myCharacterIds.size;
+      renderCharacterGrid();
+
+      // Đồng bộ lên Supabase
+      if (isOwned) {
+        await supabaseClient.from('user_characters')
+          .delete()
+          .match({ user_id: currentUser.id, character_id: charId });
+      } else {
+        await supabaseClient.from('user_characters')
+          .insert([{ user_id: currentUser.id, character_id: charId }]);
+      }
+    }
+
+    // =========================================================================
+    // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM
+    // =========================================================================
+    function renderBoardTable() {
+      const tbody = document.getElementById('board-tbody');
+      if (allUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-500">Chưa có thành viên nào đăng ký.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = allUsers.map((user, idx) => {
+        const charIds = userCharactersMap[user.id] || [];
+        const charNames = charIds
+          .map(id => allCharacters.find(c => c.id === id)?.name)
+          .filter(Boolean)
+          .sort();
+
+        const badges = charNames.length > 0
+          ? charNames.map(name => `<span class="inline-block px-2.5 py-1 m-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-200 text-xs">${name}</span>`).join('')
+          : `<span class="text-slate-500 italic text-xs">Chưa chọn nhân vật nào</span>`;
+
+        return `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="py-3.5 px-4 text-center font-semibold text-slate-400">${idx + 1}</td>
+            <td class="py-3.5 px-4 font-bold text-amber-300">${user.username}</td>
+            <td class="py-3.5 px-4 font-mono text-xs text-slate-300">${user.uid}</td>
+            <td class="py-3.5 px-4">${badges}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderParticipantCheckboxes() {
+      const container = document.getElementById('participant-checkboxes');
+      container.innerHTML = allUsers.map(user => {
+        const count = (userCharactersMap[user.id] || []).length;
+        return `
+          <label class="cursor-pointer select-none inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-amber-400/60 text-sm">
+            <input type="checkbox" value="${user.id}" class="participant-cb accent-amber-500 w-4 h-4" ${count > 0 ? 'checked' : ''} />
+            <span>${user.username}</span>
+            <span class="text-xs text-slate-400">(${count})</span>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function toggleAllPlayers(checked) {
+      document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = checked);
+    }
+
+    async function spinRandom() {
+      const checkedUserIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
+
+      // Lọc ra những người được chọn VÀ có ít nhất 1 nhân vật trong kho
+      const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length > 0);
+
+      if (validUsers.length === 0) {
+        alert('Vui lòng chọn ít nhất 1 thành viên đã có nhân vật trong kho để quay!');
+        return;
+      }
+
+      const btn = document.getElementById('spin-btn');
+      btn.disabled = true;
+      btn.textContent = 'ĐANG QUAY...';
+
+      // Bước 1: Chọn ngẫu nhiên 1 người chơi
+      const randomUserId = validUsers[Math.floor(Math.random() * validUsers.length)];
+
+      // Bước 2: Chọn ngẫu nhiên 1 nhân vật từ kho của người chơi đó
+      const roster = userCharactersMap[randomUserId];
+      const randomCharIndex = Math.floor(Math.random() * roster.length);
+      const randomCharId = roster[randomCharIndex];
+
+      // Cập nhật lên bảng random_lobby để đồng bộ cho toàn bộ thành viên
+      await supabaseClient
+        .from('random_lobby')
+        .update({
+          selected_user_id: randomUserId,
+          selected_character_id: randomCharId,
+          random_number: randomCharIndex + 1,
+          updated_by: currentUser.id,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', 1);
+
+      btn.disabled = false;
+      btn.textContent = 'QUAY NGẪU NHIÊN';
+    }
+
+    function switchMainTab(tab) {
+      const viewBoard = document.getElementById('view-board');
+      const viewRoster = document.getElementById('view-roster');
+      const btnBoard = document.getElementById('btn-view-board');
+      const btnRoster = document.getElementById('btn-view-roster');
+
+      if (tab === 'board') {
+        viewBoard.classList.remove('hidden');
+        viewRoster.classList.add('hidden');
+        btnBoard.className = 'px-5 py-2.5 rounded-xl font-semibold bg-amber-500 text-slate-900 transition';
+        btnRoster.className = 'px-5 py-2.5 rounded-xl font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+      } else {
+        viewBoard.classList.add('hidden');
+        viewRoster.classList.remove('hidden');
+        btnRoster.className = 'px-5 py-2.5 rounded-xl font-semibold bg-amber-500 text-slate-900 transition';
+        btnBoard.className = 'px-5 py-2.5 rounded-xl font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+      }
+    }
+  </script>
+</body>
+</html>
