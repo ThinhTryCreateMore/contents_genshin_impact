@@ -1001,7 +1001,6 @@
         </div>
 
         <!-- Cột hiển thị Boss hiện tại đang áp dụng cho lượt quay nhân vật -->
-      <!-- Cột hiển thị Boss hiện tại đang áp dụng cho lượt quay nhân vật -->
         <div class="lg:col-span-2 stage flex flex-col justify-between">
           <div class="flex justify-between items-center mb-3">
             <span class="eyebrow">Mục tiêu Boss hiện tại</span>
@@ -1079,12 +1078,6 @@
           </div>
           <div id="lobby-result" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-auto">
             <div class="col-span-full text-center italic text-sm py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>
-          </div>
-          <div id="random-main-action" class="hidden mt-5 pt-4 text-center fade-in" style="border-top: 1px solid var(--line-soft);">
-            <button type="button" onclick="spinMainPlayer()" id="spin-main-btn" class="btn-gold px-6 py-3 text-sm uppercase tracking-wider">
-              ✨ Random Player Phải Chuyển Thành Main (Aether / Lumine)
-            </button>
-            <div id="random-main-status" class="text-xs mt-2" style="color: var(--ink-dim);"></div>
           </div>
         </div>
       </div>
@@ -1537,7 +1530,7 @@
 
     let lastLobbySig = null;
 
-function updateMainActionVisibility() {
+    function updateMainActionVisibility() {
       const actionWrap = document.getElementById('random-main-action');
       const statusText = document.getElementById('random-main-status');
       const btn = document.getElementById('spin-main-btn');
@@ -1567,6 +1560,7 @@ function updateMainActionVisibility() {
           : 'Tùy chọn hỗ trợ nếu cảm thấy đánh không nổi — Bấm để chọn ngẫu nhiên 1 người đổi sang Main.';
       }
     }
+
     function renderLobbyCards(results, spinnerName, force = false) {
       const resultDiv = document.getElementById('lobby-result');
       const metaDiv = document.getElementById('lobby-meta');
@@ -1928,7 +1922,7 @@ function updateMainActionVisibility() {
         notes.push(`Hệ thống sẽ chọn ngẫu nhiên <strong>${reqEls.length} người</strong> bắt buộc bốc trúng nhân vật thuộc nguyên tố ${reqEls.map(e => ELEMENT_LABELS[e] || e).join(' và ')}.`);
       }
       if (needMain) {
-        notes.push(`Sau khi quay nhân vật bên dưới, sẽ hiện nút <strong>Random Player Phải Chuyển Thành Main</strong> để chọn 1 người đổi sang <strong>Aether / Lumine</strong>.`);
+        notes.push(`Boss này cần <strong>Nhà Lữ Hành (Aether / Lumine)</strong> — Bấm nút <strong>Random 1 Player Dùng Main</strong> ngay bên dưới để chọn người cầm Main.`);
       }
       const ruleText = notes.length > 0
         ? notes.join(' ')
@@ -2105,7 +2099,7 @@ function updateMainActionVisibility() {
       return copy;
     }
 
-  function spinRandom() {
+    function spinRandom() {
       const checkedUserIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
       const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length > 0);
       const desiredCount = parseInt(document.getElementById('spin-count').value, 10);
@@ -2214,7 +2208,6 @@ function updateMainActionVisibility() {
         updated_at: new Date().toISOString()
       };
 
-      // Nếu người được chọn Main trước đó không nằm trong lượt quay này thì xóa trạng thái main_player cũ
       if (activeBoss && activeBoss.main_player && !preselectedMainUid) {
         delete activeBoss.main_player;
         lobbyPatch.current_boss_json = activeBoss;
@@ -2334,28 +2327,6 @@ function updateMainActionVisibility() {
         .eq('id', 1)
         .then(({ error }) => {
           if (error) console.error('Lỗi hủy trạng thái Main:', error.message);
-        });
-    }
-
-      const chosenIndex = Math.floor(Math.random() * lastLobbyResults.length);
-      const updatedResults = lastLobbyResults.map((item, idx) => ({
-        ...item,
-        forced_main: idx === chosenIndex
-      }));
-
-      const me = allUsers.find(u => u.id === currentUser.id);
-      renderLobbyCards(updatedResults, me ? me.username : '', true);
-
-      supabaseClient
-        .from('random_lobby')
-        .update({
-          results_json: updatedResults,
-          updated_by: currentUser.id,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', 1)
-        .then(({ error }) => {
-          if (error) console.error('Lỗi đồng bộ người chơi Main:', error.message);
         });
     }
 
