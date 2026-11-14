@@ -292,6 +292,88 @@
     .tag:hover { border-color: rgba(227,194,122,.5); color: var(--gold-bright); background: rgba(227,194,122,.07); }
 
 
+
+    /* ---------- Huy hiệu Nguyên tố ---------- */
+    .el-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      letter-spacing: .04em; border: 1px solid currentColor;
+    }
+    .el-Pyro    { color: #ff8c7a; background: rgba(255, 102, 77, .14); }
+    .el-Hydro   { color: #66c2ff; background: rgba(56, 168, 255, .14); }
+    .el-Anemo   { color: #74e8c4; background: rgba(68, 214, 170, .14); }
+    .el-Electro { color: #d39eff; background: rgba(178, 102, 255, .14); }
+    .el-Dendro  { color: #9ce06c; background: rgba(124, 198, 68, .14); }
+    .el-Cryo    { color: #9ee8ff; background: rgba(118, 214, 245, .14); }
+    .el-Geo     { color: #f5cc6c; background: rgba(235, 184, 68, .14); }
+
+    /* ---------- Khu vực Boss ---------- */
+    .boss-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 13px; border-radius: 12px; font-size: 13px;
+      background: rgba(7, 11, 22, .62); border: 1px solid var(--line-soft);
+      color: var(--ink); transition: all .2s ease;
+    }
+    .boss-pill.eliminated {
+      opacity: .42; text-decoration: line-through;
+      border-style: dashed;
+    }
+    .boss-active-banner {
+      padding: 16px 20px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(227,194,122,.16), rgba(30,42,76,.7));
+      border: 1px solid var(--gold);
+      box-shadow: 0 10px 28px -14px rgba(227,194,122,.6);
+    }
+
+    /* ---------- Nút chọn nguyên tố khi tạo Boss ---------- */
+    .el-toggle {
+      cursor: pointer; user-select: none;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: rgba(7, 11, 22, .6); border: 1px solid var(--line-soft);
+      color: var(--ink-dim); transition: all .2s ease;
+    }
+    .el-toggle input { display: none; }
+    .el-toggle:has(input:checked) {
+      border-color: var(--gold);
+      color: var(--gold-bright);
+      background: rgba(227, 194, 122, .16);
+      box-shadow: 0 0 14px -5px rgba(227,194,122,.65);
+    }
+
+    /* ---------- Modal thông báo Boss & Xác nhận Reset ---------- */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 80;
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+      background: rgba(4, 7, 15, .82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: fadeIn .25s ease both;
+    }
+    .modal-backdrop.hidden { display: none; }
+    .modal-box {
+      width: 100%; max-width: 540px; max-height: 92vh; overflow-y: auto;
+      padding: 28px 26px; text-align: center;
+    }
+    .boss-locate-wrap {
+      margin: 14px auto 18px;
+      border-radius: 14px; overflow: hidden;
+      border: 1px solid var(--line);
+      background: rgba(7, 11, 22, .85);
+      box-shadow: 0 10px 30px -12px rgba(0,0,0,.8);
+    }
+    .boss-locate-img {
+      display: block; width: 100%; max-height: 270px;
+      object-fit: contain; background: #060a14;
+    }
+    .req-badge-slot {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 6px; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+      background: rgba(227, 194, 122, .14); border: 1px solid var(--gold);
+      color: var(--gold-bright);
+    }
+
     /* ---------- Avatar nhân vật ---------- */
     .char-avatar {
       width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: top center;
@@ -804,6 +886,105 @@
   <!-- MÀN HÌNH CHÍNH (SAU KHI ĐĂNG NHẬP) -->
   <main id="app-section" class="hidden max-w-7xl mx-auto space-y-10 fade-in">
 
+    <!-- KHU VỰC 0: VÒNG QUAY BOSS & RÀNG BUỘC NGUYÊN TỐ -->
+    <div class="panel panel-gold p-6 md:p-8">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
+        <div>
+          <div class="eyebrow mb-1">Boss Challenge</div>
+          <h2 class="font-display text-3xl font-bold title-gold">Vòng Quay Boss</h2>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <span id="boss-remaining-badge" class="text-xs px-3.5 py-2 rounded-xl font-semibold" style="color: var(--gold-bright); background: rgba(7,11,22,.65); border: 1px solid var(--line);">
+            Còn 0/0 Boss
+          </span>
+          <button onclick="toggleBossManager()" class="btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-wider">
+            + Thêm / Quản lý Boss
+          </button>
+        </div>
+      </div>
+
+      <!-- Khung thêm / quản lý Boss (ẩn/hiện) -->
+      <div id="boss-manager-panel" class="hidden mt-5 p-5 rounded-2xl fade-in" style="background: rgba(7,11,22,.65); border: 1px solid var(--line);">
+        <div class="flex justify-between items-center mb-4">
+          <span class="text-xs uppercase tracking-widest font-semibold" style="color: var(--gold);">Thêm Boss mới vào danh sách</span>
+          <button onclick="toggleBossManager()" class="text-xs" style="color: var(--ink-mute);">Đóng ✕</button>
+        </div>
+        <form onsubmit="handleAddBoss(event)" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-4">
+              <div>
+                <label class="field-label">Tên Boss</label>
+                <input type="text" id="new-boss-name" required placeholder="VD: Lôi Âm Quyền Hiện, Rồng Điềm Báo..." class="field" />
+              </div>
+              <div>
+                <label class="field-label">Link ảnh bản đồ vị trí (locate_url — tùy chọn)</label>
+                <input type="url" id="new-boss-locate-url" placeholder="https://.../map-boss.png" class="field" />
+              </div>
+            </div>
+            <div>
+              <label class="field-label">Nguyên tố yêu cầu (Chọn tối đa 2, hoặc để trống)</label>
+              <div id="new-boss-elements" class="flex flex-wrap gap-1.5 pt-1">
+                <label class="el-toggle"><input type="checkbox" value="Pyro" onchange="limitBossElements(this)" /><span>🔥 Pyro</span></label>
+                <label class="el-toggle"><input type="checkbox" value="Hydro" onchange="limitBossElements(this)" /><span>💧 Hydro</span></label>
+                <label class="el-toggle"><input type="checkbox" value="Anemo" onchange="limitBossElements(this)" /><span>🌪️ Anemo</span></label>
+                <label class="el-toggle"><input type="checkbox" value="Electro" onchange="limitBossElements(this)" /><span>⚡ Electro</span></label>
+                <label class="el-toggle"><input type="checkbox" value="Dendro" onchange="limitBossElements(this)" /><span>🌿 Dendro</span></label>
+                <label class="el-toggle"><input type="checkbox" value="Cryo" onchange="limitBossElements(this)" /><span>❄️ Cryo</span></label>
+                <label class="el-toggle"><input type="checkbox" value="Geo" onchange="limitBossElements(this)" /><span>🪨 Geo</span></label>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" class="btn-gold px-6 py-2.5 text-sm">Lưu Boss</button>
+          </div>
+        </form>
+
+        <hr class="divider my-5" />
+        <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--ink-dim);">Danh sách tất cả Boss đã tạo (Bấm ✕ để xóa vĩnh viễn)</div>
+        <div id="boss-manage-list" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="ornament my-6"><i></i></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        <!-- Cột điều khiển Quay Boss & Reset -->
+        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between gap-5" style="background: rgba(7,11,22,.45); border:1px solid var(--line-soft);">
+          <div>
+            <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--ink-dim);">Boss trong vòng lặp hiện tại</div>
+            <div id="boss-pool-chips" class="flex flex-wrap gap-2 max-h-44 overflow-y-auto pr-1">
+              <span class="text-xs italic" style="color: var(--ink-mute);">Chưa có Boss nào. Hãy bấm "+ Thêm / Quản lý Boss".</span>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <button onclick="spinBoss()" id="spin-boss-btn" class="btn-gold w-full py-3.5 text-base uppercase tracking-widest">
+              Quay Boss Ngẫu Nhiên
+            </button>
+            <div class="text-center pt-1">
+              <button onclick="openResetBossModal()" class="btn-ghost w-full py-2.5 text-xs font-semibold uppercase tracking-wider">
+                Reset Vòng Chơi
+              </button>
+              <div class="text-[11px] mt-1.5" style="color: var(--ink-mute);">Nhấn vào để reset vòng chơi</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột hiển thị Boss hiện tại đang áp dụng cho lượt quay nhân vật -->
+        <div class="lg:col-span-2 stage flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-3">
+            <span class="eyebrow">Mục tiêu Boss hiện tại</span>
+            <span id="boss-meta" class="text-xs" style="color: var(--ink-mute);"></span>
+          </div>
+
+          <div id="active-boss-display" class="my-auto">
+            <div class="text-center italic py-8 font-display text-lg" style="color: var(--ink-mute);">
+              Chưa chọn Boss — Vòng quay nhân vật đang ở chế độ tự do
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- KHU VỰC 1: VÒNG QUAY RANDOM ĐỒNG BỘ REALTIME (2-4 NGƯỜI) -->
     <div class="panel panel-gold p-6 md:p-8">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
@@ -903,6 +1084,36 @@
     </div>
 
   </main>
+
+<!-- MODAL 1: THÔNG BÁO QUAY TRÚNG BOSS (CHỈ CÓ DUY NHẤT 1 NÚT XÁC NHẬN) -->
+<div id="boss-alert-modal" class="modal-backdrop hidden">
+  <div class="panel panel-gold modal-box">
+    <div class="eyebrow mb-2">Mục tiêu đã được chọn</div>
+    <h3 id="modal-boss-name" class="font-display text-4xl font-bold title-gold my-2"></h3>
+    <div id="modal-boss-elements" class="flex justify-center flex-wrap gap-2 my-3"></div>
+    <div id="modal-boss-locate" class="hidden"></div>
+    <p id="modal-boss-desc" class="text-xs leading-relaxed mb-6" style="color: var(--ink-dim);"></p>
+    <button onclick="confirmCurrentBoss()" class="btn-gold w-full py-3.5 text-base uppercase tracking-widest">
+      Xác nhận
+    </button>
+  </div>
+</div>
+
+<!-- MODAL 2: XÁC NHẬN RESET VÒNG CHƠI BOSS -->
+<div id="reset-boss-modal" class="modal-backdrop hidden">
+  <div class="panel panel-gold modal-box">
+    <div class="eyebrow mb-2">Xác nhận thao tác</div>
+    <h3 class="font-display text-3xl font-bold title-gold my-2">Reset vòng chơi?</h3>
+    <p class="text-sm leading-relaxed my-5" style="color: var(--ink-dim);">
+      Bạn có chắc chắn muốn khôi phục toàn bộ Boss đã đánh về lại vòng quay và xóa ràng buộc nguyên tố hiện tại không?
+    </p>
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="closeResetBossModal()" class="btn-ghost py-3 text-sm font-semibold">Hủy</button>
+      <button onclick="confirmResetBossLoop()" class="btn-gold py-3 text-sm font-bold">Xác nhận Reset</button>
+    </div>
+  </div>
+</div>
+
 </div>
 
   <script>
@@ -919,8 +1130,27 @@
     let authMode = 'login';
     let allCharacters = [];
     let allUsers = [];
+    let allBosses = [];
+    let activeBoss = null;
+    let pendingBoss = null;
     let userCharactersMap = {};
     let myCharacterIds = new Set();
+
+    const ELEMENT_LABELS = {
+      Pyro: '🔥 Pyro',
+      Hydro: '💧 Hydro',
+      Anemo: '🌪️ Anemo',
+      Electro: '⚡ Electro',
+      Dendro: '🌿 Dendro',
+      Cryo: '❄️ Cryo',
+      Geo: '🪨 Geo'
+    };
+
+    function renderElementBadge(el) {
+      if (!el) return '';
+      const label = ELEMENT_LABELS[el] || el;
+      return `<span class="el-badge el-${esc(el)}">${esc(label)}</span>`;
+    }
 
 
     // Tự động ánh xạ tên nhân vật sang link icon chuẩn Enka/Ambr CDN nếu cột icon_url chưa có
@@ -1200,6 +1430,7 @@
       const { data: chars } = await supabaseClient.from('characters').select('*').order('name');
       allCharacters = chars || [];
 
+      await refreshBosses();
       await refreshUsersAndRosters();
       await refreshLobbyResult();
       renderCharacterGrid();
@@ -1260,6 +1491,9 @@
         const isDuplicate = charCounts[item.character_name] > 1;
         const charObj = allCharacters.find(c => c.id === item.character_id) || { name: item.character_name, icon_url: item.icon_url };
         const avatarHtml = renderAvatarImg(charObj, 'slot-avatar', 'slot-avatar-fallback');
+        const reqElBadge = item.required_element
+          ? `<div class="req-badge-slot">Yêu cầu: ${esc(ELEMENT_LABELS[item.required_element] || item.required_element)}</div>`
+          : '';
         return `
           <div class="slot-card ${isDuplicate ? 'dup' : ''}" style="animation-delay:${idx * 90}ms">
             <div class="flex items-center gap-3.5 min-w-0">
@@ -1267,6 +1501,7 @@
               <div class="min-w-0">
                 <div class="slot-meta">Slot ${idx + 1} &middot; ${esc(item.username)}</div>
                 <div class="slot-name truncate">${esc(item.character_name)}</div>
+                ${reqElBadge}
               </div>
             </div>
             <div class="text-right shrink-0">
@@ -1280,11 +1515,22 @@
       metaDiv.textContent = spinnerName ? `Quay bởi: ${spinnerName}` : '';
     }
 
+    async function refreshBosses() {
+      const { data: bosses } = await supabaseClient.from('bosses').select('*').order('id');
+      allBosses = bosses || [];
+      renderBossLists();
+    }
+
     async function refreshLobbyResult() {
       const { data: lobby } = await supabaseClient.from('random_lobby').select('*').eq('id', 1).single();
       if (!lobby) return;
       const spinner = allUsers.find(u => u.id === lobby.updated_by);
       renderLobbyCards(lobby.results_json || [], spinner ? spinner.username : '');
+
+      activeBoss = lobby.current_boss_json || null;
+      pendingBoss = lobby.pending_boss_json || null;
+      renderActiveBossBanner();
+      syncBossAlertModal();
     }
 
     // Đồng bộ HTTP định kỳ 2.5s song song với Realtime (đảm bảo chạy qua Vercel Proxy)
@@ -1293,6 +1539,7 @@
       if (pollTimer) return;
       pollTimer = setInterval(() => {
         if (!currentUser) return;
+        refreshBosses();
         refreshUsersAndRosters();
         refreshLobbyResult();
       }, 2500);
@@ -1306,6 +1553,7 @@
       startPolling();
       if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
       realtimeChannel = supabaseClient.channel('genshin-sync-channel')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'bosses' }, () => refreshBosses())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'user_characters' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'random_lobby' }, () => refreshLobbyResult())
@@ -1429,6 +1677,272 @@
       document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = checked);
     }
 
+    // =========================================================================
+    // 4b. QUẢN LÝ BOSS & VÒNG QUAY BOSS (TẠM XÓA SAU XÁC NHẬN + RESET CÓ XÁC NHẬN)
+    // =========================================================================
+    function toggleBossManager() {
+      const panel = document.getElementById('boss-manager-panel');
+      panel.classList.toggle('hidden');
+    }
+
+    function limitBossElements(changedCb) {
+      const checked = Array.from(document.querySelectorAll('#new-boss-elements input:checked'));
+      if (checked.length > 2) {
+        changedCb.checked = false;
+        alert('Mỗi Boss chỉ được chọn tối đa 2 nguyên tố yêu cầu!');
+      }
+    }
+
+    async function handleAddBoss(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('new-boss-name');
+      const locateInput = document.getElementById('new-boss-locate-url');
+      const name = nameInput.value.trim();
+      const locate_url = locateInput ? locateInput.value.trim() : '';
+      if (!name) return;
+
+      const required_elements = Array.from(document.querySelectorAll('#new-boss-elements input:checked')).map(cb => cb.value);
+
+      const { error } = await supabaseClient
+        .from('bosses')
+        .insert([{ name, locate_url: locate_url || null, required_elements, is_eliminated: false }]);
+
+      if (error) {
+        alert('Lỗi thêm Boss: ' + error.message);
+        return;
+      }
+
+      nameInput.value = '';
+      if (locateInput) locateInput.value = '';
+      document.querySelectorAll('#new-boss-elements input').forEach(cb => cb.checked = false);
+      await refreshBosses();
+    }
+
+    async function deleteBoss(bossId) {
+      const { error } = await supabaseClient.from('bosses').delete().eq('id', bossId);
+      if (error) {
+        alert('Lỗi xóa Boss: ' + error.message);
+        return;
+      }
+      await refreshBosses();
+    }
+
+    function renderBossLists() {
+      const remaining = allBosses.filter(b => !b.is_eliminated);
+      document.getElementById('boss-remaining-badge').textContent = `Còn ${remaining.length}/${allBosses.length} Boss`;
+
+      const poolDiv = document.getElementById('boss-pool-chips');
+      if (allBosses.length === 0) {
+        poolDiv.innerHTML = `<span class="text-xs italic" style="color: var(--ink-mute);">Chưa có Boss nào. Hãy bấm "+ Thêm / Quản lý Boss".</span>`;
+      } else {
+        poolDiv.innerHTML = allBosses.map(b => {
+          const els = (b.required_elements || []).map(renderElementBadge).join('');
+          return `
+            <span class="boss-pill ${b.is_eliminated ? 'eliminated' : ''}">
+              <span class="font-medium">${esc(b.name)}</span>
+              ${els}
+            </span>
+          `;
+        }).join('');
+      }
+
+      const manageDiv = document.getElementById('boss-manage-list');
+      if (allBosses.length === 0) {
+        manageDiv.innerHTML = `<span class="text-xs italic" style="color: var(--ink-mute);">Danh sách trống.</span>`;
+      } else {
+        manageDiv.innerHTML = allBosses.map(b => {
+          const els = (b.required_elements || []).map(renderElementBadge).join('');
+          return `
+            <span class="boss-pill">
+              <span>${esc(b.name)}</span>
+              ${els}
+              <button type="button" onclick="deleteBoss(${b.id})" class="ml-1 text-xs hover:text-red-400" title="Xóa Boss">✕</button>
+            </span>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderActiveBossBanner() {
+      const container = document.getElementById('active-boss-display');
+      const meta = document.getElementById('boss-meta');
+
+      if (!activeBoss) {
+        container.innerHTML = `
+          <div class="text-center italic py-8 font-display text-lg" style="color: var(--ink-mute);">
+            Chưa chọn Boss — Vòng quay nhân vật đang ở chế độ tự do
+          </div>
+        `;
+        meta.textContent = '';
+        return;
+      }
+
+      const reqEls = activeBoss.required_elements || [];
+      const elBadges = reqEls.length > 0
+        ? reqEls.map(renderElementBadge).join(' ')
+        : `<span class="text-xs italic" style="color: var(--ink-dim);">Không yêu cầu nguyên tố bắt buộc</span>`;
+
+      const ruleText = reqEls.length > 0
+        ? `Khi quay nhân vật bên dưới, hệ thống sẽ chọn ngẫu nhiên <strong>${reqEls.length} người</strong> bắt buộc bốc trúng nhân vật thuộc nguyên tố ${reqEls.map(e => ELEMENT_LABELS[e] || e).join(' và ')}.`
+        : 'Boss này không giới hạn nguyên tố — cả nhóm quay nhân vật tự do.';
+
+      const bossRecord = allBosses.find(b => b.id === activeBoss.id);
+      const locateUrl = (activeBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
+      const mapBlock = locateUrl
+        ? `<div class="boss-locate-wrap mt-3 mb-1">
+             <img src="${esc(locateUrl)}" alt="Bản đồ ${esc(activeBoss.name)}" class="boss-locate-img" style="max-height: 180px;" loading="lazy" onerror="this.parentElement.style.display='none'" />
+           </div>`
+        : '';
+
+      container.innerHTML = `
+        <div class="boss-active-banner fade-in">
+          <div class="flex flex-wrap justify-between items-center gap-3">
+            <div>
+              <div class="text-[11px] uppercase tracking-widest font-semibold" style="color: var(--gold);">Boss đang khiêu chiến</div>
+              <div class="font-display text-3xl md:text-4xl font-bold text-white mt-0.5">${esc(activeBoss.name)}</div>
+            </div>
+            <div class="flex flex-wrap gap-2">${elBadges}</div>
+          </div>
+          ${mapBlock}
+          <p class="text-xs mt-3 pt-3" style="color: var(--ink-dim); border-top: 1px solid var(--line-soft);">${ruleText}</p>
+        </div>
+      `;
+      meta.textContent = activeBoss.spun_by_name ? `Quay bởi: ${activeBoss.spun_by_name}` : '';
+    }
+
+    function syncBossAlertModal() {
+      const modal = document.getElementById('boss-alert-modal');
+      if (!pendingBoss) {
+        modal.classList.add('hidden');
+        return;
+      }
+
+      document.getElementById('modal-boss-name').textContent = pendingBoss.name;
+      const reqEls = pendingBoss.required_elements || [];
+      const elBox = document.getElementById('modal-boss-elements');
+      const locateBox = document.getElementById('modal-boss-locate');
+      const descBox = document.getElementById('modal-boss-desc');
+
+      const bossRecord = allBosses.find(b => b.id === pendingBoss.id);
+      const locateUrl = (pendingBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
+      if (locateUrl) {
+        locateBox.innerHTML = `
+          <div class="boss-locate-wrap">
+            <img src="${esc(locateUrl)}" alt="Bản đồ ${esc(pendingBoss.name)}" class="boss-locate-img" onerror="this.parentElement.parentElement.classList.add('hidden')" />
+          </div>
+        `;
+        locateBox.classList.remove('hidden');
+      } else {
+        locateBox.innerHTML = '';
+        locateBox.classList.add('hidden');
+      }
+
+      if (reqEls.length > 0) {
+        elBox.innerHTML = reqEls.map(renderElementBadge).join('');
+        descBox.innerHTML = `Boss này yêu cầu nguyên tố bắt buộc! Sau khi bấm <strong>Xác nhận</strong>, Boss sẽ tạm rời khỏi vòng quay và lượt quay nhân vật tiếp theo sẽ tự động chọn ngẫu nhiên <strong>${reqEls.length} thành viên</strong> phải bốc nhân vật thuộc nguyên tố trên.`;
+      } else {
+        elBox.innerHTML = `<span class="text-xs px-3 py-1 rounded-full" style="color: var(--ink-dim); background: rgba(255,255,255,.06);">Không yêu cầu nguyên tố</span>`;
+        descBox.innerHTML = `Bấm <strong>Xác nhận</strong> để chốt Boss này và tạm xóa khỏi vòng lặp hiện tại.`;
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    async function spinBoss() {
+      const availableBosses = allBosses.filter(b => !b.is_eliminated);
+      if (availableBosses.length === 0) {
+        alert('Tất cả Boss trong vòng hiện tại đã hoàn thành! Hãy nhấn nút "Reset Vòng Chơi" để bắt đầu vòng mới.');
+        return;
+      }
+
+      const chosen = availableBosses[Math.floor(Math.random() * availableBosses.length)];
+      const me = allUsers.find(u => u.id === currentUser.id);
+      const bossPayload = {
+        id: chosen.id,
+        name: chosen.name,
+        locate_url: chosen.locate_url || '',
+        required_elements: chosen.required_elements || [],
+        spun_by_name: me ? me.username : ''
+      };
+
+      pendingBoss = bossPayload;
+      syncBossAlertModal();
+
+      await supabaseClient
+        .from('random_lobby')
+        .update({
+          pending_boss_json: bossPayload,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', 1);
+    }
+
+    async function confirmCurrentBoss() {
+      if (!pendingBoss) return;
+      const confirmed = { ...pendingBoss };
+      pendingBoss = null;
+      activeBoss = confirmed;
+
+      syncBossAlertModal();
+      renderActiveBossBanner();
+
+      // Đánh dấu tạm xóa boss khỏi vòng lặp hiện tại
+      const localBoss = allBosses.find(b => b.id === confirmed.id);
+      if (localBoss) localBoss.is_eliminated = true;
+      renderBossLists();
+
+      await supabaseClient.from('bosses').update({ is_eliminated: true }).eq('id', confirmed.id);
+      await supabaseClient
+        .from('random_lobby')
+        .update({
+          pending_boss_json: null,
+          current_boss_json: confirmed,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', 1);
+    }
+
+    function openResetBossModal() {
+      document.getElementById('reset-boss-modal').classList.remove('hidden');
+    }
+
+    function closeResetBossModal() {
+      document.getElementById('reset-boss-modal').classList.add('hidden');
+    }
+
+    async function confirmResetBossLoop() {
+      closeResetBossModal();
+
+      allBosses.forEach(b => b.is_eliminated = false);
+      activeBoss = null;
+      pendingBoss = null;
+      renderBossLists();
+      renderActiveBossBanner();
+      syncBossAlertModal();
+
+      await supabaseClient.from('bosses').update({ is_eliminated: false }).neq('id', 0);
+      await supabaseClient
+        .from('random_lobby')
+        .update({
+          current_boss_json: null,
+          pending_boss_json: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', 1);
+    }
+
+    // =========================================================================
+    // 4c. QUAY NHÂN VẬT NGẪU NHIÊN (ÁP DỤNG RÀNG BUỘC 1-2 NGUYÊN TỐ TỪ BOSS)
+    // =========================================================================
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
     function spinRandom() {
       const checkedUserIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
       const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length > 0);
@@ -1440,25 +1954,73 @@
       }
 
       // 1. Trộn ngẫu nhiên danh sách người chơi và lấy tối đa desiredCount người
-      const shuffledUsers = [...validUsers];
-      for (let i = shuffledUsers.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffledUsers[i], shuffledUsers[j]] = [shuffledUsers[j], shuffledUsers[i]];
-      }
-      const pickedUserIds = shuffledUsers.slice(0, Math.min(desiredCount, shuffledUsers.length));
+      const pickedUserIds = shuffleArray(validUsers).slice(0, Math.min(desiredCount, validUsers.length));
 
-      // 2. Sắp xếp thứ tự bốc theo số lượng nhân vật tăng dần để tránh kẹt khi loại trừ trùng
-      const pickOrder = [...pickedUserIds].sort(
-        (a, b) => (userCharactersMap[a] || []).length - (userCharactersMap[b] || []).length
-      );
+      // 2. Gán ngẫu nhiên 1 hoặc 2 người chơi cho nguyên tố yêu cầu của Boss (nếu có)
+      const reqElements = (activeBoss && Array.isArray(activeBoss.required_elements))
+        ? activeBoss.required_elements.slice(0, 2)
+        : [];
+      const userRequiredElementMap = {}; // uid -> 'Pyro' | 'Hydro' | ...
+
+      if (reqElements.length > 0) {
+        const assignedUsers = new Set();
+        reqElements.forEach(reqEl => {
+          const targetEl = String(reqEl).trim().toLowerCase();
+          // Ưu tiên chọn ngẫu nhiên trong các thành viên chưa bị gán nguyên tố và CÓ sở hữu nhân vật thuộc nguyên tố này
+          const capableUnassigned = shuffleArray(pickedUserIds).filter(uid => {
+            if (assignedUsers.has(uid)) return false;
+            const roster = userCharactersMap[uid] || [];
+            return roster.some(cid => {
+              const c = allCharacters.find(ch => ch.id === cid);
+              return c && String(c.element || '').trim().toLowerCase() === targetEl;
+            });
+          });
+
+          if (capableUnassigned.length > 0) {
+            const chosenUid = capableUnassigned[0];
+            assignedUsers.add(chosenUid);
+            userRequiredElementMap[chosenUid] = reqEl;
+          } else {
+            // Dự phòng: chọn ngẫu nhiên 1 người chưa bị gán nếu không ai có nhân vật hệ đó
+            const fallbackUnassigned = shuffleArray(pickedUserIds).filter(uid => !assignedUsers.has(uid));
+            if (fallbackUnassigned.length > 0) {
+              const chosenUid = fallbackUnassigned[0];
+              assignedUsers.add(chosenUid);
+              userRequiredElementMap[chosenUid] = reqEl;
+            }
+          }
+        });
+      }
+
+      // 3. Ưu tiên bốc trước cho người có ràng buộc nguyên tố, sau đó xếp theo số lượng nhân vật tăng dần
+      const pickOrder = [...pickedUserIds].sort((a, b) => {
+        const aReq = userRequiredElementMap[a] ? 0 : 1;
+        const bReq = userRequiredElementMap[b] ? 0 : 1;
+        if (aReq !== bReq) return aReq - bReq;
+        return (userCharactersMap[a] || []).length - (userCharactersMap[b] || []).length;
+      });
 
       const usedCharacterIds = new Set();
       const pickedMap = {};
 
       pickOrder.forEach(uid => {
         const roster = userCharactersMap[uid] || [];
-        const available = roster.filter(charId => !usedCharacterIds.has(charId));
-        const pool = available.length > 0 ? available : roster;
+        const reqEl = userRequiredElementMap[uid] || null;
+        let candidatePool = roster;
+
+        if (reqEl) {
+          const targetEl = String(reqEl).trim().toLowerCase();
+          const matchingElRoster = roster.filter(cid => {
+            const c = allCharacters.find(ch => ch.id === cid);
+            return c && String(c.element || '').trim().toLowerCase() === targetEl;
+          });
+          if (matchingElRoster.length > 0) {
+            candidatePool = matchingElRoster;
+          }
+        }
+
+        const available = candidatePool.filter(charId => !usedCharacterIds.has(charId));
+        const pool = available.length > 0 ? available : candidatePool;
 
         const chosenCharId = pool[Math.floor(Math.random() * pool.length)];
         usedCharacterIds.add(chosenCharId);
@@ -1473,17 +2035,18 @@
           character_id: chosenCharId,
           character_name: charObj ? charObj.name : 'Unknown',
           icon_url: getCharacterIconUrl(charObj),
+          required_element: reqEl,
           random_number: originalIndex + 1
         };
       });
 
       const results = pickedUserIds.map(uid => pickedMap[uid]);
 
-      // 3. Hiển thị ngay lập tức
+      // 4. Hiển thị ngay lập tức
       const me = allUsers.find(u => u.id === currentUser.id);
       renderLobbyCards(results, me ? me.username : '', true);
 
-      // 4. Đồng bộ ngầm lên Supabase
+      // 5. Đồng bộ ngầm lên Supabase
       supabaseClient
         .from('random_lobby')
         .update({
