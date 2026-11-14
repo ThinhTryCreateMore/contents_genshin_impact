@@ -1102,7 +1102,7 @@
       document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = checked);
     }
 
-    function spinRandom() {
+function spinRandom() {
       const checkedUserIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
       const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length > 0);
       const desiredCount = parseInt(document.getElementById('spin-count').value, 10);
@@ -1112,7 +1112,7 @@
         return;
       }
 
-      // Trộn ngẫu nhiên danh sách người chơi (Fisher-Yates shuffle) và lấy tối đa desiredCount người
+      // 1. Trộn ngẫu nhiên danh sách người chơi và lấy tối đa desiredCount người
       const shuffledUsers = [...validUsers];
       for (let i = shuffledUsers.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -1120,28 +1120,45 @@
       }
       const pickedUserIds = shuffledUsers.slice(0, Math.min(desiredCount, shuffledUsers.length));
 
-      // Với mỗi người chơi được chọn, random độc lập 1 nhân vật trong kho của họ (cho phép trùng giữa các người chơi)
-      const results = pickedUserIds.map(uid => {
-        const userObj = allUsers.find(u => u.id === uid);
-        const roster = userCharactersMap[uid];
-        const randomCharIndex = Math.floor(Math.random() * roster.length);
-        const charId = roster[randomCharIndex];
-        const charObj = allCharacters.find(c => c.id === charId);
+      // 2. Sắp xếp thứ tự bốc theo số lượng nhân vật tăng dần (người ít nhân vật bốc trước để tránh kẹt)
+      const pickOrder = [...pickedUserIds].sort(
+        (a, b) => (userCharactersMap[a] || []).length - (userCharactersMap[b] || []).length
+      );
 
-        return {
+      const usedCharacterIds = new Set();
+      const pickedMap = {};
+
+      pickOrder.forEach(uid => {
+        const roster = userCharactersMap[uid] || [];
+        // Lọc ra các nhân vật chưa bị người khác bốc trúng
+        const available = roster.filter(charId => !usedCharacterIds.has(charId));
+        // Nếu kho của người này toàn nhân vật đã bị bốc hết thì mới lấy lại từ kho gốc để tránh lỗi trống
+        const pool = available.length > 0 ? available : roster;
+
+        const chosenCharId = pool[Math.floor(Math.random() * pool.length)];
+        usedCharacterIds.add(chosenCharId);
+
+        const originalIndex = roster.indexOf(chosenCharId);
+        const userObj = allUsers.find(u => u.id === uid);
+        const charObj = allCharacters.find(c => c.id === chosenCharId);
+
+        pickedMap[uid] = {
           user_id: uid,
           username: userObj ? userObj.username : 'Unknown',
-          character_id: charId,
+          character_id: chosenCharId,
           character_name: charObj ? charObj.name : 'Unknown',
-          random_number: randomCharIndex + 1
+          random_number: originalIndex + 1
         };
       });
 
-      // 1. HIỂN THỊ NGAY LẬP TỨC trên màn hình người bấm
+      // Giữ lại thứ tự hiển thị ngẫu nhiên ban đầu
+      const results = pickedUserIds.map(uid => pickedMap[uid]);
+
+      // 3. Hiển thị ngay lập tức
       const me = allUsers.find(u => u.id === currentUser.id);
       renderLobbyCards(results, me ? me.username : '', true);
 
-      // 2. Gửi đồng bộ ngầm lên Supabase cho các thành viên khác (không chặn giao diện)
+      // 4. Đồng bộ ngầm lên Supabase
       supabaseClient
         .from('random_lobby')
         .update({
