@@ -80,47 +80,61 @@
   <main id="app-section" class="hidden max-w-7xl mx-auto space-y-8">
 
     <!-- KHU VỰC 1: VÒNG QUAY RANDOM ĐỒNG BỘ REALTIME -->
+  <!-- KHU VỰC 1: VÒNG QUAY RANDOM ĐỒNG BỘ REALTIME (2-4 NGƯỜI) -->
     <div class="glass rounded-2xl p-6 shadow-xl border-amber-500/30">
       <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
         <h2 class="text-xl font-bold text-amber-300 flex items-center gap-2">
-          🎲 Vòng Quay Ngẫu Nhiên (Đồng bộ trực tiếp)
+          🎲 Vòng Quay Ngẫu Nhiên Co-op (2–4 Người)
         </h2>
-        <span class="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-          ● Realtime Sync Active
-        </span>
+        <div class="flex items-center gap-3">
+          <label class="text-sm text-slate-300 flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+            <span>Số người quay:</span>
+            <select id="spin-count" class="bg-slate-900 text-amber-300 font-bold rounded px-2 py-0.5 focus:outline-none">
+              <option value="2">2 người</option>
+              <option value="3">3 người</option>
+              <option value="4" selected>4 người</option>
+            </select>
+          </label>
+          <span class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            ● Instant Sync
+          </span>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         <!-- Cột chọn người tham gia quay -->
-        <div class="lg:col-span-2 bg-slate-800/60 p-4 rounded-xl border border-slate-700">
-          <div class="flex justify-between items-center mb-3">
-            <span class="text-sm font-medium text-slate-300">Tích chọn thành viên tham gia quay:</span>
-            <div class="space-x-2 text-xs">
-              <button onclick="toggleAllPlayers(true)" class="text-amber-400 hover:underline">Chọn tất cả</button>
-              <span class="text-slate-600">|</span>
-              <button onclick="toggleAllPlayers(false)" class="text-slate-400 hover:underline">Bỏ chọn</button>
+        <div class="lg:col-span-1 bg-slate-800/60 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-sm font-medium text-slate-300">Thành viên tham gia:</span>
+              <div class="space-x-2 text-xs">
+                <button onclick="toggleAllPlayers(true)" class="text-amber-400 hover:underline">Tất cả</button>
+                <span class="text-slate-600">|</span>
+                <button onclick="toggleAllPlayers(false)" class="text-slate-400 hover:underline">Bỏ chọn</button>
+              </div>
             </div>
+            <div id="participant-checkboxes" class="flex flex-wrap gap-2"></div>
           </div>
-          <div id="participant-checkboxes" class="flex flex-wrap gap-2">
-            <!-- Render danh sách checkbox thành viên -->
-          </div>
-        </div>
 
-        <!-- Cột hiển thị kết quả & Nút quay -->
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-xl border border-amber-500/40 text-center flex flex-col justify-between">
-          <div class="text-xs uppercase tracking-wider text-slate-400 mb-2">Kết quả hiện tại</div>
-          <div id="lobby-result" class="my-2">
-            <div class="text-slate-500 italic text-sm">Chưa có lượt quay nào</div>
-          </div>
-          <div id="lobby-meta" class="text-xs text-slate-400 mb-4 h-4"></div>
           <button onclick="spinRandom()" id="spin-btn"
-            class="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-extrabold text-base shadow-lg shadow-amber-500/20 transition transform active:scale-95">
+            class="w-full mt-5 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-extrabold text-base shadow-lg shadow-amber-500/20 transition transform active:scale-95">
             QUAY NGẪU NHIÊN
           </button>
         </div>
+
+        <!-- Cột hiển thị kết quả 2-4 người -->
+        <div class="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-xl border border-amber-500/40 flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-xs uppercase tracking-wider text-slate-400">Đội hình ngẫu nhiên hiện tại</span>
+            <span id="lobby-meta" class="text-xs text-slate-400"></span>
+          </div>
+          <div id="lobby-result" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-auto">
+            <div class="col-span-full text-center text-slate-500 italic text-sm py-6">Chưa có lượt quay nào</div>
+          </div>
+        </div>
       </div>
     </div>
-
+       
     <!-- KHU VỰC 2: CHUYỂN TAB BẢNG TỔNG HỢP & KHO CÁ NHÂN -->
     <div class="flex gap-3 border-b border-slate-700 pb-3">
       <button id="btn-view-board" onclick="switchMainTab('board')"
@@ -309,27 +323,46 @@
       renderBoardTable();
     }
 
-    async function refreshLobbyResult() {
-      const { data: lobby } = await supabaseClient.from('random_lobby').select('*').eq('id', 1).single();
+function renderLobbyCards(results, spinnerName) {
       const resultDiv = document.getElementById('lobby-result');
       const metaDiv = document.getElementById('lobby-meta');
 
-      if (!lobby || !lobby.selected_user_id || !lobby.selected_character_id) {
-        resultDiv.innerHTML = `<div class="text-slate-500 italic text-sm">Chưa có lượt quay nào</div>`;
+      if (!results || results.length === 0) {
+        resultDiv.innerHTML = `<div class="col-span-full text-center text-slate-500 italic text-sm py-6">Chưa có lượt quay nào</div>`;
         metaDiv.textContent = '';
         return;
       }
 
-      const selectedUser = allUsers.find(u => u.id === lobby.selected_user_id);
-      const selectedChar = allCharacters.find(c => c.id === lobby.selected_character_id);
-      const spinner = allUsers.find(u => u.id === lobby.updated_by);
+      // Đếm số lần xuất hiện của từng nhân vật để đánh dấu nếu trùng
+      const charCounts = {};
+      results.forEach(item => {
+        charCounts[item.character_name] = (charCounts[item.character_name] || 0) + 1;
+      });
 
-      resultDiv.innerHTML = `
-        <div class="text-lg font-bold text-amber-400">${selectedUser ? selectedUser.username : 'Unknown'}</div>
-        <div class="text-2xl font-extrabold text-white mt-0.5">✦ ${selectedChar ? selectedChar.name : 'Unknown'} ✦</div>
-        <div class="text-xs text-amber-200/80 mt-1">Số ngẫu nhiên: #${lobby.random_number || 1}</div>
-      `;
-      metaDiv.textContent = spinner ? `Quay bởi: ${spinner.username}` : '';
+      resultDiv.innerHTML = results.map((item, idx) => {
+        const isDuplicate = charCounts[item.character_name] > 1;
+        return `
+          <div class="p-3.5 rounded-xl bg-slate-800/90 border ${isDuplicate ? 'border-amber-400/70' : 'border-slate-700'} flex items-center justify-between">
+            <div>
+              <div class="text-xs text-amber-300 font-semibold">Slot ${idx + 1} • ${item.username}</div>
+              <div class="text-lg font-extrabold text-white mt-0.5">✦ ${item.character_name}</div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-400">#${item.random_number}</span>
+              ${isDuplicate ? '<div class="text-[10px] text-amber-400 mt-1 font-medium">Trùng nhân vật</div>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      metaDiv.textContent = spinnerName ? `Quay bởi: ${spinnerName}` : '';
+    }
+
+    async function refreshLobbyResult() {
+      const { data: lobby } = await supabaseClient.from('random_lobby').select('*').eq('id', 1).single();
+      if (!lobby) return;
+      const spinner = allUsers.find(u => u.id === lobby.updated_by);
+      renderLobbyCards(lobby.results_json || [], spinner ? spinner.username : '');
     }
 
     function setupRealtimeSubscriptions() {
@@ -436,43 +469,57 @@
       document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = checked);
     }
 
-    async function spinRandom() {
+function spinRandom() {
       const checkedUserIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
-
-      // Lọc ra những người được chọn VÀ có ít nhất 1 nhân vật trong kho
       const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length > 0);
+      const desiredCount = parseInt(document.getElementById('spin-count').value, 10);
 
       if (validUsers.length === 0) {
         alert('Vui lòng chọn ít nhất 1 thành viên đã có nhân vật trong kho để quay!');
         return;
       }
 
-      const btn = document.getElementById('spin-btn');
-      btn.disabled = true;
-      btn.textContent = 'ĐANG QUAY...';
+      // Trộn ngẫu nhiên danh sách người chơi (Fisher-Yates shuffle) và lấy tối đa desiredCount người
+      const shuffledUsers = [...validUsers];
+      for (let i = shuffledUsers.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledUsers[i], shuffledUsers[j]] = [shuffledUsers[j], shuffledUsers[i]];
+      }
+      const pickedUserIds = shuffledUsers.slice(0, Math.min(desiredCount, shuffledUsers.length));
 
-      // Bước 1: Chọn ngẫu nhiên 1 người chơi
-      const randomUserId = validUsers[Math.floor(Math.random() * validUsers.length)];
+      // Với mỗi người chơi được chọn, random độc lập 1 nhân vật trong kho của họ (cho phép trùng giữa các người chơi)
+      const results = pickedUserIds.map(uid => {
+        const userObj = allUsers.find(u => u.id === uid);
+        const roster = userCharactersMap[uid];
+        const randomCharIndex = Math.floor(Math.random() * roster.length);
+        const charId = roster[randomCharIndex];
+        const charObj = allCharacters.find(c => c.id === charId);
 
-      // Bước 2: Chọn ngẫu nhiên 1 nhân vật từ kho của người chơi đó
-      const roster = userCharactersMap[randomUserId];
-      const randomCharIndex = Math.floor(Math.random() * roster.length);
-      const randomCharId = roster[randomCharIndex];
+        return {
+          user_id: uid,
+          username: userObj ? userObj.username : 'Unknown',
+          character_id: charId,
+          character_name: charObj ? charObj.name : 'Unknown',
+          random_number: randomCharIndex + 1
+        };
+      });
 
-      // Cập nhật lên bảng random_lobby để đồng bộ cho toàn bộ thành viên
-      await supabaseClient
+      // 1. HIỂN THỊ NGAY LẬP TỨC (0ms độ trễ) trên màn hình người bấm
+      const me = allUsers.find(u => u.id === currentUser.id);
+      renderLobbyCards(results, me ? me.username : '');
+
+      // 2. Gửi đồng bộ ngầm lên Supabase cho các thành viên khác (không chặn giao diện)
+      supabaseClient
         .from('random_lobby')
         .update({
-          selected_user_id: randomUserId,
-          selected_character_id: randomCharId,
-          random_number: randomCharIndex + 1,
+          results_json: results,
           updated_by: currentUser.id,
           updated_at: new Date().toISOString()
         })
-        .eq('id', 1);
-
-      btn.disabled = false;
-      btn.textContent = 'QUAY NGẪU NHIÊN';
+        .eq('id', 1)
+        .then(({ error }) => {
+          if (error) console.error('Lỗi đồng bộ kết quả quay:', error.message);
+        });
     }
 
     function switchMainTab(tab) {
