@@ -4,185 +4,491 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Genshin Roster & Randomizer Sync</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .glass { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.15); }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    :root {
+      --bg-0: #070b16;
+      --bg-1: #0d1426;
+      --bg-2: #141d36;
+      --ink: #eef0f6;
+      --ink-dim: #a3adc4;
+      --ink-mute: #6b7794;
+      --gold: #e3c27a;
+      --gold-bright: #f6dfa4;
+      --gold-deep: #b8914a;
+      --line: rgba(227, 194, 122, 0.22);
+      --line-soft: rgba(163, 173, 196, 0.14);
+      --ok: #7fd1b0;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      color: var(--ink);
+      font-family: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
+      background-color: var(--bg-0);
+      background-image:
+        radial-gradient(1200px 600px at 12% -10%, rgba(88, 101, 190, 0.28), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(184, 145, 74, 0.16), transparent 55%),
+        radial-gradient(800px 600px at 50% 120%, rgba(60, 80, 150, 0.22), transparent 60%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-0));
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Bầu trời sao */
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        radial-gradient(1.2px 1.2px at 8% 18%, rgba(255,255,255,.75), transparent 60%),
+        radial-gradient(1px 1px at 22% 72%, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(1.4px 1.4px at 35% 34%, rgba(246,223,164,.8), transparent 60%),
+        radial-gradient(1px 1px at 48% 88%, rgba(255,255,255,.5), transparent 60%),
+        radial-gradient(1.2px 1.2px at 61% 14%, rgba(255,255,255,.7), transparent 60%),
+        radial-gradient(1px 1px at 72% 58%, rgba(255,255,255,.45), transparent 60%),
+        radial-gradient(1.5px 1.5px at 84% 26%, rgba(246,223,164,.7), transparent 60%),
+        radial-gradient(1px 1px at 93% 80%, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(1px 1px at 15% 46%, rgba(255,255,255,.4), transparent 60%),
+        radial-gradient(1.2px 1.2px at 55% 52%, rgba(255,255,255,.4), transparent 60%);
+      animation: twinkle 7s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle { from { opacity: .55; } to { opacity: 1; } }
+
+    #page { position: relative; z-index: 1; }
+
+    .font-display { font-family: 'Cormorant Garamond', 'Times New Roman', serif; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(227,194,122,.28); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(227,194,122,.5); }
+
+    ::selection { background: rgba(227,194,122,.35); color: #fff; }
+
+    /* ---------- Panel có khung vàng ---------- */
+    .panel {
+      position: relative;
+      background: linear-gradient(160deg, rgba(24, 34, 62, .82), rgba(13, 20, 38, .88));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--line-soft);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px -24px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .panel-gold { border-color: var(--line); }
+    .panel-gold::before, .panel-gold::after {
+      content: ""; position: absolute; width: 22px; height: 22px; pointer-events: none;
+      border: 1px solid var(--gold);
+      opacity: .75;
+    }
+    .panel-gold::before { top: 8px; left: 8px; border-right: 0; border-bottom: 0; border-top-left-radius: 10px; }
+    .panel-gold::after { bottom: 8px; right: 8px; border-left: 0; border-top: 0; border-bottom-right-radius: 10px; }
+
+    /* ---------- Tiêu đề ---------- */
+    .eyebrow {
+      font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold-deep);
+      font-weight: 600;
+    }
+    .title-gold {
+      background: linear-gradient(180deg, #fff3cf 0%, var(--gold) 55%, var(--gold-deep) 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .divider {
+      height: 1px; border: 0;
+      background: linear-gradient(90deg, transparent, var(--line), transparent);
+    }
+    .ornament {
+      display: flex; align-items: center; gap: 12px; color: var(--gold-deep);
+    }
+    .ornament::before, .ornament::after {
+      content: ""; flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line));
+    }
+    .ornament::after { transform: scaleX(-1); }
+    .ornament i {
+      width: 7px; height: 7px; transform: rotate(45deg);
+      background: var(--gold); box-shadow: 0 0 12px rgba(227,194,122,.8);
+    }
+
+    /* ---------- Form ---------- */
+    .field-label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 8px; font-weight: 500; }
+    .field {
+      width: 100%; padding: 12px 16px; border-radius: 12px;
+      background: rgba(7, 11, 22, .6);
+      border: 1px solid var(--line-soft);
+      color: var(--ink); font-size: 14px; transition: all .2s ease;
+    }
+    .field::placeholder { color: var(--ink-mute); }
+    .field:focus {
+      outline: none; border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(227,194,122,.14);
+      background: rgba(7, 11, 22, .85);
+    }
+
+    /* ---------- Nút ---------- */
+    .btn-gold {
+      position: relative; overflow: hidden;
+      background: linear-gradient(180deg, #f6dfa4 0%, #e3c27a 50%, #c79f55 100%);
+      color: #2a1f0a; font-weight: 700; letter-spacing: .04em;
+      border-radius: 12px; border: 1px solid #f6dfa4;
+      box-shadow: 0 10px 28px -10px rgba(227,194,122,.65), inset 0 1px 0 rgba(255,255,255,.55);
+      transition: transform .15s ease, box-shadow .25s ease, filter .2s ease;
+    }
+    .btn-gold:hover { filter: brightness(1.06); box-shadow: 0 14px 34px -10px rgba(227,194,122,.85), inset 0 1px 0 rgba(255,255,255,.6); }
+    .btn-gold:active { transform: scale(.98); }
+    .btn-gold::after {
+      content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+      transform: skewX(-20deg); transition: left .7s ease;
+    }
+    .btn-gold:hover::after { left: 130%; }
+
+    .btn-ghost {
+      border: 1px solid var(--line-soft); color: var(--ink-dim);
+      border-radius: 10px; background: rgba(255,255,255,.02);
+      transition: all .2s ease;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold-bright); background: rgba(227,194,122,.06); }
+
+    .link-gold { color: var(--gold); transition: color .2s; }
+    .link-gold:hover { color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ---------- Tab đăng nhập (segmented) ---------- */
+    .seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(7,11,22,.7); border: 1px solid var(--line-soft); }
+    .seg-btn {
+      flex: 1; padding: 10px 0; border-radius: 10px; font-weight: 600; font-size: 14px;
+      color: var(--ink-dim); transition: all .25s ease;
+    }
+    .seg-btn:hover { color: var(--ink); }
+    .seg-btn.active {
+      background: linear-gradient(180deg, rgba(246,223,164,.18), rgba(227,194,122,.08));
+      color: var(--gold-bright); box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    /* ---------- Tab chính (underline) ---------- */
+    .tab-main {
+      position: relative; padding: 14px 6px; margin-right: 28px;
+      font-weight: 600; font-size: 15px; color: var(--ink-mute);
+      transition: color .2s ease;
+    }
+    .tab-main:hover { color: var(--ink); }
+    .tab-main::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      transform: scaleX(0); transition: transform .3s ease;
+    }
+    .tab-main.active { color: var(--gold-bright); }
+    .tab-main.active::after { transform: scaleX(1); }
+    .tab-count {
+      display: inline-block; min-width: 24px; padding: 1px 8px; margin-left: 6px;
+      border-radius: 999px; font-size: 12px; text-align: center;
+      background: rgba(227,194,122,.12); color: var(--gold); border: 1px solid var(--line);
+    }
+
+    /* ---------- Chọn thành viên quay ---------- */
+    .member-chip {
+      position: relative; cursor: pointer; user-select: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--ink-dim);
+      background: rgba(7,11,22,.55); border: 1px solid var(--line-soft);
+      transition: all .2s ease;
+    }
+    .member-chip:hover { border-color: rgba(227,194,122,.5); color: var(--ink); }
+    .member-chip input { position: absolute; opacity: 0; pointer-events: none; }
+    .member-chip .dot {
+      width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--ink-mute);
+      transition: all .2s ease;
+    }
+    .member-chip:has(input:checked) {
+      color: var(--gold-bright); border-color: var(--gold);
+      background: linear-gradient(180deg, rgba(227,194,122,.16), rgba(227,194,122,.05));
+      box-shadow: 0 0 18px -6px rgba(227,194,122,.6);
+    }
+    .member-chip:has(input:checked) .dot { background: var(--gold); border-color: var(--gold-bright); box-shadow: 0 0 8px var(--gold); }
+    .member-chip .cnt { font-size: 11px; color: var(--ink-mute); }
+
+    .select-gold {
+      background: rgba(7,11,22,.7); color: var(--gold-bright); font-weight: 600;
+      border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; cursor: pointer;
+    }
+    .select-gold:focus { outline: none; box-shadow: 0 0 0 3px rgba(227,194,122,.14); }
+
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 999px; font-size: 12px; letter-spacing: .06em;
+      color: var(--ok); background: rgba(127,209,176,.08); border: 1px solid rgba(127,209,176,.28);
+    }
+    .live-badge::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok);
+      box-shadow: 0 0 0 0 rgba(127,209,176,.6); animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(127,209,176,.55); }
+      70% { box-shadow: 0 0 0 9px rgba(127,209,176,0); }
+      100% { box-shadow: 0 0 0 0 rgba(127,209,176,0); }
+    }
+
+    /* ---------- Thẻ kết quả quay ---------- */
+    .stage {
+      position: relative; border-radius: 16px; padding: 20px;
+      background:
+        radial-gradient(500px 220px at 50% 0%, rgba(227,194,122,.12), transparent 70%),
+        linear-gradient(160deg, rgba(20,29,54,.9), rgba(9,14,28,.95));
+      border: 1px solid var(--line);
+    }
+    .slot-card {
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 16px 18px 16px 22px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(30,42,76,.85), rgba(14,21,40,.9));
+      border: 1px solid var(--line-soft);
+      opacity: 0; transform: translateY(10px) scale(.98);
+      animation: reveal .55s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+    .slot-card::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(180deg, var(--gold-bright), var(--gold-deep));
+    }
+    .slot-card.dup { border-color: rgba(227,194,122,.6); box-shadow: 0 0 26px -10px rgba(227,194,122,.6); }
+    @keyframes reveal { to { opacity: 1; transform: none; } }
+    .slot-meta { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+    .slot-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; line-height: 1.1; font-weight: 700; color: #fff; margin-top: 4px; }
+    .slot-num {
+      font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 12px;
+      padding: 3px 10px; border-radius: 999px; color: var(--ink-dim);
+      background: rgba(7,11,22,.7); border: 1px solid var(--line-soft);
+    }
+    .dup-tag { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-top: 6px; font-weight: 600; }
+
+    /* ---------- Bảng ---------- */
+    .board-table thead th {
+      position: sticky; top: 0; z-index: 2;
+      background: rgba(10,16,32,.96);
+      color: var(--gold); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600;
+      border-bottom: 1px solid var(--line);
+    }
+    .board-table tbody tr { transition: background .2s ease; }
+    .board-table tbody tr:hover { background: rgba(227,194,122,.045); }
+    .board-table tbody td { border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    .board-table tbody tr:last-child td { border-bottom: 0; }
+    .rank {
+      display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center;
+      border-radius: 50%; font-size: 12px; font-weight: 700; color: var(--gold);
+      border: 1px solid var(--line); background: rgba(227,194,122,.06);
+    }
+    .tag {
+      display: inline-block; padding: 4px 11px; margin: 3px 3px 3px 0;
+      border-radius: 8px; font-size: 12px; color: #d8def0;
+      background: rgba(255,255,255,.035); border: 1px solid var(--line-soft);
+      transition: all .2s ease;
+    }
+    .tag:hover { border-color: rgba(227,194,122,.5); color: var(--gold-bright); background: rgba(227,194,122,.07); }
+
+    /* ---------- Lưới nhân vật ---------- */
+    .char-card {
+      position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 12px 14px; border-radius: 12px; text-align: left; font-size: 13px; font-weight: 500;
+      color: var(--ink-dim); background: rgba(10,16,32,.55);
+      border: 1px solid var(--line-soft); transition: all .2s ease;
+    }
+    .char-card:hover { border-color: rgba(227,194,122,.45); color: var(--ink); transform: translateY(-1px); }
+    .char-card .mark {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 11px; border: 1px solid var(--line-soft); color: var(--ink-mute); transition: all .2s ease;
+    }
+    .char-card.owned {
+      color: var(--gold-bright);
+      background: linear-gradient(135deg, rgba(227,194,122,.17), rgba(227,194,122,.05));
+      border-color: var(--gold);
+      box-shadow: 0 8px 22px -12px rgba(227,194,122,.7), inset 0 0 0 1px rgba(246,223,164,.08);
+    }
+    .char-card.owned .mark { background: var(--gold); border-color: var(--gold-bright); color: #2a1f0a; font-weight: 700; }
+
+    /* ---------- Hiệu ứng chuyển cảnh ---------- */
+    .fade-in { animation: fadeIn .5s ease both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen">
+<div id="page" class="min-h-screen p-4 md:p-8">
 
   <!-- HEADER -->
-  <header class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 mb-8 pb-4 border-b border-slate-700">
+  <header class="max-w-7xl mx-auto flex flex-wrap justify-between items-end gap-4 mb-10 pb-6 relative">
     <div>
-      <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">
-        ✦ Genshin Roster & Co-op Randomizer
+      <div class="eyebrow mb-2">Teyvat Co-op Registry</div>
+      <h1 class="font-display text-4xl md:text-5xl font-bold title-gold leading-tight">
+        Genshin Roster &amp; Co-op Randomizer
       </h1>
-      <p class="text-slate-400 text-sm mt-1">Đồng bộ kho nhân vật & quay ngẫu nhiên thời gian thực</p>
+      <p class="text-sm mt-2" style="color: var(--ink-dim);">Đồng bộ kho nhân vật &amp; quay ngẫu nhiên thời gian thực</p>
     </div>
-    <div id="user-nav" class="hidden flex items-center gap-4">
+    <div id="user-nav" class="hidden flex items-center gap-5">
       <div class="text-right">
-        <div id="nav-username" class="font-semibold text-amber-300"></div>
-        <div id="nav-uid" class="text-xs text-slate-400"></div>
+        <div id="nav-username" class="font-display text-xl font-semibold" style="color: var(--gold-bright);"></div>
+        <div id="nav-uid" class="text-xs font-mono" style="color: var(--ink-mute);"></div>
       </div>
-      <button onclick="handleLogout()" class="px-4 py-2 bg-rose-600/80 hover:bg-rose-600 rounded-lg text-sm font-medium transition">
-        Đăng xuất
-      </button>
+      <button onclick="handleLogout()" class="btn-ghost px-4 py-2 text-sm font-medium">Đăng xuất</button>
     </div>
+    <hr class="divider absolute left-0 right-0 bottom-0" />
   </header>
 
   <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ -->
-  <section id="auth-section" class="max-w-md mx-auto glass rounded-2xl p-6 md:p-8 shadow-2xl mt-10">
-    <div class="flex gap-2 mb-6 bg-slate-800/80 p-1 rounded-xl">
-      <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-lg font-medium bg-amber-500 text-slate-900 transition">Đăng nhập</button>
-      <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition">Đăng ký</button>
+  <section id="auth-section" class="panel panel-gold max-w-md mx-auto p-7 md:p-9 mt-8 fade-in">
+    <div class="text-center mb-7">
+      <div class="eyebrow mb-2">Chào mừng, Lữ khách</div>
+      <h2 class="font-display text-3xl font-bold title-gold">Bước vào Teyvat</h2>
     </div>
 
-    <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
+    <div class="seg mb-7">
+      <button id="tab-login" onclick="switchAuthTab('login')" class="seg-btn active">Đăng nhập</button>
+      <button id="tab-register" onclick="switchAuthTab('register')" class="seg-btn">Đăng ký</button>
+    </div>
+
+    <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-5">
       <div>
-        <label class="block text-sm text-slate-300 mb-1">Email</label>
-        <input type="email" id="auth-email" required placeholder="player@gmail.com"
-          class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none" />
+        <label class="field-label">Email</label>
+        <input type="email" id="auth-email" required placeholder="player@gmail.com" class="field" />
       </div>
       <div>
-        <label class="block text-sm text-slate-300 mb-1">Mật khẩu (tối thiểu 6 ký tự)</label>
-        <input type="password" id="auth-password" required minlength="6" placeholder="••••••••"
-          class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none" />
+        <label class="field-label">Mật khẩu (tối thiểu 6 ký tự)</label>
+        <input type="password" id="auth-password" required minlength="6" placeholder="••••••••" class="field" />
       </div>
 
       <!-- Trường mở rộng khi Đăng ký -->
-      <div id="register-fields" class="hidden space-y-4 pt-2 border-t border-slate-700">
+      <div id="register-fields" class="hidden space-y-5 pt-5">
+        <div class="ornament"><i></i></div>
         <div>
-          <label class="block text-sm text-slate-300 mb-1">Tên hiển thị (Player Name)</label>
-          <input type="text" id="auth-username" placeholder="VD: Tohru_sama, Pochiko..."
-            class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none" />
+          <label class="field-label">Tên hiển thị (Player Name)</label>
+          <input type="text" id="auth-username" placeholder="VD: Tohru_sama, Pochiko..." class="field" />
         </div>
         <div>
-          <label class="block text-sm text-slate-300 mb-1">UID Genshin Impact</label>
-          <input type="text" id="auth-uid" placeholder="VD: 868474609"
-            class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none" />
+          <label class="field-label">UID Genshin Impact</label>
+          <input type="text" id="auth-uid" placeholder="VD: 868474609" class="field" />
         </div>
       </div>
 
-      <div id="auth-error" class="text-rose-400 text-sm hidden"></div>
+      <div id="auth-error" class="text-sm hidden px-4 py-3 rounded-xl" style="color:#ffb4bf; background: rgba(244,63,94,.1); border:1px solid rgba(244,63,94,.3);"></div>
 
-      <button type="submit" id="auth-submit-btn"
-        class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-900 font-bold shadow-lg transition mt-2">
+      <button type="submit" id="auth-submit-btn" class="btn-gold w-full py-3.5 text-base mt-1">
         Đăng nhập ngay
       </button>
     </form>
   </section>
 
   <!-- MÀN HÌNH CHÍNH (SAU KHI ĐĂNG NHẬP) -->
-  <main id="app-section" class="hidden max-w-7xl mx-auto space-y-8">
+  <main id="app-section" class="hidden max-w-7xl mx-auto space-y-10 fade-in">
 
-    <!-- KHU VỰC 1: VÒNG QUAY RANDOM ĐỒNG BỘ REALTIME -->
-  <!-- KHU VỰC 1: VÒNG QUAY RANDOM ĐỒNG BỘ REALTIME (2-4 NGƯỜI) -->
-    <div class="glass rounded-2xl p-6 shadow-xl border-amber-500/30">
-      <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-        <h2 class="text-xl font-bold text-amber-300 flex items-center gap-2">
-          🎲 Vòng Quay Ngẫu Nhiên Co-op (2–4 Người)
-        </h2>
-        <div class="flex items-center gap-3">
-          <label class="text-sm text-slate-300 flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
-            <span>Số người quay:</span>
-            <select id="spin-count" class="bg-slate-900 text-amber-300 font-bold rounded px-2 py-0.5 focus:outline-none">
+    <!-- KHU VỰC 1: VÒNG QUAY RANDOM ĐỒNG BỘ REALTIME (2-4 NGƯỜI) -->
+    <div class="panel panel-gold p-6 md:p-8">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
+        <div>
+          <div class="eyebrow mb-1">Co-op Draw</div>
+          <h2 class="font-display text-3xl font-bold title-gold">Vòng Quay Ngẫu Nhiên (2–4 Người)</h2>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <label class="text-sm flex items-center gap-3 px-4 py-2 rounded-xl" style="color: var(--ink-dim); background: rgba(7,11,22,.6); border:1px solid var(--line-soft);">
+            <span>Số người quay</span>
+            <select id="spin-count" class="select-gold">
               <option value="2">2 người</option>
               <option value="3">3 người</option>
               <option value="4" selected>4 người</option>
             </select>
           </label>
-          <span class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            ● Instant Sync
-          </span>
+          <span class="live-badge">Instant Sync</span>
         </div>
       </div>
 
+      <div class="ornament my-6"><i></i></div>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         <!-- Cột chọn người tham gia quay -->
-        <div class="lg:col-span-1 bg-slate-800/60 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between" style="background: rgba(7,11,22,.45); border:1px solid var(--line-soft);">
           <div>
-            <div class="flex justify-between items-center mb-3">
-              <span class="text-sm font-medium text-slate-300">Thành viên tham gia:</span>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-xs uppercase tracking-widest font-semibold" style="color: var(--ink-dim);">Thành viên tham gia</span>
               <div class="space-x-2 text-xs">
-                <button onclick="toggleAllPlayers(true)" class="text-amber-400 hover:underline">Tất cả</button>
-                <span class="text-slate-600">|</span>
-                <button onclick="toggleAllPlayers(false)" class="text-slate-400 hover:underline">Bỏ chọn</button>
+                <button onclick="toggleAllPlayers(true)" class="link-gold">Tất cả</button>
+                <span style="color: var(--ink-mute);">/</span>
+                <button onclick="toggleAllPlayers(false)" style="color: var(--ink-mute);" class="hover:text-white transition">Bỏ chọn</button>
               </div>
             </div>
             <div id="participant-checkboxes" class="flex flex-wrap gap-2"></div>
           </div>
 
-          <button onclick="spinRandom()" id="spin-btn"
-            class="w-full mt-5 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-extrabold text-base shadow-lg shadow-amber-500/20 transition transform active:scale-95">
-            QUAY NGẪU NHIÊN
+          <button onclick="spinRandom()" id="spin-btn" class="btn-gold w-full mt-6 py-4 text-base uppercase tracking-widest">
+            Quay ngẫu nhiên
           </button>
         </div>
 
         <!-- Cột hiển thị kết quả 2-4 người -->
-        <div class="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 p-5 rounded-xl border border-amber-500/40 flex flex-col justify-between">
-          <div class="flex justify-between items-center mb-3">
-            <span class="text-xs uppercase tracking-wider text-slate-400">Đội hình ngẫu nhiên hiện tại</span>
-            <span id="lobby-meta" class="text-xs text-slate-400"></span>
+        <div class="lg:col-span-2 stage flex flex-col">
+          <div class="flex justify-between items-center mb-4">
+            <span class="eyebrow">Đội hình ngẫu nhiên hiện tại</span>
+            <span id="lobby-meta" class="text-xs" style="color: var(--ink-mute);"></span>
           </div>
           <div id="lobby-result" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-auto">
-            <div class="col-span-full text-center text-slate-500 italic text-sm py-6">Chưa có lượt quay nào</div>
+            <div class="col-span-full text-center italic text-sm py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>
           </div>
         </div>
       </div>
     </div>
-       
+
     <!-- KHU VỰC 2: CHUYỂN TAB BẢNG TỔNG HỢP & KHO CÁ NHÂN -->
-    <div class="flex gap-3 border-b border-slate-700 pb-3">
-      <button id="btn-view-board" onclick="switchMainTab('board')"
-        class="px-5 py-2.5 rounded-xl font-semibold bg-amber-500 text-slate-900 transition">
-        📋 Bảng Nhân Vật Toàn Nhóm
-      </button>
-      <button id="btn-view-roster" onclick="switchMainTab('roster')"
-        class="px-5 py-2.5 rounded-xl font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
-        🎒 Kho Nhân Vật Của Tôi (<span id="my-char-count">0</span>)
-      </button>
-    </div>
-
-    <!-- TAB A: BẢNG TỔNG HỢP TOÀN NHÓM -->
-    <div id="view-board" class="glass rounded-2xl overflow-hidden shadow-xl">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-slate-800/90 text-amber-300 text-sm border-b border-slate-700">
-              <th class="py-3.5 px-4 w-16 text-center">STT</th>
-              <th class="py-3.5 px-4 w-44">Người chơi</th>
-              <th class="py-3.5 px-4 w-32">UID</th>
-              <th class="py-3.5 px-4">Danh sách nhân vật sở hữu</th>
-            </tr>
-          </thead>
-          <tbody id="board-tbody" class="divide-y divide-slate-800 text-sm">
-            <!-- Dữ liệu render tự động -->
-          </tbody>
-        </table>
+    <div>
+      <div class="flex flex-wrap border-b" style="border-color: var(--line-soft);">
+        <button id="btn-view-board" onclick="switchMainTab('board')" class="tab-main active">
+          Bảng Nhân Vật Toàn Nhóm
+        </button>
+        <button id="btn-view-roster" onclick="switchMainTab('roster')" class="tab-main">
+          Kho Nhân Vật Của Tôi<span class="tab-count" id="my-char-count">0</span>
+        </button>
       </div>
-    </div>
 
-    <!-- TAB B: QUẢN LÝ KHO NHÂN VẬT CÁ NHÂN (118 NHÂN VẬT) -->
-    <div id="view-roster" class="hidden glass rounded-2xl p-6 shadow-xl">
-      <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-        <div>
-          <h3 class="text-lg font-bold text-white">Chọn các nhân vật bạn đang sở hữu</h3>
-          <p class="text-xs text-slate-400">Hệ thống tự động lưu và đồng bộ ngay khi bạn bấm chọn/bỏ chọn.</p>
+      <!-- TAB A: BẢNG TỔNG HỢP TOÀN NHÓM -->
+      <div id="view-board" class="panel overflow-hidden mt-6 fade-in">
+        <div class="overflow-x-auto">
+          <table class="board-table w-full text-left border-collapse">
+            <thead>
+              <tr>
+                <th class="py-4 px-5 w-20 text-center">STT</th>
+                <th class="py-4 px-5 w-48">Người chơi</th>
+                <th class="py-4 px-5 w-36">UID</th>
+                <th class="py-4 px-5">Danh sách nhân vật sở hữu</th>
+              </tr>
+            </thead>
+            <tbody id="board-tbody" class="text-sm">
+              <!-- Dữ liệu render tự động -->
+            </tbody>
+          </table>
         </div>
-        <input type="text" id="char-search" oninput="renderCharacterGrid()" placeholder="🔍 Tìm tên nhân vật..."
-          class="px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 focus:border-amber-400 focus:outline-none text-sm w-full sm:w-64" />
       </div>
 
-      <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 max-h-[550px] overflow-y-auto pr-2">
-        <!-- Render 118 nhân vật -->
+      <!-- TAB B: QUẢN LÝ KHO NHÂN VẬT CÁ NHÂN -->
+      <div id="view-roster" class="hidden panel p-6 md:p-8 mt-6 fade-in">
+        <div class="flex flex-wrap justify-between items-end gap-4 mb-6">
+          <div>
+            <h3 class="font-display text-2xl font-bold" style="color: var(--gold-bright);">Chọn các nhân vật bạn đang sở hữu</h3>
+            <p class="text-xs mt-1" style="color: var(--ink-mute);">Hệ thống tự động lưu và đồng bộ ngay khi bạn bấm chọn / bỏ chọn.</p>
+          </div>
+          <input type="text" id="char-search" oninput="renderCharacterGrid()" placeholder="Tìm tên nhân vật..."
+            class="field sm:!w-72" />
+        </div>
+
+        <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[560px] overflow-y-auto pr-2">
+          <!-- Render nhân vật -->
+        </div>
       </div>
     </div>
 
   </main>
+</div>
 
   <script>
     // =========================================================================
@@ -196,10 +502,17 @@
     // Biến trạng thái toàn cục
     let currentUser = null;
     let authMode = 'login';
-    let allCharacters = [];      // Danh sách 118 nhân vật từ DB
+    let allCharacters = [];      // Danh sách nhân vật từ DB
     let allUsers = [];           // Danh sách thành viên
     let userCharactersMap = {};  // { user_id: [char_id_1, char_id_2, ...] }
     let myCharacterIds = new Set();
+
+    // Chống chèn HTML khi hiển thị tên người dùng / nhân vật
+    function esc(str) {
+      return String(str ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[ch]));
+    }
 
     // =========================================================================
     // 1. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ
@@ -217,15 +530,15 @@
         document.getElementById('auth-username').required = true;
         document.getElementById('auth-uid').required = true;
         submitBtn.textContent = 'Tạo tài khoản & Tham gia';
-        tabReg.className = 'flex-1 py-2 rounded-lg font-medium bg-amber-500 text-slate-900 transition';
-        tabLogin.className = 'flex-1 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition';
+        tabReg.className = 'seg-btn active';
+        tabLogin.className = 'seg-btn';
       } else {
         regFields.classList.add('hidden');
         document.getElementById('auth-username').required = false;
         document.getElementById('auth-uid').required = false;
         submitBtn.textContent = 'Đăng nhập ngay';
-        tabLogin.className = 'flex-1 py-2 rounded-lg font-medium bg-amber-500 text-slate-900 transition';
-        tabReg.className = 'flex-1 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition';
+        tabLogin.className = 'seg-btn active';
+        tabReg.className = 'seg-btn';
       }
     }
 
@@ -285,7 +598,6 @@
     // 2. TẢI DỮ LIỆU & ĐỒNG BỘ REALTIME
     // =========================================================================
     async function initAppData() {
-      // Tải danh sách 118 nhân vật
       const { data: chars } = await supabaseClient.from('characters').select('*').order('name');
       allCharacters = chars || [];
 
@@ -323,12 +635,12 @@
       renderBoardTable();
     }
 
-function renderLobbyCards(results, spinnerName) {
+    function renderLobbyCards(results, spinnerName) {
       const resultDiv = document.getElementById('lobby-result');
       const metaDiv = document.getElementById('lobby-meta');
 
       if (!results || results.length === 0) {
-        resultDiv.innerHTML = `<div class="col-span-full text-center text-slate-500 italic text-sm py-6">Chưa có lượt quay nào</div>`;
+        resultDiv.innerHTML = `<div class="col-span-full text-center italic py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>`;
         metaDiv.textContent = '';
         return;
       }
@@ -342,14 +654,14 @@ function renderLobbyCards(results, spinnerName) {
       resultDiv.innerHTML = results.map((item, idx) => {
         const isDuplicate = charCounts[item.character_name] > 1;
         return `
-          <div class="p-3.5 rounded-xl bg-slate-800/90 border ${isDuplicate ? 'border-amber-400/70' : 'border-slate-700'} flex items-center justify-between">
-            <div>
-              <div class="text-xs text-amber-300 font-semibold">Slot ${idx + 1} • ${item.username}</div>
-              <div class="text-lg font-extrabold text-white mt-0.5">✦ ${item.character_name}</div>
+          <div class="slot-card ${isDuplicate ? 'dup' : ''}" style="animation-delay:${idx * 90}ms">
+            <div class="min-w-0">
+              <div class="slot-meta">Slot ${idx + 1} &middot; ${esc(item.username)}</div>
+              <div class="slot-name truncate">${esc(item.character_name)}</div>
             </div>
-            <div class="text-right">
-              <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-400">#${item.random_number}</span>
-              ${isDuplicate ? '<div class="text-[10px] text-amber-400 mt-1 font-medium">Trùng nhân vật</div>' : ''}
+            <div class="text-right shrink-0">
+              <span class="slot-num">#${esc(item.random_number)}</span>
+              ${isDuplicate ? '<div class="dup-tag">Trùng nhân vật</div>' : ''}
             </div>
           </div>
         `;
@@ -381,16 +693,17 @@ function renderLobbyCards(results, spinnerName) {
       const grid = document.getElementById('character-grid');
       const filtered = allCharacters.filter(c => c.name.toLowerCase().includes(keyword));
 
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center italic py-10 font-display text-lg" style="color: var(--ink-mute);">Không tìm thấy nhân vật phù hợp</div>`;
+        return;
+      }
+
       grid.innerHTML = filtered.map(char => {
         const owned = myCharacterIds.has(char.id);
         return `
-          <button onclick="toggleCharacter(${char.id})"
-            class="p-3 rounded-xl border text-left text-sm font-medium transition flex items-center justify-between
-            ${owned
-              ? 'bg-amber-500/20 border-amber-400 text-amber-200 shadow-sm'
-              : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200'}">
-            <span class="truncate pr-1">${char.name}</span>
-            <span class="text-xs">${owned ? '✔' : '+'}</span>
+          <button onclick="toggleCharacter(${char.id})" class="char-card ${owned ? 'owned' : ''}">
+            <span class="truncate">${esc(char.name)}</span>
+            <span class="mark">${owned ? '&#10003;' : ''}</span>
           </button>
         `;
       }).join('');
@@ -425,7 +738,7 @@ function renderLobbyCards(results, spinnerName) {
     function renderBoardTable() {
       const tbody = document.getElementById('board-tbody');
       if (allUsers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-500">Chưa có thành viên nào đăng ký.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="py-12 text-center italic font-display text-lg" style="color: var(--ink-mute);">Chưa có thành viên nào đăng ký.</td></tr>`;
         return;
       }
 
@@ -437,15 +750,18 @@ function renderLobbyCards(results, spinnerName) {
           .sort();
 
         const badges = charNames.length > 0
-          ? charNames.map(name => `<span class="inline-block px-2.5 py-1 m-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-200 text-xs">${name}</span>`).join('')
-          : `<span class="text-slate-500 italic text-xs">Chưa chọn nhân vật nào</span>`;
+          ? charNames.map(name => `<span class="tag">${esc(name)}</span>`).join('')
+          : `<span class="italic text-xs" style="color: var(--ink-mute);">Chưa chọn nhân vật nào</span>`;
 
         return `
-          <tr class="hover:bg-slate-800/40 transition">
-            <td class="py-3.5 px-4 text-center font-semibold text-slate-400">${idx + 1}</td>
-            <td class="py-3.5 px-4 font-bold text-amber-300">${user.username}</td>
-            <td class="py-3.5 px-4 font-mono text-xs text-slate-300">${user.uid}</td>
-            <td class="py-3.5 px-4">${badges}</td>
+          <tr>
+            <td class="py-4 px-5 text-center"><span class="rank">${idx + 1}</span></td>
+            <td class="py-4 px-5">
+              <div class="font-display text-xl font-bold" style="color: var(--gold-bright);">${esc(user.username)}</div>
+              <div class="text-xs mt-0.5" style="color: var(--ink-mute);">${charNames.length} nhân vật</div>
+            </td>
+            <td class="py-4 px-5 font-mono text-xs" style="color: var(--ink-dim);">${esc(user.uid)}</td>
+            <td class="py-4 px-5">${badges}</td>
           </tr>
         `;
       }).join('');
@@ -453,13 +769,21 @@ function renderLobbyCards(results, spinnerName) {
 
     function renderParticipantCheckboxes() {
       const container = document.getElementById('participant-checkboxes');
+      // Giữ nguyên trạng thái đã chọn khi dữ liệu được làm mới
+      const previouslyChecked = new Set(
+        Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value)
+      );
+      const hadRendered = container.children.length > 0;
+
       container.innerHTML = allUsers.map(user => {
         const count = (userCharactersMap[user.id] || []).length;
+        const checked = hadRendered ? previouslyChecked.has(user.id) : count > 0;
         return `
-          <label class="cursor-pointer select-none inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-amber-400/60 text-sm">
-            <input type="checkbox" value="${user.id}" class="participant-cb accent-amber-500 w-4 h-4" ${count > 0 ? 'checked' : ''} />
-            <span>${user.username}</span>
-            <span class="text-xs text-slate-400">(${count})</span>
+          <label class="member-chip">
+            <input type="checkbox" value="${esc(user.id)}" class="participant-cb" ${checked ? 'checked' : ''} />
+            <span class="dot"></span>
+            <span>${esc(user.username)}</span>
+            <span class="cnt">(${count})</span>
           </label>
         `;
       }).join('');
@@ -469,7 +793,7 @@ function renderLobbyCards(results, spinnerName) {
       document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = checked);
     }
 
-function spinRandom() {
+    function spinRandom() {
       const checkedUserIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
       const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length > 0);
       const desiredCount = parseInt(document.getElementById('spin-count').value, 10);
@@ -504,7 +828,7 @@ function spinRandom() {
         };
       });
 
-      // 1. HIỂN THỊ NGAY LẬP TỨC (0ms độ trễ) trên màn hình người bấm
+      // 1. HIỂN THỊ NGAY LẬP TỨC trên màn hình người bấm
       const me = allUsers.find(u => u.id === currentUser.id);
       renderLobbyCards(results, me ? me.username : '');
 
@@ -531,13 +855,13 @@ function spinRandom() {
       if (tab === 'board') {
         viewBoard.classList.remove('hidden');
         viewRoster.classList.add('hidden');
-        btnBoard.className = 'px-5 py-2.5 rounded-xl font-semibold bg-amber-500 text-slate-900 transition';
-        btnRoster.className = 'px-5 py-2.5 rounded-xl font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+        btnBoard.className = 'tab-main active';
+        btnRoster.className = 'tab-main';
       } else {
         viewBoard.classList.add('hidden');
         viewRoster.classList.remove('hidden');
-        btnRoster.className = 'px-5 py-2.5 rounded-xl font-semibold bg-amber-500 text-slate-900 transition';
-        btnBoard.className = 'px-5 py-2.5 rounded-xl font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+        btnRoster.className = 'tab-main active';
+        btnBoard.className = 'tab-main';
       }
     }
   </script>
