@@ -478,22 +478,14 @@
     }
     #splash.out { opacity: 0; pointer-events: none; }
     .splash-word {
-        font-family: 'Baloo 2', 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: clamp(48px, 11vw, 120px);
-  letter-spacing: .01em;
-  line-height: 1;
-  color: #3a3a3c;
+        font-size: clamp(26px, 6vw, 54px); font-weight: 300; color: #fff;
+      letter-spacing: .42em; padding-left: .42em;
+      text-shadow: 0 0 28px rgba(255,255,255,.35);
+      opacity: 0; animation: splashWord 3.5s ease forwards;
     }
     .splash-sub {
-     font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
-  font-size: clamp(11px, 1.6vw, 18px);
-  letter-spacing: .42em;          /* thưa ra, đây là nét đặc trưng của dòng phụ */
-  text-transform: uppercase;
-  margin-top: 14px;
-  padding-left: .42em;            /* bù phần khoảng cách thừa ở cuối để chữ nằm đúng giữa */
-  color: #3a3a3c;
+     margin-top: 18px; font-size: 11px; letter-spacing: .4em; text-transform: uppercase;
+      color: rgba(255,255,255,.45); opacity: 0; animation: splashSub 3.5s ease forwards;
 }
     }
     @keyframes splashWord {
