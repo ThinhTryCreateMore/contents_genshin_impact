@@ -3413,5 +3413,442 @@
       }
     }
   </script>
+  <!-- ==================== WIDGET DISCORD CHAT - NGỌT ==================== -->
+<div id="ngot-dc-widget" aria-live="polite">
+  <!-- Khung cửa sổ chat -->
+  <div id="ngot-dc-window" class="ngot-dc-hidden" role="dialog" aria-label="Tin nhắn từ Ngọt">
+    <!-- Thanh tiêu đề kiểu cửa sổ ứng dụng -->
+    <div class="ngot-dc-header">
+      <div class="ngot-dc-header-left">
+        <div class="ngot-dc-header-avt-wrap">
+          <img
+            src="assets/ngot-avt.jpg"
+            alt="Ngọt"
+            class="ngot-dc-header-avt"
+            onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%235865F2%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2238%22 font-family=%22sans-serif%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>N</text></svg>';"
+          />
+          <span class="ngot-dc-online-dot" title="Đang trực tuyến"></span>
+        </div>
+        <div class="ngot-dc-header-info">
+          <div class="ngot-dc-header-name">
+            <span>Ngọt</span>
+            <span class="ngot-dc-role-tag">ADMIN</span>
+          </div>
+          <div class="ngot-dc-header-sub">Server Nguyên Thần</div>
+        </div>
+      </div>
+
+      <!-- Nút ẩn / thu nhỏ cửa sổ -->
+      <button
+        type="button"
+        id="ngot-dc-minimize"
+        class="ngot-dc-min-btn"
+        title="Ẩn cửa sổ"
+        aria-label="Ẩn cửa sổ chat"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Nội dung tin nhắn -->
+    <div class="ngot-dc-body">
+      <div class="ngot-dc-msg-row">
+        <img
+          src="assets/ngot-avt.jpg"
+          alt="Ngọt"
+          class="ngot-dc-msg-avt"
+          onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%235865F2%22/><text x=%2250%25%22 y=%2255%25%22 font-size=%2238%22 font-family=%22sans-serif%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>N</text></svg>';"
+        />
+        <div class="ngot-dc-msg-content">
+          <div class="ngot-dc-msg-meta">
+            <span class="ngot-dc-sender">Ngọt</span>
+            <span class="ngot-dc-time">Hôm nay</span>
+          </div>
+
+          <div class="ngot-dc-bubble">
+            <p>Chào mừng bạn đến với contents của server Nguyên Thần này nhé &lt;3</p>
+            <p>
+              Mình là Ngọt, trước khi vào game hãy đọc qua thể thức sau:
+              <a
+                href="https://docs.google.com/document/d/1z0oeOZaBanc7wCbfoh4_EGB5pnRr20UA/edit"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="ngot-dc-doc-link"
+                title="Mở tài liệu thể thức"
+              >
+                <span class="ngot-dc-notebook-icon" aria-hidden="true">📓</span>
+                <span>Xem Thể Thức</span>
+              </a>
+            </p>
+            <p>Lời cuối, chúc các bạn may mắn, mãi iu &lt;3</p>
+            <p class="ngot-dc-sign">— Ngọt</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nút biểu tượng Discord cố định ở góc màn hình -->
+  <button
+    type="button"
+    id="ngot-dc-launcher"
+    class="ngot-dc-launcher"
+    title="Tin nhắn từ Ngọt"
+    aria-label="Mở tin nhắn từ Ngọt"
+    aria-expanded="false"
+  >
+    <!-- Icon Discord SVG -->
+    <svg class="ngot-dc-icon" viewBox="0 0 127.14 96.36" fill="currentColor" aria-hidden="true">
+      <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+    </svg>
+
+    <!-- Dấu chấm ! đỏ thông báo -->
+    <span id="ngot-dc-badge" class="ngot-dc-badge" aria-label="Có tin nhắn mới">!</span>
+  </button>
+</div>
+
+<style>
+  /* Toàn bộ CSS được cô lập trong #ngot-dc-widget để không ảnh hưởng giao diện gốc */
+  #ngot-dc-widget,
+  #ngot-dc-widget * {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  #ngot-dc-widget {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 9998;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    pointer-events: none; /* Không chặn click vào các nút bên dưới trang */
+  }
+
+  /* Nút tròn Discord */
+  #ngot-dc-widget .ngot-dc-launcher {
+    pointer-events: auto;
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: #5865F2;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 255, 255, 0.12);
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 0;
+    margin: 0;
+  }
+
+  #ngot-dc-widget .ngot-dc-launcher:hover {
+    background: #4752C4;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 28px rgba(88, 101, 242, 0.45);
+  }
+
+  #ngot-dc-widget .ngot-dc-launcher:active {
+    transform: scale(0.95);
+  }
+
+  #ngot-dc-widget .ngot-dc-icon {
+    width: 30px;
+    height: 30px;
+    display: block;
+  }
+
+  /* Dấu chấm ! đỏ */
+  #ngot-dc-widget .ngot-dc-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    background: #ED4245;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2.5px solid #1e1f22;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    animation: ngotDcPulse 1.8s infinite;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  #ngot-dc-widget .ngot-dc-badge.ngot-dc-badge-read {
+    opacity: 0;
+    transform: scale(0);
+    pointer-events: none;
+    animation: none;
+  }
+
+  @keyframes ngotDcPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.16); }
+  }
+
+  /* Khung cửa sổ chat */
+  #ngot-dc-widget #ngot-dc-window {
+    pointer-events: auto;
+    width: 350px;
+    max-width: calc(100vw - 32px);
+    background: #313338;
+    color: #dbdee1;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    transform-origin: bottom right;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: opacity 0.22s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.22s;
+  }
+
+  /* Hiệu ứng ẩn cửa sổ như thu nhỏ app */
+  #ngot-dc-widget #ngot-dc-window.ngot-dc-hidden {
+    opacity: 0;
+    transform: translateY(18px) scale(0.72);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* Thanh tiêu đề */
+  #ngot-dc-widget .ngot-dc-header {
+    background: #2b2d31;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1f2023;
+  }
+
+  #ngot-dc-widget .ngot-dc-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #ngot-dc-widget .ngot-dc-header-avt-wrap {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  #ngot-dc-widget .ngot-dc-header-avt {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+  }
+
+  #ngot-dc-widget .ngot-dc-online-dot {
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #23a55a;
+    border: 2px solid #2b2d31;
+  }
+
+  #ngot-dc-widget .ngot-dc-header-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #f2f3f5;
+    line-height: 1.2;
+  }
+
+  #ngot-dc-widget .ngot-dc-role-tag {
+    background: #5865F2;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  #ngot-dc-widget .ngot-dc-header-sub {
+    font-size: 11.5px;
+    color: #949ba4;
+    margin-top: 2px;
+  }
+
+  /* Nút thu nhỏ cửa sổ */
+  #ngot-dc-widget .ngot-dc-min-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #b5bac1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    padding: 0;
+  }
+
+  #ngot-dc-widget .ngot-dc-min-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  /* Vùng tin nhắn */
+  #ngot-dc-widget .ngot-dc-body {
+    padding: 14px;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+
+  #ngot-dc-widget .ngot-dc-msg-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+  }
+
+  #ngot-dc-widget .ngot-dc-msg-avt {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center 20%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    border: 1.5px solid rgba(149, 224, 108, 0.45);
+  }
+
+  #ngot-dc-widget .ngot-dc-msg-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  #ngot-dc-widget .ngot-dc-msg-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+
+  #ngot-dc-widget .ngot-dc-sender {
+    font-size: 14px;
+    font-weight: 700;
+    color: #95e06c;
+  }
+
+  #ngot-dc-widget .ngot-dc-time {
+    font-size: 11px;
+    color: #949ba4;
+  }
+
+  #ngot-dc-widget .ngot-dc-bubble {
+    background: #2b2d31;
+    border-radius: 0 12px 12px 12px;
+    padding: 10px 12px;
+    font-size: 13.5px;
+    line-height: 1.52;
+    color: #dbdee1;
+    border-left: 3px solid #95e06c;
+  }
+
+  #ngot-dc-widget .ngot-dc-bubble p {
+    margin: 0 0 8px 0;
+  }
+
+  #ngot-dc-widget .ngot-dc-bubble p:last-child {
+    margin-bottom: 0;
+  }
+
+  #ngot-dc-widget .ngot-dc-doc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: rgba(88, 101, 242, 0.22);
+    border: 1px solid rgba(88, 101, 242, 0.5);
+    color: #949cf7;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+
+  #ngot-dc-widget .ngot-dc-doc-link:hover {
+    background: #5865F2;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  #ngot-dc-widget .ngot-dc-notebook-icon {
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  #ngot-dc-widget .ngot-dc-sign {
+    font-weight: 600;
+    color: #f2f3f5;
+    text-align: right;
+  }
+</style>
+
+<script>
+  (() => {
+    'use strict';
+    const launcher = document.getElementById('ngot-dc-launcher');
+    const chatWindow = document.getElementById('ngot-dc-window');
+    const minimizeBtn = document.getElementById('ngot-dc-minimize');
+    const badge = document.getElementById('ngot-dc-badge');
+
+    if (!launcher || !chatWindow || !minimizeBtn) return;
+
+    const openChat = () => {
+      chatWindow.classList.remove('ngot-dc-hidden');
+      launcher.setAttribute('aria-expanded', 'true');
+      if (badge) badge.classList.add('ngot-dc-badge-read');
+    };
+
+    const minimizeChat = () => {
+      chatWindow.classList.add('ngot-dc-hidden');
+      launcher.setAttribute('aria-expanded', 'false');
+    };
+
+    launcher.addEventListener('click', () => {
+      const isHidden = chatWindow.classList.contains('ngot-dc-hidden');
+      if (isHidden) {
+        openChat();
+      } else {
+        minimizeChat();
+      }
+    });
+
+    minimizeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      minimizeChat();
+    });
+  })();
+</script>
+<!-- ==================== HẾT WIDGET DISCORD CHAT ==================== -->
 </body>
 </html>
