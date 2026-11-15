@@ -1120,9 +1120,9 @@
         <button type="button" data-bg-style="solid" onclick="setBgStyle('solid')" class="theme-btn bg-style-btn" title="Sử dụng màu nền đơn sắc gốc">🎨 Đơn sắc</button>
       </div>
 
-      <button type="button" onclick="openBgManagerModal()" class="btn-ghost px-3 py-1.5 text-xs font-semibold" title="Thêm hoặc quản lý ảnh nền cho từng chế độ">
-        + Ảnh nền
-      </button>
+      <button id="btn-open-bg-manager" type="button" onclick="openBgManagerModal()" class="hidden btn-ghost px-3 py-1.5 text-xs font-semibold" title="Thêm hoặc quản lý ảnh nền cho từng chế độ">
+     + Ảnh nền
+    </button>
 
       <div id="user-nav" class="hidden flex items-center gap-5">
         <div class="text-right">
@@ -1755,7 +1755,12 @@
         updateBlur();
       });
     })();
-
+    function canCurrentUserEditBg() {
+  if (!currentUser) return false;
+  const me = allUsers.find(u => u.id === currentUser.id);
+  return Boolean(me && me.can_edit_bg);
+}
+    
     function openBgManagerModal() {
       const uploadSelect = document.getElementById('bg-upload-mode');
       if (uploadSelect) uploadSelect.value = currentThemeMode;
@@ -2282,6 +2287,9 @@
       $('user-nav').classList.add('hidden');
       $('auth-password').value = '';
       $('auth-error').classList.add('hidden');
+      $('user-nav').classList.add('hidden');
+      $('btn-open-bg-manager')?.classList.add('hidden');
+      closeBgManagerModal();
       splashDone.then(showAuth);
     }
 
@@ -2337,13 +2345,18 @@
       const { data: users } = await supabaseClient.from('users').select('*').order('stt');
       allUsers = users || [];
 
-      const me = allUsers.find(u => u.id === currentUser.id);
+     const me = allUsers.find(u => u.id === currentUser.id);
       if (me) {
-        document.getElementById('nav-username').textContent = me.username;
-        document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
-      }
+     document.getElementById('nav-username').textContent = me.username;
+     document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
+}
 
-      const { data: uChars } = await supabaseClient.from('user_characters').select('*');
+// Chỉ hiện nút "+ Ảnh nền" nếu user có cột can_edit_bg = true
+    const bgBtn = document.getElementById('btn-open-bg-manager');
+    if (bgBtn) {
+     bgBtn.classList.toggle('hidden', !Boolean(me && me.can_edit_bg));
+}
+       const { data: uChars } = await supabaseClient.from('user_characters').select('*');
       userCharactersMap = {};
       const serverMyIds = new Set();
 
