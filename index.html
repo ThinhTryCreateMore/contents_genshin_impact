@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" data-theme="default">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,152 +7,114 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.cdnfonts.com/css/hywenhei" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Áp dụng sớm theme đã lưu để tránh chớp màn hình khi tải trang
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('genshin_sync_theme');
+        if (savedTheme === 'dark' || savedTheme === 'light') {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <style>
-    @font-face {
-      font-family: 'GenshinImpact';
-      src: local('HYWenHei-85W'), local('HYWenHei'),
-           url('https://cdn.jsdelivr.net/gh/Nice-1/Genshin-Font@main/HYWenHei-85W.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    :root,
-    html[data-theme="default"] {
-      --font-genshin: 'GenshinImpact', 'HYWenHei', 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
-      --font-body: 'GenshinImpact', 'HYWenHei', 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
-
+    :root {
       --bg-0: #070b16;
       --bg-1: #0d1426;
       --bg-2: #141d36;
-      --bg-radial-1: rgba(88, 101, 190, 0.28);
-      --bg-radial-2: rgba(184, 145, 74, 0.16);
-      --bg-radial-3: rgba(60, 80, 150, 0.22);
-      --star-opacity: 1;
-
       --ink: #eef0f6;
-      --ink-strong: #ffffff;
       --ink-dim: #a3adc4;
       --ink-mute: #6b7794;
       --gold: #e3c27a;
       --gold-bright: #f6dfa4;
       --gold-deep: #b8914a;
-      --title-grad: linear-gradient(180deg, #fff3cf 0%, #e3c27a 55%, #b8914a 100%);
-      --line: rgba(227, 194, 122, 0.24);
-      --line-soft: rgba(163, 173, 196, 0.15);
+      --line: rgba(227, 194, 122, 0.22);
+      --line-soft: rgba(163, 173, 196, 0.14);
       --ok: #7fd1b0;
-
-      --surface-panel: linear-gradient(160deg, rgba(24, 34, 62, .84), rgba(13, 20, 38, .90));
-      --surface-sub: rgba(7, 11, 22, .56);
-      --surface-input: rgba(7, 11, 22, .65);
-      --surface-input-focus: rgba(7, 11, 22, .88);
-      --surface-stage: radial-gradient(500px 220px at 50% 0%, rgba(227,194,122,.12), transparent 70%), linear-gradient(160deg, rgba(20,29,54,.92), rgba(9,14,28,.96));
-      --surface-slot: linear-gradient(135deg, rgba(30,42,76,.88), rgba(14,21,40,.94));
-      --surface-slot-zoom: linear-gradient(135deg, rgba(34,48,86,.99), rgba(14,21,40,.99));
-      --surface-card: rgba(10, 16, 32, .62);
-      --surface-card-zoom: rgba(16, 25, 48, .98);
-      --surface-thead: rgba(10, 16, 32, .96);
-      --surface-tag: rgba(255, 255, 255, .045);
-      --surface-boss-banner: linear-gradient(135deg, rgba(227,194,122,.16), rgba(30,42,76,.74));
-      --surface-footer: rgba(7, 11, 22, .72);
-      --surface-icon-btn: rgba(255, 255, 255, .05);
-      --shadow-panel: 0 24px 60px -24px rgba(0,0,0,.72), inset 0 1px 0 rgba(255,255,255,.04);
-      --modal-backdrop: rgba(4, 7, 15, .82);
+      --panel-bg: linear-gradient(160deg, rgba(24, 34, 62, .82), rgba(13, 20, 38, .88));
+      --sub-bg: rgba(7, 11, 22, .55);
+      --stage-bg: radial-gradient(500px 220px at 50% 0%, rgba(227,194,122,.12), transparent 70%), linear-gradient(160deg, rgba(20,29,54,.9), rgba(9,14,28,.95));
+      --slot-bg: linear-gradient(135deg, rgba(30,42,76,.85), rgba(14,21,40,.9));
+      --slot-name-color: #ffffff;
+      --thead-bg: rgba(10,16,32,.96);
+      --card-bg: rgba(10,16,32,.55);
+      --tag-ink: #d8def0;
+      --tag-bg: rgba(255, 255, 255, 0.045);
+      --body-bg-image:
+        radial-gradient(1200px 600px at 12% -10%, rgba(88, 101, 190, 0.28), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(184, 145, 74, 0.16), transparent 55%),
+        radial-gradient(800px 600px at 50% 120%, rgba(60, 80, 150, 0.22), transparent 60%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-0));
     }
 
     html[data-theme="dark"] {
-      --bg-0: #09090b;
-      --bg-1: #111115;
-      --bg-2: #18181f;
-      --bg-radial-1: rgba(227, 194, 122, 0.08);
-      --bg-radial-2: rgba(120, 120, 135, 0.08);
-      --bg-radial-3: rgba(39, 39, 46, 0.25);
-      --star-opacity: 0.35;
-
-      --ink: #f4f4f6;
-      --ink-strong: #ffffff;
-      --ink-dim: #a1a1aa;
-      --ink-mute: #71717a;
-      --gold: #e5c174;
-      --gold-bright: #fae3a8;
-      --gold-deep: #b58d3d;
-      --title-grad: linear-gradient(180deg, #fff5d6 0%, #e5c174 55%, #b58d3d 100%);
-      --line: rgba(229, 193, 116, 0.26);
+      --bg-0: #050608;
+      --bg-1: #0a0b0f;
+      --bg-2: #12141c;
+      --ink: #f2f4f8;
+      --ink-dim: #9ea6b8;
+      --ink-mute: #646c80;
+      --gold: #e3c27a;
+      --gold-bright: #f8e4b0;
+      --gold-deep: #b8914a;
+      --line: rgba(227, 194, 122, 0.24);
       --line-soft: rgba(255, 255, 255, 0.10);
-      --ok: #6ee7b7;
-
-      --surface-panel: linear-gradient(160deg, rgba(24, 24, 29, .92), rgba(14, 14, 18, .95));
-      --surface-sub: rgba(10, 10, 13, .72);
-      --surface-input: rgba(10, 10, 13, .82);
-      --surface-input-focus: rgba(15, 15, 20, .96);
-      --surface-stage: radial-gradient(500px 220px at 50% 0%, rgba(229,193,116,.09), transparent 70%), linear-gradient(160deg, rgba(24,24,29,.95), rgba(12,12,15,.98));
-      --surface-slot: linear-gradient(135deg, rgba(32,32,39,.92), rgba(18,18,23,.96));
-      --surface-slot-zoom: linear-gradient(135deg, rgba(38,38,46,.99), rgba(20,20,26,.99));
-      --surface-card: rgba(20, 20, 25, .78);
-      --surface-card-zoom: rgba(28, 28, 35, .99);
-      --surface-thead: rgba(15, 15, 19, .98);
-      --surface-tag: rgba(255, 255, 255, .05);
-      --surface-boss-banner: linear-gradient(135deg, rgba(229,193,116,.14), rgba(32,32,39,.85));
-      --surface-footer: rgba(12, 12, 16, .88);
-      --surface-icon-btn: rgba(255, 255, 255, .06);
-      --shadow-panel: 0 24px 60px -24px rgba(0,0,0,.88), inset 0 1px 0 rgba(255,255,255,.04);
-      --modal-backdrop: rgba(0, 0, 0, .86);
+      --ok: #7fd1b0;
+      --panel-bg: linear-gradient(160deg, rgba(20, 22, 30, .90), rgba(10, 11, 16, .94));
+      --sub-bg: rgba(5, 6, 9, .72);
+      --stage-bg: radial-gradient(500px 220px at 50% 0%, rgba(227,194,122,.10), transparent 70%), linear-gradient(160deg, rgba(18,20,28,.94), rgba(8,9,13,.98));
+      --slot-bg: linear-gradient(135deg, rgba(26,29,40,.92), rgba(13,15,22,.96));
+      --slot-name-color: #ffffff;
+      --thead-bg: rgba(8,9,13,.98);
+      --card-bg: rgba(14,16,23,.75);
+      --tag-ink: #dfe4f0;
+      --tag-bg: rgba(255, 255, 255, 0.05);
+      --body-bg-image:
+        radial-gradient(1100px 550px at 15% -10%, rgba(184, 145, 74, 0.12), transparent 60%),
+        radial-gradient(900px 500px at 85% 110%, rgba(90, 100, 130, 0.12), transparent 60%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-0));
     }
 
     html[data-theme="light"] {
-      --bg-0: #f3efe4;
+      --bg-0: #efeae0;
       --bg-1: #faf7f0;
-      --bg-2: #ebe4d5;
-      --bg-radial-1: rgba(201, 154, 70, 0.16);
-      --bg-radial-2: rgba(110, 152, 204, 0.14);
-      --bg-radial-3: rgba(184, 145, 74, 0.12);
-      --star-opacity: 0;
-
-      --ink: #1e2433;
-      --ink-strong: #111624;
-      --ink-dim: #4c566e;
-      --ink-mute: #758099;
-      --gold: #9e6d1c;
-      --gold-bright: #7d520c;
-      --gold-deep: #855812;
-      --title-grad: linear-gradient(180deg, #b88228 0%, #8e5f12 60%, #684208 100%);
-      --line: rgba(158, 109, 28, 0.30);
-      --line-soft: rgba(30, 36, 51, 0.12);
-      --ok: #15805d;
-
-      --surface-panel: linear-gradient(160deg, rgba(255, 253, 248, .92), rgba(247, 242, 231, .95));
-      --surface-sub: rgba(236, 229, 214, .62);
-      --surface-input: rgba(255, 255, 255, .86);
-      --surface-input-focus: #ffffff;
-      --surface-stage: radial-gradient(500px 220px at 50% 0%, rgba(184,134,45,.11), transparent 70%), linear-gradient(160deg, rgba(252,249,242,.96), rgba(241,235,221,.98));
-      --surface-slot: linear-gradient(135deg, rgba(255,255,255,.95), rgba(244,238,225,.96));
-      --surface-slot-zoom: linear-gradient(135deg, #ffffff, #f6efe0);
-      --surface-card: rgba(255, 255, 255, .82);
-      --surface-card-zoom: #ffffff;
-      --surface-thead: rgba(243, 236, 222, .98);
-      --surface-tag: rgba(30, 36, 51, .05);
-      --surface-boss-banner: linear-gradient(135deg, rgba(201,154,70,.18), rgba(255,253,247,.92));
-      --surface-footer: rgba(244, 238, 225, .90);
-      --surface-icon-btn: rgba(30, 36, 51, .06);
-      --shadow-panel: 0 20px 48px -22px rgba(72, 56, 28, .22), inset 0 1px 0 rgba(255,255,255,.85);
-      --modal-backdrop: rgba(26, 24, 20, .58);
+      --bg-2: #ffffff;
+      --ink: #1c2230;
+      --ink-dim: #4a5368;
+      --ink-mute: #768096;
+      --gold: #a67a28;
+      --gold-bright: #7d5814;
+      --gold-deep: #8c641c;
+      --line: rgba(166, 122, 40, 0.34);
+      --line-soft: rgba(28, 34, 48, 0.12);
+      --ok: #19875e;
+      --panel-bg: linear-gradient(160deg, rgba(255, 253, 248, .92), rgba(246, 240, 228, .94));
+      --sub-bg: rgba(238, 232, 220, .75);
+      --stage-bg: radial-gradient(500px 220px at 50% 0%, rgba(166,122,40,.12), transparent 70%), linear-gradient(160deg, rgba(252,249,242,.95), rgba(241,234,221,.98));
+      --slot-bg: linear-gradient(135deg, rgba(255,255,255,.96), rgba(244,237,224,.96));
+      --slot-name-color: #1c2230;
+      --thead-bg: rgba(245,239,227,.98);
+      --card-bg: rgba(255,255,255,.82);
+      --tag-ink: #2b3345;
+      --tag-bg: rgba(166, 122, 40, 0.08);
+      --body-bg-image:
+        radial-gradient(1200px 600px at 12% -10%, rgba(140, 185, 222, 0.26), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(227, 194, 122, 0.25), transparent 55%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-0));
     }
 
     * { box-sizing: border-box; }
+
     html { scroll-behavior: smooth; }
 
     body {
       color: var(--ink);
-      font-family: var(--font-body);
+      font-family: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
       background-color: var(--bg-0);
-      background-image:
-        radial-gradient(1200px 600px at 12% -10%, var(--bg-radial-1), transparent 60%),
-        radial-gradient(900px 500px at 100% 0%, var(--bg-radial-2), transparent 55%),
-        radial-gradient(800px 600px at 50% 120%, var(--bg-radial-3), transparent 60%),
-        linear-gradient(180deg, var(--bg-1), var(--bg-0));
+      background-image: var(--body-bg-image);
       background-attachment: fixed;
       -webkit-font-smoothing: antialiased;
       transition: background-color .3s ease, color .3s ease;
@@ -162,7 +124,6 @@
     body::before, #door-gate::before {
       content: "";
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      opacity: var(--star-opacity);
       background-image:
         radial-gradient(1.2px 1.2px at 8% 18%, rgba(255,255,255,.75), transparent 60%),
         radial-gradient(1px 1px at 22% 72%, rgba(255,255,255,.55), transparent 60%),
@@ -176,28 +137,32 @@
         radial-gradient(1.2px 1.2px at 55% 52%, rgba(255,255,255,.4), transparent 60%);
       animation: twinkle 7s ease-in-out infinite alternate;
     }
-    @keyframes twinkle { from { opacity: calc(var(--star-opacity) * .55); } to { opacity: var(--star-opacity); } }
+    html[data-theme="light"] body::before { opacity: .25; }
+    @keyframes twinkle { from { opacity: .55; } to { opacity: 1; } }
 
     #page { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-    .font-display { font-family: var(--font-genshin); letter-spacing: .01em; }
+    .font-display { font-family: 'Cormorant Garamond', 'Times New Roman', serif; }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(227,194,122,.32); border-radius: 8px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(227,194,122,.55); }
+    ::-webkit-scrollbar-thumb { background: rgba(227,194,122,.28); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(227,194,122,.5); }
 
-    ::selection { background: rgba(227,194,122,.35); color: var(--ink-strong); }
+    ::selection { background: rgba(227,194,122,.35); color: #fff; }
 
     /* ---------- Panel có khung vàng ---------- */
     .panel {
       position: relative;
-      background: var(--surface-panel);
+      background: var(--panel-bg);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--line-soft);
       border-radius: 18px;
-      box-shadow: var(--shadow-panel);
+      box-shadow: 0 24px 60px -24px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    html[data-theme="light"] .panel {
+      box-shadow: 0 18px 45px -24px rgba(60, 45, 20, .18), inset 0 1px 0 rgba(255,255,255,.8);
     }
     .panel-gold { border-color: var(--line); }
     .panel-gold::before, .panel-gold::after {
@@ -210,11 +175,15 @@
 
     /* ---------- Tiêu đề ---------- */
     .eyebrow {
-      font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold-deep);
+      font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold-deep);
       font-weight: 600;
     }
     .title-gold {
-      background: var(--title-grad);
+      background: linear-gradient(180deg, #fff3cf 0%, var(--gold) 55%, var(--gold-deep) 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    html[data-theme="light"] .title-gold {
+      background: linear-gradient(180deg, #b8892d 0%, #8f6519 55%, #63430c 100%);
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
     .divider {
@@ -234,20 +203,22 @@
       background: var(--gold); box-shadow: 0 0 12px rgba(227,194,122,.8);
     }
 
-    /* ---------- Chuyển đổi Mode (Hiện tại / Dark / Light) ---------- */
+    /* ---------- Bộ chuyển đổi giao diện (Hiện tại / Dark / Light) ---------- */
     .theme-switcher {
-      display: inline-flex; align-items: center; gap: 3px;
-      padding: 4px; border-radius: 12px;
-      background: var(--surface-sub);
-      border: 1px solid var(--line);
+      display: inline-flex; align-items: center; gap: 2px;
+      padding: 3px; border-radius: 12px;
+      background: var(--sub-bg);
+      border: 1px solid var(--line-soft);
     }
     .theme-btn {
-      padding: 6px 11px; border-radius: 9px; font-size: 12px; font-weight: 600;
-      color: var(--ink-dim); transition: all .2s ease; white-space: nowrap;
+      padding: 5px 10px; border-radius: 9px;
+      font-size: 11px; font-weight: 600; letter-spacing: .03em;
+      color: var(--ink-dim); transition: all .2s ease;
+      cursor: pointer; white-space: nowrap;
     }
-    .theme-btn:hover { color: var(--ink-strong); }
+    .theme-btn:hover { color: var(--ink); }
     .theme-btn.active {
-      background: linear-gradient(180deg, rgba(246,223,164,.24), rgba(227,194,122,.12));
+      background: linear-gradient(180deg, rgba(246,223,164,.22), rgba(227,194,122,.10));
       color: var(--gold-bright);
       box-shadow: inset 0 0 0 1px var(--line);
     }
@@ -256,15 +227,14 @@
     .field-label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 8px; font-weight: 500; }
     .field {
       width: 100%; padding: 12px 16px; border-radius: 12px;
-      background: var(--surface-input);
+      background: var(--sub-bg);
       border: 1px solid var(--line-soft);
       color: var(--ink); font-size: 14px; transition: all .2s ease;
     }
     .field::placeholder { color: var(--ink-mute); }
     .field:focus {
       outline: none; border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(227,194,122,.16);
-      background: var(--surface-input-focus);
+      box-shadow: 0 0 0 3px rgba(227,194,122,.14);
     }
 
     /* ---------- Nút ---------- */
@@ -287,23 +257,23 @@
 
     .btn-ghost {
       border: 1px solid var(--line-soft); color: var(--ink-dim);
-      border-radius: 10px; background: var(--surface-icon-btn);
+      border-radius: 10px; background: rgba(255,255,255,.02);
       transition: all .2s ease;
     }
-    .btn-ghost:hover { border-color: var(--gold); color: var(--gold-bright); background: rgba(227,194,122,.10); }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold-bright); background: rgba(227,194,122,.08); }
 
     .link-gold { color: var(--gold); transition: color .2s; }
     .link-gold:hover { color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px; }
 
     /* ---------- Tab đăng nhập (segmented) ---------- */
-    .seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface-sub); border: 1px solid var(--line-soft); }
+    .seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--sub-bg); border: 1px solid var(--line-soft); }
     .seg-btn {
       flex: 1; padding: 10px 0; border-radius: 10px; font-weight: 600; font-size: 14px;
       color: var(--ink-dim); transition: all .25s ease;
     }
-    .seg-btn:hover { color: var(--ink-strong); }
+    .seg-btn:hover { color: var(--ink); }
     .seg-btn.active {
-      background: linear-gradient(180deg, rgba(246,223,164,.22), rgba(227,194,122,.10));
+      background: linear-gradient(180deg, rgba(246,223,164,.18), rgba(227,194,122,.08));
       color: var(--gold-bright); box-shadow: inset 0 0 0 1px var(--line);
     }
 
@@ -313,7 +283,7 @@
       font-weight: 600; font-size: 15px; color: var(--ink-mute);
       transition: color .2s ease;
     }
-    .tab-main:hover { color: var(--ink-strong); }
+    .tab-main:hover { color: var(--ink); }
     .tab-main::after {
       content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
@@ -324,7 +294,7 @@
     .tab-count {
       display: inline-block; min-width: 24px; padding: 1px 8px; margin-left: 6px;
       border-radius: 999px; font-size: 12px; text-align: center;
-      background: rgba(227,194,122,.14); color: var(--gold); border: 1px solid var(--line);
+      background: rgba(227,194,122,.12); color: var(--gold); border: 1px solid var(--line);
     }
 
     /* ---------- Chọn thành viên quay ---------- */
@@ -332,10 +302,10 @@
       position: relative; cursor: pointer; user-select: none;
       display: inline-flex; align-items: center; gap: 8px;
       padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--ink-dim);
-      background: var(--surface-sub); border: 1px solid var(--line-soft);
+      background: var(--sub-bg); border: 1px solid var(--line-soft);
       transition: all .2s ease;
     }
-    .member-chip:hover { border-color: var(--gold); color: var(--ink-strong); }
+    .member-chip:hover { border-color: rgba(227,194,122,.5); color: var(--ink); }
     .member-chip input { position: absolute; opacity: 0; pointer-events: none; }
     .member-chip .dot {
       width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--ink-mute);
@@ -343,14 +313,14 @@
     }
     .member-chip:has(input:checked) {
       color: var(--gold-bright); border-color: var(--gold);
-      background: linear-gradient(180deg, rgba(227,194,122,.18), rgba(227,194,122,.07));
+      background: linear-gradient(180deg, rgba(227,194,122,.16), rgba(227,194,122,.05));
       box-shadow: 0 0 18px -6px rgba(227,194,122,.6);
     }
     .member-chip:has(input:checked) .dot { background: var(--gold); border-color: var(--gold-bright); box-shadow: 0 0 8px var(--gold); }
     .member-chip .cnt { font-size: 11px; color: var(--ink-mute); }
 
     .select-gold {
-      background: var(--surface-input); color: var(--gold-bright); font-weight: 600;
+      background: var(--sub-bg); color: var(--gold-bright); font-weight: 600;
       border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; cursor: pointer;
     }
     .select-gold:focus { outline: none; box-shadow: 0 0 0 3px rgba(227,194,122,.14); }
@@ -358,7 +328,7 @@
     .live-badge {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 6px 14px; border-radius: 999px; font-size: 12px; letter-spacing: .06em;
-      color: var(--ok); background: rgba(127,209,176,.10); border: 1px solid rgba(127,209,176,.32);
+      color: var(--ok); background: rgba(127,209,176,.08); border: 1px solid rgba(127,209,176,.28);
     }
     .live-badge::before {
       content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok);
@@ -373,18 +343,18 @@
     /* ---------- Thẻ kết quả quay ---------- */
     .stage {
       position: relative; border-radius: 16px; padding: 20px;
-      background: var(--surface-stage);
+      background: var(--stage-bg);
       border: 1px solid var(--line);
     }
     .slot-card {
       position: relative; overflow: hidden;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
       padding: 16px 18px 16px 22px; border-radius: 14px;
-      background: var(--surface-slot);
+      background: var(--slot-bg);
       border: 1px solid var(--line-soft);
       opacity: 0; transform: translateY(10px) scale(.98);
       animation: reveal .55s cubic-bezier(.2,.8,.2,1) forwards;
-      transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .28s ease, background .28s ease;
+      transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, border-color .25s ease;
     }
     .slot-card::before {
       content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
@@ -392,89 +362,66 @@
     }
     .slot-card.dup { border-color: rgba(227,194,122,.6); box-shadow: 0 0 26px -10px rgba(227,194,122,.6); }
     @keyframes reveal { to { opacity: 1; transform: none; } }
-    .slot-meta { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-    .slot-name { font-family: var(--font-genshin); font-size: 22px; line-height: 1.2; font-weight: 700; color: var(--ink-strong); margin-top: 4px; }
+    .slot-meta { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+    .slot-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; line-height: 1.1; font-weight: 700; color: var(--slot-name-color); margin-top: 4px; }
     .slot-num {
       font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 12px;
       padding: 3px 10px; border-radius: 999px; color: var(--ink-dim);
-      background: var(--surface-sub); border: 1px solid var(--line-soft);
+      background: var(--sub-bg); border: 1px solid var(--line-soft);
     }
     .dup-tag { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-top: 6px; font-weight: 600; }
 
-    /* ---------- Phóng to khung nhân vật khi giữ chuột 3 giây ---------- */
-    .hover-zoom-target {
+    /* ---------- Hiệu ứng giữ chuột 3 giây phóng to thẻ nhân vật (v10) ---------- */
+    .zoomable-card {
       position: relative;
+      overflow: hidden;
     }
-    .hover-zoom-target::after {
-      content: "";
-      position: absolute; left: 10px; right: 10px; bottom: 0; height: 2px;
+    .hold-progress {
+      position: absolute;
+      left: 0; bottom: 0; height: 3px; width: 0%;
       background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
-      border-radius: 2px;
-      transform: scaleX(0);
-      transform-origin: left center;
-      opacity: 0;
+      box-shadow: 0 0 8px var(--gold);
       pointer-events: none;
-    }
-    .hover-zoom-target.hover-charging::after {
-      opacity: .85;
-      transform: scaleX(1);
-      transition: transform 3s linear, opacity .2s ease;
-    }
-    .hover-zoom-target.card-zoomed::after {
       opacity: 0;
-      transition: opacity .15s ease;
+      transition: none;
     }
-
-    .char-card.card-zoomed {
-      z-index: 45;
-      transform: scale(1.24) translateY(-3px) !important;
-      background: var(--surface-card-zoom) !important;
-      border-color: var(--gold) !important;
-      box-shadow: 0 20px 44px -10px rgba(0, 0, 0, .75), 0 0 0 1.5px var(--gold) !important;
-      overflow: visible;
+    .zoomable-card.holding .hold-progress {
+      opacity: 1;
+      width: 100%;
+      transition: width 3s linear;
     }
-    .char-card.card-zoomed .char-avatar,
-    .char-card.card-zoomed .char-avatar-fallback {
-      width: 52px;
-      height: 52px;
-      transition: width .25s ease, height .25s ease;
+    .zoomable-card.card-zoomed {
+      opacity: 1 !important;
+      transform: scale(1.18) !important;
+      z-index: 45 !important;
+      border-color: var(--gold-bright) !important;
+      box-shadow: 0 22px 48px -10px rgba(0, 0, 0, .82), 0 0 0 1.5px var(--gold), 0 0 24px rgba(227, 194, 122, .45) !important;
+      overflow: visible !important;
     }
-    .char-card.card-zoomed .char-title-text,
-    .char-card.card-zoomed .char-sub-text {
+    .zoomable-card.card-zoomed .truncate {
       white-space: normal !important;
       overflow: visible !important;
       text-overflow: unset !important;
       word-break: break-word;
-      line-height: 1.25;
     }
-
-    .slot-card.card-zoomed {
-      z-index: 45;
-      transform: scale(1.14) translateY(-4px) !important;
-      background: var(--surface-slot-zoom) !important;
-      border-color: var(--gold) !important;
-      box-shadow: 0 24px 52px -12px rgba(0, 0, 0, .8), 0 0 0 1.5px var(--gold) !important;
-      overflow: visible;
-    }
-    .slot-card.card-zoomed .slot-avatar,
-    .slot-card.card-zoomed .slot-avatar-fallback {
-      width: 74px;
-      height: 74px;
+    .zoomable-card.card-zoomed .char-avatar,
+    .zoomable-card.card-zoomed .char-avatar-fallback {
+      width: 48px;
+      height: 48px;
       transition: width .25s ease, height .25s ease;
     }
-    .slot-card.card-zoomed .slot-name {
-      white-space: normal !important;
-      overflow: visible !important;
-      text-overflow: unset !important;
-      word-break: break-word;
-      font-size: 25px;
+    .zoomable-card.card-zoomed .slot-avatar,
+    .zoomable-card.card-zoomed .slot-avatar-fallback {
+      width: 68px;
+      height: 68px;
+      transition: width .25s ease, height .25s ease;
     }
 
     /* ---------- Bảng ---------- */
     .board-table thead th {
       position: sticky; top: 0; z-index: 2;
-      background: var(--surface-thead);
-      color: var(--gold); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600;
+      background: var(--thead-bg);
+      color: var(--gold); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600;
       border-bottom: 1px solid var(--line);
     }
     .board-table tbody tr { transition: background .2s ease; }
@@ -484,31 +431,40 @@
     .rank {
       display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center;
       border-radius: 50%; font-size: 12px; font-weight: 700; color: var(--gold);
-      border: 1px solid var(--line); background: rgba(227,194,122,.08);
+      border: 1px solid var(--line); background: rgba(227,194,122,.06);
     }
+    .tag {
+      display: inline-block; padding: 4px 11px; margin: 3px 3px 3px 0;
+      border-radius: 8px; font-size: 12px; color: var(--tag-ink);
+      background: var(--tag-bg); border: 1px solid var(--line-soft);
+      transition: all .2s ease;
+    }
+    .tag:hover { border-color: rgba(227,194,122,.5); color: var(--gold-bright); background: rgba(227,194,122,.09); }
 
     /* ---------- Huy hiệu Cần Main (Nhà Lữ Hành) ---------- */
     .main-badge {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700;
-      letter-spacing: .04em; color: var(--gold-bright);
+      letter-spacing: .04em; color: #ffe7a3;
       background: linear-gradient(135deg, rgba(227, 194, 122, .24), rgba(140, 185, 222, .22));
       border: 1px solid var(--gold);
       box-shadow: 0 0 12px -4px rgba(227, 194, 122, .65);
+    }
+    html[data-theme="light"] .main-badge {
+      color: #69470a;
+      background: linear-gradient(135deg, rgba(227, 194, 122, .36), rgba(140, 185, 222, .32));
     }
     .slot-card.main-picked {
       border-color: #8cb9de;
       box-shadow: 0 0 28px -8px rgba(140, 185, 222, .75);
     }
-
     /* ---------- Huy hiệu Vũ khí ---------- */
     .wp-badge {
       display: inline-flex; align-items: center; gap: 3px;
       padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 600;
       letter-spacing: .03em; color: var(--ink-dim);
-      background: var(--surface-tag); border: 1px solid var(--line-soft);
+      background: rgba(255, 255, 255, .05); border: 1px solid var(--line-soft);
     }
-
     /* ---------- Huy hiệu Nguyên tố ---------- */
     .el-badge {
       display: inline-flex; align-items: center; gap: 4px;
@@ -522,30 +478,34 @@
     .el-Dendro  { color: #9ce06c; background: rgba(124, 198, 68, .14); }
     .el-Cryo    { color: #9ee8ff; background: rgba(118, 214, 245, .14); }
     .el-Geo     { color: #f5cc6c; background: rgba(235, 184, 68, .14); }
-    html[data-theme="light"] .el-Pyro    { color: #c93b28; background: rgba(255, 102, 77, .15); }
-    html[data-theme="light"] .el-Hydro   { color: #126eb8; background: rgba(56, 168, 255, .15); }
-    html[data-theme="light"] .el-Anemo   { color: #127d5f; background: rgba(68, 214, 170, .16); }
-    html[data-theme="light"] .el-Electro { color: #7932b8; background: rgba(178, 102, 255, .14); }
-    html[data-theme="light"] .el-Dendro  { color: #437a1a; background: rgba(124, 198, 68, .16); }
-    html[data-theme="light"] .el-Cryo    { color: #197696; background: rgba(118, 214, 245, .18); }
-    html[data-theme="light"] .el-Geo     { color: #94660c; background: rgba(235, 184, 68, .18); }
+
+    html[data-theme="light"] .el-Pyro    { color: #c73b24; background: rgba(255, 102, 77, .14); }
+    html[data-theme="light"] .el-Hydro   { color: #166db5; background: rgba(56, 168, 255, .14); }
+    html[data-theme="light"] .el-Anemo   { color: #187d5e; background: rgba(68, 214, 170, .16); }
+    html[data-theme="light"] .el-Electro { color: #7c2ec7; background: rgba(178, 102, 255, .14); }
+    html[data-theme="light"] .el-Dendro  { color: #477d19; background: rgba(124, 198, 68, .16); }
+    html[data-theme="light"] .el-Cryo    { color: #1a7696; background: rgba(118, 214, 245, .18); }
+    html[data-theme="light"] .el-Geo     { color: #9c6e11; background: rgba(235, 184, 68, .18); }
 
     /* ---------- Khu vực Boss ---------- */
     .boss-pill {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 7px 13px; border-radius: 12px; font-size: 13px;
-      background: var(--surface-sub); border: 1px solid var(--line-soft);
+      background: var(--sub-bg); border: 1px solid var(--line-soft);
       color: var(--ink); transition: all .2s ease;
     }
     .boss-pill.eliminated {
-      opacity: .45; text-decoration: line-through;
+      opacity: .42; text-decoration: line-through;
       border-style: dashed;
     }
     .boss-active-banner {
       padding: 16px 20px; border-radius: 14px;
-      background: var(--surface-boss-banner);
+      background: linear-gradient(135deg, rgba(227,194,122,.16), rgba(30,42,76,.65));
       border: 1px solid var(--gold);
-      box-shadow: 0 10px 28px -14px rgba(227,194,122,.55);
+      box-shadow: 0 10px 28px -14px rgba(227,194,122,.6);
+    }
+    html[data-theme="light"] .boss-active-banner {
+      background: linear-gradient(135deg, rgba(227,194,122,.28), rgba(255,252,245,.9));
     }
 
     /* ---------- Nút chọn nguyên tố khi tạo Boss ---------- */
@@ -553,22 +513,22 @@
       cursor: pointer; user-select: none;
       display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
-      background: var(--surface-sub); border: 1px solid var(--line-soft);
+      background: var(--sub-bg); border: 1px solid var(--line-soft);
       color: var(--ink-dim); transition: all .2s ease;
     }
     .el-toggle input { display: none; }
     .el-toggle:has(input:checked) {
       border-color: var(--gold);
       color: var(--gold-bright);
-      background: rgba(227, 194, 122, .18);
+      background: rgba(227, 194, 122, .16);
       box-shadow: 0 0 14px -5px rgba(227,194,122,.65);
     }
 
-    /* ---------- Modal ---------- */
+    /* ---------- Modal thông báo Boss, Xác nhận Reset & Luật ---------- */
     .modal-backdrop {
       position: fixed; inset: 0; z-index: 80;
       display: flex; align-items: center; justify-content: center; padding: 16px;
-      background: var(--modal-backdrop);
+      background: rgba(4, 7, 15, .82);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       animation: fadeIn .25s ease both;
@@ -582,8 +542,8 @@
       margin: 14px auto 18px;
       border-radius: 14px; overflow: hidden;
       border: 1px solid var(--line);
-      background: var(--surface-sub);
-      box-shadow: 0 10px 30px -12px rgba(0,0,0,.65);
+      background: rgba(7, 11, 22, .85);
+      box-shadow: 0 10px 30px -12px rgba(0,0,0,.8);
     }
     .boss-locate-img {
       display: block; width: 100%; max-height: 270px;
@@ -593,16 +553,16 @@
       display: inline-flex; align-items: center; gap: 6px;
       margin-top: 6px; padding: 3px 10px; border-radius: 999px;
       font-size: 11px; font-weight: 600;
-      background: rgba(227, 194, 122, .16); border: 1px solid var(--gold);
+      background: rgba(227, 194, 122, .14); border: 1px solid var(--gold);
       color: var(--gold-bright);
     }
 
     /* ---------- Avatar nhân vật ---------- */
     .char-avatar {
       width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: top center;
-      flex-shrink: 0; background: var(--surface-sub);
+      flex-shrink: 0; background: rgba(7, 11, 22, 0.85);
       border: 1px solid rgba(227, 194, 122, 0.35);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
     }
     .char-card.owned .char-avatar {
       border-color: var(--gold-bright);
@@ -611,48 +571,48 @@
     .char-avatar-fallback {
       width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center;
-      font-family: var(--font-genshin); font-weight: 700; font-size: 15px;
-      color: var(--gold); background: rgba(227, 194, 122, 0.12);
+      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 15px;
+      color: var(--gold); background: rgba(227, 194, 122, 0.1);
       border: 1px solid rgba(227, 194, 122, 0.25);
     }
     .slot-avatar {
       width: 54px; height: 54px; border-radius: 50%; object-fit: cover; object-position: top center;
-      flex-shrink: 0; background: var(--surface-sub);
+      flex-shrink: 0; background: rgba(7, 11, 22, 0.9);
       border: 1.5px solid var(--gold);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 12px rgba(227, 194, 122, 0.25);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(227, 194, 122, 0.25);
     }
     .slot-avatar-fallback {
       width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center;
-      font-family: var(--font-genshin); font-weight: 700; font-size: 22px;
+      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 22px;
       color: var(--gold-bright); background: rgba(227, 194, 122, 0.14);
       border: 1.5px solid var(--gold);
     }
     .tag-with-icon {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 3px 10px 3px 4px; margin: 3px 4px 3px 0;
-      border-radius: 999px; font-size: 12px; color: var(--ink);
-      background: var(--surface-tag); border: 1px solid var(--line-soft);
+      border-radius: 999px; font-size: 12px; color: var(--tag-ink);
+      background: var(--tag-bg); border: 1px solid var(--line-soft);
       transition: all .2s ease;
     }
     .tag-with-icon:hover {
-      border-color: var(--gold); color: var(--gold-bright);
-      background: rgba(227, 194, 122, 0.10);
+      border-color: rgba(227, 194, 122, 0.55); color: var(--gold-bright);
+      background: rgba(227, 194, 122, 0.11);
     }
     .tag-avatar {
       width: 22px; height: 22px; border-radius: 50%; object-fit: cover; object-position: top center;
-      background: var(--surface-sub); border: 1px solid rgba(227, 194, 122, 0.3);
+      background: rgba(7, 11, 22, 0.9); border: 1px solid rgba(227, 194, 122, 0.3);
     }
 
     /* ---------- Lưới nhân vật ---------- */
     .char-card {
       position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px;
       padding: 12px 14px; border-radius: 12px; text-align: left; font-size: 13px; font-weight: 500;
-      color: var(--ink-dim); background: var(--surface-card);
+      color: var(--ink-dim); background: var(--card-bg);
       border: 1px solid var(--line-soft);
-      transition: transform .25s cubic-bezier(.2,.8,.2,1), border-color .2s ease, background .2s ease, box-shadow .25s ease, color .2s ease;
+      transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .2s ease, background .2s ease, color .2s ease;
     }
-    .char-card:hover { border-color: rgba(227,194,122,.55); color: var(--ink-strong); transform: translateY(-1px); }
+    .char-card:hover { border-color: rgba(227,194,122,.45); color: var(--ink); transform: translateY(-1px); }
     .char-card .mark {
       flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
       display: inline-flex; align-items: center; justify-content: center;
@@ -660,51 +620,17 @@
     }
     .char-card.owned {
       color: var(--gold-bright);
-      background: linear-gradient(135deg, rgba(227,194,122,.20), rgba(227,194,122,.07));
+      background: linear-gradient(135deg, rgba(227,194,122,.19), rgba(227,194,122,.06));
       border-color: var(--gold);
-      box-shadow: 0 8px 22px -12px rgba(227,194,122,.65), inset 0 0 0 1px rgba(246,223,164,.10);
+      box-shadow: 0 8px 22px -12px rgba(227,194,122,.7), inset 0 0 0 1px rgba(246,223,164,.08);
     }
     .char-card.owned .mark { background: var(--gold); border-color: var(--gold-bright); color: #2a1f0a; font-weight: 700; }
-
-    /* ---------- Footer Credit & Discord ---------- */
-    .site-footer {
-      margin-top: auto;
-      border-top: 1px solid var(--line-soft);
-      background: var(--surface-footer);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-    .footer-icon-btn {
-      width: 42px; height: 42px;
-      display: inline-flex; align-items: center; justify-content: center;
-      border-radius: 12px;
-      background: var(--surface-icon-btn);
-      border: 1px solid var(--line-soft);
-      color: var(--ink);
-      transition: all .2s ease;
-    }
-    .footer-icon-btn:hover {
-      border-color: var(--gold);
-      color: var(--gold-bright);
-      background: rgba(227, 194, 122, .12);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px -8px rgba(227, 194, 122, .45);
-    }
-    .footer-discord-btn:hover {
-      border-color: #5865F2;
-      color: #ffffff;
-      background: #5865F2;
-      box-shadow: 0 8px 22px -6px rgba(88, 101, 242, .65);
-    }
 
     /* ---------- Hiệu ứng chuyển cảnh ---------- */
     .fade-in { animation: fadeIn .5s ease both; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
     /* =====================================================================
-       INTRO: SPLASH  ->  ĐĂNG NHẬP  ->  CÁNH CỬA CELESTIA TRÊN MÂY (FULLSCREEN)
-       ===================================================================== */
-       /* =====================================================================
        INTRO: SPLASH  ->  ĐĂNG NHẬP  ->  CÁNH CỬA CELESTIA TRÊN MÂY (FULLSCREEN)
        ===================================================================== */
     #splash {
@@ -824,7 +750,12 @@
 
     .door-title { position: relative; z-index: 4; text-align: center; transition: opacity .6s ease; }
     .door-title .eyebrow { color: #eef7ff; text-shadow: 0 2px 10px rgba(23, 52, 86, 0.55); }
-    .door-greet { margin-top: 6px; text-shadow: 0 4px 20px rgba(20, 44, 74, 0.55); }
+    .door-greet {
+      margin-top: 6px;
+      background: linear-gradient(180deg, #fff3cf 0%, #e3c27a 55%, #b8914a 100%) !important;
+      -webkit-background-clip: text !important; background-clip: text !important; color: transparent !important;
+      text-shadow: 0 4px 20px rgba(20, 44, 74, 0.55);
+    }
     .door-hint {
       position: relative; z-index: 4;
       font-size: 13px; letter-spacing: .38em; text-transform: uppercase;
@@ -1078,33 +1009,27 @@
 </div>
 
 <div id="page" class="min-h-screen p-4 md:p-8">
+
   <!-- HEADER -->
-  <header class="w-full max-w-7xl mx-auto flex flex-wrap justify-between items-end gap-4 mb-10 pb-6 relative">
+  <header class="max-w-7xl mx-auto w-full flex flex-wrap justify-between items-end gap-4 mb-10 pb-6 relative">
     <div>
       <div class="eyebrow mb-2">Teyvat Co-op Registry</div>
-      <h1 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold title-gold leading-tight">
+      <h1 class="font-display text-4xl md:text-5xl font-bold title-gold leading-tight">
         Genshin Roster &amp; Co-op Randomizer
       </h1>
       <p class="text-sm mt-2" style="color: var(--ink-dim);">Đồng bộ kho nhân vật &amp; quay ngẫu nhiên thời gian thực</p>
     </div>
-
-    <div class="flex flex-wrap items-center gap-3 sm:gap-4">
-      <!-- BỘ CHUYỂN ĐỔI MODE: HIỆN TẠI / DARK / LIGHT -->
+    <div class="flex flex-wrap items-center gap-4">
+      <!-- Bộ chuyển đổi 3 chế độ giao diện: Hiện tại / Dark / Light -->
       <div class="theme-switcher" role="group" aria-label="Chuyển đổi giao diện">
-        <button type="button" data-theme-btn="default" onclick="setThemeMode('default')" class="theme-btn active" title="Giao diện Teyvat mặc định">
-          ✦ Hiện tại
-        </button>
-        <button type="button" data-theme-btn="dark" onclick="setThemeMode('dark')" class="theme-btn" title="Giao diện tối thuần">
-          🌙 Dark
-        </button>
-        <button type="button" data-theme-btn="light" onclick="setThemeMode('light')" class="theme-btn" title="Giao diện sáng ban ngày">
-          ☀️ Light
-        </button>
+        <button type="button" data-theme-val="default" onclick="setTheme('default')" class="theme-btn active">Hiện tại</button>
+        <button type="button" data-theme-val="dark" onclick="setTheme('dark')" class="theme-btn">Dark</button>
+        <button type="button" data-theme-val="light" onclick="setTheme('light')" class="theme-btn">Light</button>
       </div>
 
-      <div id="user-nav" class="hidden flex items-center gap-4">
+      <div id="user-nav" class="hidden flex items-center gap-5">
         <div class="text-right">
-          <div id="nav-username" class="font-display text-lg sm:text-xl font-semibold" style="color: var(--gold-bright);"></div>
+          <div id="nav-username" class="font-display text-xl font-semibold" style="color: var(--gold-bright);"></div>
           <div id="nav-uid" class="text-xs font-mono" style="color: var(--ink-mute);"></div>
         </div>
         <button onclick="handleLogout()" class="btn-ghost px-4 py-2 text-sm font-medium">Đăng xuất</button>
@@ -1114,7 +1039,7 @@
   </header>
 
   <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ -->
-  <section id="auth-section" class="hidden panel panel-gold w-full max-w-md mx-auto p-7 md:p-9 mt-6 mb-12 fade-in">
+  <section id="auth-section" class="hidden panel panel-gold max-w-md mx-auto w-full p-7 md:p-9 mt-8 fade-in">
     <div class="text-center mb-7">
       <div class="eyebrow mb-2">Chào mừng, Lữ khách</div>
       <h2 class="font-display text-3xl font-bold title-gold">Bước vào Teyvat</h2>
@@ -1135,6 +1060,7 @@
         <input type="password" id="auth-password" required minlength="6" placeholder="••••••••" class="field" />
       </div>
 
+      <!-- Trường mở rộng khi Đăng ký -->
       <div id="register-fields" class="hidden space-y-5 pt-5">
         <div class="ornament"><i></i></div>
         <div>
@@ -1147,7 +1073,7 @@
         </div>
       </div>
 
-      <div id="auth-error" class="text-sm hidden px-4 py-3 rounded-xl" style="color:#f43f5e; background: rgba(244,63,94,.12); border:1px solid rgba(244,63,94,.32);"></div>
+      <div id="auth-error" class="text-sm hidden px-4 py-3 rounded-xl" style="color:#ffb4bf; background: rgba(244,63,94,.1); border:1px solid rgba(244,63,94,.3);"></div>
 
       <button type="submit" id="auth-submit-btn" class="btn-gold w-full py-3.5 text-base mt-1">
         Đăng nhập ngay
@@ -1156,7 +1082,7 @@
   </section>
 
   <!-- MÀN HÌNH CHÍNH (SAU KHI ĐĂNG NHẬP) -->
-  <main id="app-section" class="hidden w-full max-w-7xl mx-auto space-y-10 mb-12 fade-in">
+  <main id="app-section" class="hidden max-w-7xl mx-auto w-full space-y-10 fade-in">
 
     <!-- KHU VỰC 0: VÒNG QUAY BOSS & RÀNG BUỘC NGUYÊN TỐ -->
     <div class="panel panel-gold p-6 md:p-8">
@@ -1166,7 +1092,7 @@
           <h2 class="font-display text-3xl font-bold title-gold">Vòng Quay Boss</h2>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
-          <span id="boss-remaining-badge" class="text-xs px-3.5 py-2 rounded-xl font-semibold" style="color: var(--gold-bright); background: var(--surface-sub); border: 1px solid var(--line);">
+          <span id="boss-remaining-badge" class="text-xs px-3.5 py-2 rounded-xl font-semibold" style="color: var(--gold-bright); background: var(--sub-bg); border: 1px solid var(--line);">
             Còn 0/0 Boss
           </span>
           <button onclick="toggleBossManager()" class="btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-wider">
@@ -1176,7 +1102,7 @@
       </div>
 
       <!-- Khung thêm / quản lý Boss (ẩn/hiện) -->
-      <div id="boss-manager-panel" class="hidden mt-5 p-5 rounded-2xl fade-in" style="background: var(--surface-sub); border: 1px solid var(--line);">
+      <div id="boss-manager-panel" class="hidden mt-5 p-5 rounded-2xl fade-in" style="background: var(--sub-bg); border: 1px solid var(--line);">
         <div class="flex justify-between items-center mb-4">
           <span class="text-xs uppercase tracking-widest font-semibold" style="color: var(--gold);">Thêm Boss mới vào danh sách</span>
           <button onclick="toggleBossManager()" class="text-xs" style="color: var(--ink-mute);">Đóng ✕</button>
@@ -1229,7 +1155,7 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         <!-- Cột điều khiển Quay Boss & Reset -->
-        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between gap-5" style="background: var(--surface-sub); border:1px solid var(--line-soft);">
+        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between gap-5" style="background: var(--sub-bg); border:1px solid var(--line-soft);">
           <div>
             <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--ink-dim);">Boss trong vòng lặp hiện tại</div>
             <div id="boss-pool-chips" class="flex flex-wrap gap-2 max-h-44 overflow-y-auto pr-1">
@@ -1250,7 +1176,7 @@
           </div>
         </div>
 
-        <!-- Cột hiển thị Boss hiện tại -->
+        <!-- Cột hiển thị Boss hiện tại đang áp dụng cho lượt quay nhân vật -->
         <div class="lg:col-span-2 stage flex flex-col justify-between">
           <div class="flex justify-between items-center mb-3">
             <span class="eyebrow">Mục tiêu Boss hiện tại</span>
@@ -1286,7 +1212,7 @@
           <h2 class="font-display text-3xl font-bold title-gold">Vòng Quay Ngẫu Nhiên (2–4 Người)</h2>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
-          <label class="text-sm flex items-center gap-3 px-4 py-2 rounded-xl" style="color: var(--ink-dim); background: var(--surface-sub); border:1px solid var(--line-soft);">
+          <label class="text-sm flex items-center gap-3 px-4 py-2 rounded-xl" style="color: var(--ink-dim); background: var(--sub-bg); border:1px solid var(--line-soft);">
             <span>Số người quay</span>
             <select id="spin-count" class="select-gold">
               <option value="2">2 người</option>
@@ -1302,14 +1228,14 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         <!-- Cột chọn người tham gia quay -->
-        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between" style="background: var(--surface-sub); border:1px solid var(--line-soft);">
+        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between" style="background: var(--sub-bg); border:1px solid var(--line-soft);">
           <div>
             <div class="flex justify-between items-center mb-4">
               <span class="text-xs uppercase tracking-widest font-semibold" style="color: var(--ink-dim);">Thành viên tham gia</span>
               <div class="space-x-2 text-xs">
                 <button onclick="toggleAllPlayers(true)" class="link-gold">Tất cả</button>
                 <span style="color: var(--ink-mute);">/</span>
-                <button onclick="toggleAllPlayers(false)" style="color: var(--ink-mute);" class="hover:opacity-80 transition">Bỏ chọn</button>
+                <button onclick="toggleAllPlayers(false)" style="color: var(--ink-mute);" class="hover:text-white transition">Bỏ chọn</button>
               </div>
             </div>
             <div id="participant-checkboxes" class="flex flex-wrap gap-2"></div>
@@ -1324,7 +1250,7 @@
         <div class="lg:col-span-2 stage flex flex-col">
           <div class="flex justify-between items-center mb-4">
             <span class="eyebrow">Đội hình ngẫu nhiên hiện tại</span>
-            <span id="lobby-meta" class="text-xs" style="color: var(--ink-mute);">Giữ chuột 3s vào thẻ để phóng to</span>
+            <span id="lobby-meta" class="text-xs" style="color: var(--ink-mute);"></span>
           </div>
           <div id="lobby-result" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-auto">
             <div class="col-span-full text-center italic text-sm py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>
@@ -1366,59 +1292,38 @@
         <div class="flex flex-wrap justify-between items-end gap-4 mb-6">
           <div>
             <h3 class="font-display text-2xl font-bold" style="color: var(--gold-bright);">Chọn các nhân vật bạn đang sở hữu</h3>
-            <p class="text-xs mt-1" style="color: var(--ink-mute);">Bấm chọn / bỏ chọn tự động lưu · Giữ chuột 3s vào khung nhân vật để phóng to tên &amp; icon.</p>
+            <p class="text-xs mt-1" style="color: var(--ink-mute);">Hệ thống tự động lưu ngay khi bấm chọn · Giữ chuột 3 giây vào thẻ để phóng to.</p>
           </div>
           <input type="text" id="char-search" oninput="renderCharacterGrid()" placeholder="Tìm tên nhân vật..."
             class="field sm:!w-72" />
         </div>
 
-        <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[560px] overflow-y-auto pr-2 py-2"></div>
+        <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[560px] overflow-y-auto pr-2"></div>
       </div>
     </div>
 
   </main>
 
-  <!-- FOOTER CREDIT & DISCORD (LẤY CẢM HỨNG TỪ LUNARIS FOOTER) -->
-  <footer class="site-footer w-full max-w-7xl mx-auto rounded-2xl px-6 py-5 mt-8">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="text-center md:text-left space-y-2">
-        <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 text-xs sm:text-sm font-medium" style="color: var(--ink-dim);">
-          <button type="button" onclick="openRulesModal()" class="hover:underline underline-offset-4 transition" style="color: var(--gold-bright);">
-            Luật &amp; Nguyên tắc
-          </button>
-          <button type="button" onclick="openRulesModal()" class="hover:underline underline-offset-4 transition">
-            Bản quyền Server
-          </button>
-          <span>
-            Credit: <strong style="color: var(--gold);">Ngọt</strong>
-          </span>
-        </div>
-        <p class="text-xs leading-relaxed" style="color: var(--ink-mute);">
-          Dự án cộng đồng Co-op Randomizer được thực hiện bởi <strong style="color: var(--ink-dim);">Ngọt</strong> · Sản phẩm thuộc bản quyền server. Genshin Impact và toàn bộ hình ảnh nhân vật thuộc quyền sở hữu của HoYoverse.
-        </p>
+  <!-- FOOTER: CREDIT NGỌT, LUẬT & NGUYÊN TẮC, DISCORD -->
+  <footer class="max-w-7xl mx-auto w-full mt-auto pt-12 pb-6">
+    <hr class="divider mb-6" />
+    <div class="flex flex-wrap items-center justify-between gap-4 text-xs" style="color: var(--ink-dim);">
+      <div class="flex items-center gap-2">
+        <span style="color: var(--gold);">✦</span>
+        <span>Genshin Roster &amp; Co-op Randomizer &middot; Thực hiện bởi <strong style="color: var(--gold-bright);">Ngọt</strong></span>
       </div>
-
-      <!-- Nhóm nút biểu tượng bên phải (Luật/Nguyên tắc + Discord ẩn link) -->
-      <div class="flex items-center gap-2.5 shrink-0">
-        <button type="button" onclick="openRulesModal()" class="footer-icon-btn" title="Luật &amp; Nguyên tắc" aria-label="Luật và Nguyên tắc">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-            <path d="M9 12h6"></path>
-            <path d="M9 16h6"></path>
-          </svg>
+      <div class="flex items-center gap-3 flex-wrap">
+        <button type="button" onclick="openRulesModal()" class="btn-ghost px-3.5 py-2 text-xs font-semibold">
+          📜 Luật &amp; Nguyên tắc
         </button>
-
-        <a href="https://discord.gg/jmdkN5jBVa" target="_blank" rel="noopener noreferrer" class="footer-icon-btn footer-discord-btn" title="Tham gia Discord Server" aria-label="Discord Server">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
-          </svg>
+        <a href="https://discord.gg/jmdkN5jBVa" target="_blank" rel="noopener noreferrer" class="btn-ghost px-3.5 py-2 text-xs font-semibold inline-flex items-center gap-1.5">
+          <span>💬 Tham gia Discord</span>
         </a>
       </div>
     </div>
   </footer>
 
-<!-- MODAL 1: THÔNG BÁO QUAY TRÚNG BOSS -->
+<!-- MODAL 1: THÔNG BÁO QUAY TRÚNG BOSS (CHỈ CÓ DUY NHẤT 1 NÚT XÁC NHẬN) -->
 <div id="boss-alert-modal" class="modal-backdrop hidden">
   <div class="panel panel-gold modal-box">
     <div class="eyebrow mb-2">Mục tiêu đã được chọn</div>
@@ -1447,37 +1352,34 @@
   </div>
 </div>
 
-<!-- MODAL 3: LUẬT & NGUYÊN TẮC / BẢN QUYỀN SERVER -->
-<div id="rules-credit-modal" class="modal-backdrop hidden" onclick="if(event.target===this) closeRulesModal()">
+<!-- MODAL 3: LUẬT & NGUYÊN TẮC CO-OP + CREDIT -->
+<div id="rules-modal" class="modal-backdrop hidden" onclick="if(event.target === this) closeRulesModal()">
   <div class="panel panel-gold modal-box text-left">
     <div class="text-center mb-4">
-      <div class="eyebrow mb-1">Server Guidelines &amp; Copyright</div>
+      <div class="eyebrow mb-1">Teyvat Co-op Charter</div>
       <h3 class="font-display text-3xl font-bold title-gold">Luật &amp; Nguyên Tắc</h3>
     </div>
-
     <div class="ornament my-4"><i></i></div>
-
-    <div class="space-y-3 text-sm leading-relaxed" style="color: var(--ink-dim);">
-      <div class="p-4 rounded-xl" style="background: var(--surface-sub); border: 1px solid var(--line-soft);">
-        <ul class="space-y-2 list-disc pl-4">
-          <li>Mỗi thành viên cập nhật trung thực danh sách nhân vật mình đang sở hữu trong mục <strong>Kho Nhân Vật Của Tôi</strong>.</li>
-          <li>Khi quay Boss &amp; quay đội hình ngẫu nhiên, cả nhóm tuân thủ đúng nguyên tố yêu cầu và nhân vật hệ thống đã chỉ định.</li>
-          <li>Giữ tinh thần giao lưu vui vẻ, hỗ trợ lẫn nhau trong mọi lượt khiêu chiến Co-op.</li>
-        </ul>
-      </div>
-
-      <div class="p-4 rounded-xl text-center" style="background: rgba(227,194,122,.12); border: 1px solid var(--gold);">
-        <p class="font-display text-lg font-bold" style="color: var(--gold-bright);">
-          ✦ Sản phẩm thuộc bản quyền server ✦
-        </p>
-        <p class="text-sm mt-1 font-medium" style="color: var(--ink);">
-          Thực hiện bởi <strong>Ngọt</strong> — Chúc mọi người chơi game vui vẻ!
-        </p>
+    <div class="space-y-3.5 text-sm leading-relaxed" style="color: var(--ink-dim);">
+      <p>
+        <strong style="color: var(--gold-bright);">1. Cập nhật kho trung thực:</strong> Thành viên vui lòng đánh dấu đầy đủ và chính xác các nhân vật mình đang sở hữu trong mục <em>Kho Nhân Vật Của Tôi</em>.
+      </p>
+      <p>
+        <strong style="color: var(--gold-bright);">2. Tuân thủ kết quả quay:</strong> Khi hệ thống đã chốt Boss, nguyên tố bắt buộc, đội hình ngẫu nhiên hoặc chỉ định người dùng <em>Main (Aether / Lumine)</em>, mọi người vui lòng sử dụng đúng nhân vật được chỉ định.
+      </p>
+      <p>
+        <strong style="color: var(--gold-bright);">3. Tinh thần Co-op:</strong> Giữ thái độ vui vẻ, tôn trọng và hỗ trợ đồng đội trong suốt quá trình khiêu chiến Boss.
+      </p>
+      <div class="p-3.5 rounded-xl mt-4 text-xs" style="background: var(--sub-bg); border: 1px solid var(--line-soft);">
+        <div style="color: var(--gold-bright); font-weight: 600;">✦ Bản quyền &amp; Credit</div>
+        <p class="mt-1">Dự án thuộc bản quyền server, được thiết kế và phát triển bởi <strong>Ngọt</strong>. Chúc mọi người có những giờ phút Co-op thật vui vẻ!</p>
       </div>
     </div>
-
-    <div class="mt-6">
-      <button type="button" onclick="closeRulesModal()" class="btn-gold w-full py-3 text-sm uppercase tracking-widest">
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="https://discord.gg/jmdkN5jBVa" target="_blank" rel="noopener noreferrer" class="btn-ghost flex-1 py-3 text-center text-sm font-semibold">
+        💬 Discord Server
+      </a>
+      <button type="button" onclick="closeRulesModal()" class="btn-gold flex-1 py-3 text-sm font-bold">
         Đã hiểu
       </button>
     </div>
@@ -1488,31 +1390,6 @@
 
   <script>
     // =========================================================================
-    // 0. QUẢN LÝ THEME MODE (HIỆN TẠI / DARK MODE / LIGHT MODE)
-    // =========================================================================
-    function setThemeMode(mode) {
-      const valid = ['default', 'dark', 'light'].includes(mode) ? mode : 'default';
-      document.documentElement.setAttribute('data-theme', valid);
-      try { localStorage.setItem('genshin_theme_mode', valid); } catch (_) {}
-      document.querySelectorAll('[data-theme-btn]').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-theme-btn') === valid);
-      });
-    }
-
-    (function initThemeMode() {
-      let saved = 'default';
-      try { saved = localStorage.getItem('genshin_theme_mode') || 'default'; } catch (_) {}
-      setThemeMode(saved);
-    })();
-
-    function openRulesModal() {
-      document.getElementById('rules-credit-modal').classList.remove('hidden');
-    }
-    function closeRulesModal() {
-      document.getElementById('rules-credit-modal').classList.add('hidden');
-    }
-
-    // =========================================================================
     // CẤU HÌNH KẾT NỐI SUPABASE
     // =========================================================================
     const SUPABASE_URL = 'https://contentsgenshinimpact.vercel.app/supabase';
@@ -1520,30 +1397,109 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let authMode = 'login';
+    // Biến trạng thái toàn cục
     let currentUser = null;
+    let authMode = 'login';
     let allCharacters = [];
     let allUsers = [];
-    let userCharactersMap = {};
-    let myCharacterIds = new Set();
-    let realtimeChannel = null;
-
-    // Theo dõi thao tác chọn/bỏ chọn nhân vật đang chờ đồng bộ để chống xung đột polling/realtime
-    const pendingCharOps = new Map();
-    let charOpCounter = 0;
-
-    // Trạng thái Boss & Ràng buộc nguyên tố
     let allBosses = [];
     let activeBoss = null;
     let pendingBoss = null;
     let lastLobbyResults = [];
+    let userCharactersMap = {};
+    let myCharacterIds = new Set();
 
-    // Chữ ký DOM chống nhấp nháy khi đồng bộ định kỳ
-    let lastLobbySig = null;
+    // Bộ đệm chống ghi đè trạng thái tích chọn nhân vật (TTL 5 giây) & chống nhấp nháy Boss
+    const pendingCharOps = new Map();
+    let bossMutationLockUntil = 0;
+    let lastBossPoolSig = null;
+    let lastBossManageSig = null;
     let lastActiveBossSig = null;
     let lastPendingBossSig = null;
-    let lastBossListSig = null;
-    let bossMutationLockUntil = 0;
+
+    // =========================================================================
+    // 0. CHUYỂN ĐỔI GIAO DIỆN (HIỆN TẠI / DARK / LIGHT) & MODAL LUẬT
+    // =========================================================================
+    function setTheme(themeName) {
+      const normalized = (themeName === 'dark' || themeName === 'light') ? themeName : 'default';
+      if (normalized === 'default') {
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', normalized);
+      }
+      try {
+        localStorage.setItem('genshin_sync_theme', normalized);
+      } catch (e) {}
+
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme-val') === normalized);
+      });
+    }
+
+    (function syncInitialThemeButtons() {
+      let saved = 'default';
+      try {
+        saved = localStorage.getItem('genshin_sync_theme') || 'default';
+      } catch (e) {}
+      setTheme(saved);
+    })();
+
+    function openRulesModal() {
+      document.getElementById('rules-modal').classList.remove('hidden');
+    }
+
+    function closeRulesModal() {
+      document.getElementById('rules-modal').classList.add('hidden');
+    }
+
+    // =========================================================================
+    // 0b. HIỆU ỨNG GIỮ CHUỘT 3 GIÂY PHÓNG TO KHUNG NHÂN VẬT (KHO & LOBBY)
+    // =========================================================================
+    function initDelayedHoverZoom(containerEl) {
+      if (!containerEl) return;
+      const cards = containerEl.querySelectorAll('.zoomable-card');
+      cards.forEach(card => {
+        if (card.dataset.zoomBound === '1') return;
+        card.dataset.zoomBound = '1';
+
+        let holdTimer = null;
+        let didZoom = false;
+
+        const startHold = () => {
+          clearTimeout(holdTimer);
+          didZoom = false;
+          card.classList.add('holding');
+          holdTimer = setTimeout(() => {
+            didZoom = true;
+            card.classList.remove('holding');
+            card.classList.add('card-zoomed');
+          }, 3000);
+        };
+
+        const cancelHold = () => {
+          clearTimeout(holdTimer);
+          holdTimer = null;
+          card.classList.remove('holding', 'card-zoomed');
+        };
+
+        card.addEventListener('pointerdown', (e) => {
+          if (e.button !== 0 && e.pointerType === 'mouse') return;
+          startHold();
+        });
+        card.addEventListener('pointerup', cancelHold);
+        card.addEventListener('pointerleave', cancelHold);
+        card.addEventListener('pointercancel', cancelHold);
+
+        // Chặn sự kiện click toggle nhân vật nếu người dùng vừa giữ chuột đủ 3 giây để phóng to
+        card.addEventListener('click', (e) => {
+          if (didZoom) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            didZoom = false;
+          }
+        }, true);
+      });
+    }
 
     const ELEMENT_LABELS = {
       Pyro: '🔥 Pyro',
@@ -1555,192 +1511,129 @@
       Geo: '🪨 Geo'
     };
 
-    const WEAPON_LABELS = {
-      Sword: 'Kiếm Đơn',
-      Claymore: 'Trọng Kiếm',
-      Polearm: 'Vũ Khí Cán Dài',
-      Bow: 'Cung',
-      Catalyst: 'Pháp Khí'
-    };
-
-    function isBossRequireMain(boss) {
-      if (!boss) return false;
-      return Boolean(boss['cần_main'] ?? boss.can_main ?? boss.require_main);
-    }
-
-    function esc(str) {
-      return String(str ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    function isBossRequireMain(bossObj) {
+      if (!bossObj) return false;
+      return Boolean(bossObj['cần_main'] ?? bossObj.can_main ?? bossObj['cần-main']);
     }
 
     function renderElementBadge(el) {
       if (!el) return '';
-      const key = Object.keys(ELEMENT_LABELS).find(k => k.toLowerCase() === String(el).trim().toLowerCase()) || el;
-      const label = ELEMENT_LABELS[key] || el;
-      return `<span class="el-badge el-${esc(key)}">${esc(label)}</span>`;
+      const label = ELEMENT_LABELS[el] || el;
+      return `<span class="el-badge el-${esc(el)}">${esc(label)}</span>`;
     }
+
+    const WEAPON_LABELS = {
+      Sword: '⚔️ Kiếm Đơn',
+      Claymore: '🗡️ Trọng Kiếm',
+      Polearm: '🔱 Vũ Khí Cán Dài',
+      Bow: '🏹 Cung',
+      Catalyst: '📖 Pháp Khí'
+    };
 
     function renderWeaponBadge(wp) {
       if (!wp) return '';
-      const key = Object.keys(WEAPON_LABELS).find(k => k.toLowerCase() === String(wp).trim().toLowerCase()) || wp;
-      const label = WEAPON_LABELS[key] || wp;
-      return `<span class="wp-badge">⚔️ ${esc(label)}</span>`;
+      const key = Object.keys(WEAPON_LABELS).find(k => k.toLowerCase() === String(wp).trim().toLowerCase());
+      const label = key ? WEAPON_LABELS[key] : wp;
+      return `<span class="wp-badge">${esc(label)}</span>`;
     }
 
-    function getCharacterIconUrl(char) {
-      if (!char) return '';
-      const raw = (char.icon_url || '').trim();
-      if (raw) return raw;
-      const name = (char.name || '').trim();
-      if (!name) return '';
-      const slug = name.replace(/[^a-zA-Z0-9]/g, '');
+    // Tự động ánh xạ tên nhân vật sang link icon chuẩn Enka/Ambr CDN nếu cột icon_url chưa có
+    const CDN_SLUG_OVERRIDES = {
+      'traveller': 'PlayerBoy', 'traveler': 'PlayerBoy', 'aether': 'PlayerBoy', 'lumine': 'PlayerGirl',
+      'nhà lữ hành': 'PlayerBoy', 'nha lu hanh': 'PlayerBoy',
+      'hu tao': 'Hutao', 'raiden shogun': 'Shougun', 'raiden': 'Shougun',
+      'kamisato ayaka': 'Ayaka', 'kamisato ayato': 'Ayato',
+      'kaedehara kazuha': 'Kazuha', 'sangonomiya kokomi': 'Kokomi',
+      'arataki itto': 'Itto', 'kujou sara': 'Sara', 'kuki shinobu': 'Shinobu',
+      'shikanoin heizou': 'Heizou', 'yae miko': 'Yae', 'yoimiya': 'Yoimiya',
+      'kirara': 'Momoka', 'chiori': 'Chiori', 'thoma': 'Tohma', 'gorou': 'Gorou', 'sayu': 'Sayu',
+      'yun jin': 'Yunjin', 'yanfei': 'Feiyan', 'xianyun': 'Liuyun', 'baizhu': 'Baizhuer',
+      'alhaitham': 'Alhatham', 'wanderer': 'Wanderer', 'scaramouche': 'Wanderer',
+      'lyney': 'Liney', 'lynette': 'Linette', 'freminet': 'Freminet',
+      'neuvillette': 'Neuvillette', 'wriothesley': 'Wriothesley', 'furina': 'Furina',
+      'charlotte': 'Charlotte', 'navia': 'Navia', 'chevreuse': 'Chevreuse',
+      'gaming': 'Gaming', 'arlecchino': 'Arlecchino', 'clorinde': 'Clorinde',
+      'sigewinne': 'Sigewinne', 'emilie': 'Emilie',
+      'kachina': 'Kachina', 'kinich': 'Kinich', 'mualani': 'Mualani', 'xilonen': 'Xilonen',
+      'chasca': 'Chasca', 'ororon': 'Olorun', 'mavuika': 'Mavuika', 'citlali': 'Citlali',
+      'lan yan': 'Lanyan', 'yumemizuki mizuki': 'Mizuki', 'varesa': 'Varesa', 'iansan': 'Iansan',
+      'escofier': 'Escoffier', 'escoffier': 'Escoffier', 'ifa': 'Ifa', 'skirk': 'Skirk', 'dahlia': 'Dahlia',
+      'jean': 'Qin', 'amber': 'Ambor', 'noelle': 'Noel', 'ningguang': 'Ningguang',
+      'xingqiu': 'Xingqiu', 'chongyun': 'Chongyun', 'tartaglia': 'Tartaglia', 'childe': 'Tartaglia'
+    };
+
+    function getCharacterIconUrl(charObj) {
+      if (!charObj) return '';
+      if (charObj.icon_url && String(charObj.icon_url).trim()) {
+        return String(charObj.icon_url).trim();
+      }
+      const rawName = String(charObj.name || '').trim();
+      if (!rawName) return '';
+      const lower = rawName.toLowerCase();
+      let slug = CDN_SLUG_OVERRIDES[lower];
+      if (!slug) {
+        const parts = rawName.split(/\s+/);
+        const lastWord = parts[parts.length - 1].replace(/[^a-zA-Z0-9]/g, '');
+        slug = lastWord ? lastWord.charAt(0).toUpperCase() + lastWord.slice(1) : '';
+      }
       return slug ? `https://enka.network/ui/UI_AvatarIcon_${slug}.png` : '';
     }
 
-    function renderAvatarImg(char, imgClass, fallbackClass) {
-      const url = getCharacterIconUrl(char);
-      const initial = esc(((char && char.name) || '?').charAt(0).toUpperCase());
-      if (!url) {
-        return `<span class="${fallbackClass}">${initial}</span>`;
-      }
-      return `<img src="${esc(url)}" alt="${esc(char.name || '')}" class="${imgClass}" loading="lazy" onerror="this.outerHTML='<span class=&quot;${fallbackClass}&quot;>${initial}</span>'" />`;
+    function renderAvatarImg(charObj, imgClass, fallbackClass) {
+      const name = charObj ? charObj.name : '?';
+      const initial = esc(name.charAt(0).toUpperCase());
+      const url = getCharacterIconUrl(charObj);
+      if (!url) return `<span class="${fallbackClass}">${initial}</span>`;
+      return `<img src="${esc(url)}" alt="${esc(name)}" class="${imgClass}" loading="lazy" onerror="this.outerHTML='<span class=\'${fallbackClass}\'>${initial}</span>'" />`;
+    }
+
+    function esc(str) {
+      return String(str ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[ch]));
     }
 
     // =========================================================================
-    // HIỆU ỨNG PHÓNG TO KHUNG NHÂN VẬT KHI GIỮ CHUỘT ~3 GIÂY
-    // =========================================================================
-    function initDelayedHoverZoom(containerId, cardSelector) {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-
-      let activeCard = null;
-      let hoverTimer = null;
-
-      function clearCardZoom(card) {
-        if (hoverTimer) {
-          clearTimeout(hoverTimer);
-          hoverTimer = null;
-        }
-        if (card) {
-          card.classList.remove('hover-charging', 'card-zoomed');
-        }
-      }
-
-      container.addEventListener('mouseover', (e) => {
-        const card = e.target.closest(cardSelector);
-        if (!card || !container.contains(card)) return;
-        if (card === activeCard) return;
-
-        clearCardZoom(activeCard);
-        activeCard = card;
-
-        // Kích hoạt thanh tiến trình 3 giây
-        void card.offsetWidth;
-        card.classList.add('hover-charging');
-
-        hoverTimer = setTimeout(() => {
-          if (activeCard === card && document.body.contains(card)) {
-            card.classList.remove('hover-charging');
-            card.classList.add('card-zoomed');
-          }
-        }, 3000);
-      });
-
-      container.addEventListener('mouseout', (e) => {
-        if (!activeCard) return;
-        const related = e.relatedTarget;
-        if (related && activeCard.contains(related)) return;
-        clearCardZoom(activeCard);
-        activeCard = null;
-      });
-    }
-
-    // =========================================================================
-    // 0. LUỒNG MỞ ĐẦU: SPLASH ĐEN -> ĐĂNG NHẬP -> CÁNH CỬA CELESTIA -> APP
-    // =========================================================================
-    let splashDone = false;
-    let appReadyPromise = null;
-    let isEnteringDoor = false;
-
-    function finishSplash() {
-      if (splashDone) return;
-      splashDone = true;
-      const splash = document.getElementById('splash');
-      splash.classList.add('out');
-      setTimeout(() => splash.remove(), 950);
-
-      if (!currentUser) {
-        document.getElementById('auth-section').classList.remove('hidden');
-      }
-    }
-
-    setTimeout(finishSplash, 3500);
-
-    function showCelestiaGate(user) {
-      const displayName = (user && user.user_metadata && user.user_metadata.username) || (user && user.email) || 'Lữ khách';
-      document.getElementById('door-welcome').textContent = `Chào mừng, ${displayName}`;
-      const gate = document.getElementById('door-gate');
-      gate.classList.remove('hidden', 'opening', 'leaving');
-      requestAnimationFrame(() => gate.classList.add('show'));
-    }
-
-    async function openCelestiaDoor() {
-      if (isEnteringDoor) return;
-      isEnteringDoor = true;
-
-      const gate = document.getElementById('door-gate');
-      const flash = document.getElementById('celestia-flash');
-
-      gate.classList.add('opening');
-      setTimeout(() => flash.classList.add('on'), 550);
-
-      if (appReadyPromise) await appReadyPromise;
-
-      setTimeout(() => {
-        gate.classList.add('leaving');
-        document.getElementById('auth-section').classList.add('hidden');
-        document.getElementById('user-nav').classList.remove('hidden');
-        document.getElementById('app-section').classList.remove('hidden');
-        flash.classList.remove('on');
-
-        setTimeout(() => {
-          gate.classList.add('hidden');
-          gate.classList.remove('show', 'opening', 'leaving');
-          isEnteringDoor = false;
-        }, 1000);
-      }, 1150);
-    }
-
-    // =========================================================================
-    // 1. QUẢN LÝ ĐĂNG NHẬP & ĐĂNG KÝ
+    // 1. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ
     // =========================================================================
     function switchAuthTab(mode) {
       authMode = mode;
       const regFields = document.getElementById('register-fields');
       const submitBtn = document.getElementById('auth-submit-btn');
       const tabLogin = document.getElementById('tab-login');
-      const tabRegister = document.getElementById('tab-register');
+      const tabReg = document.getElementById('tab-register');
       document.getElementById('auth-error').classList.add('hidden');
 
-      if (mode === 'login') {
-        regFields.classList.add('hidden');
-        submitBtn.textContent = 'Đăng nhập ngay';
-        tabLogin.className = 'seg-btn active';
-        tabRegister.className = 'seg-btn';
-        document.getElementById('auth-username').required = false;
-        document.getElementById('auth-uid').required = false;
-      } else {
+      if (mode === 'register') {
         regFields.classList.remove('hidden');
-        submitBtn.textContent = 'Tạo tài khoản mới';
-        tabRegister.className = 'seg-btn active';
-        tabLogin.className = 'seg-btn';
         document.getElementById('auth-username').required = true;
         document.getElementById('auth-uid').required = true;
+        submitBtn.textContent = 'Tạo tài khoản & Tham gia';
+        tabReg.className = 'seg-btn active';
+        tabLogin.className = 'seg-btn';
+      } else {
+        regFields.classList.add('hidden');
+        document.getElementById('auth-username').required = false;
+        document.getElementById('auth-uid').required = false;
+        submitBtn.textContent = 'Đăng nhập ngay';
+        tabLogin.className = 'seg-btn active';
+        tabReg.className = 'seg-btn';
       }
+    }
+
+    function showAuthMsg(text, type) {
+      const box = document.getElementById('auth-error');
+      box.textContent = text;
+      if (type === 'info') {
+        box.style.color = '#bfe9d7';
+        box.style.background = 'rgba(127,209,176,.1)';
+        box.style.border = '1px solid rgba(127,209,176,.3)';
+      } else {
+        box.style.color = '#ffb4bf';
+        box.style.background = 'rgba(244,63,94,.1)';
+        box.style.border = '1px solid rgba(244,63,94,.3)';
+      }
+      box.classList.remove('hidden');
     }
 
     async function handleAuth(e) {
@@ -1748,116 +1641,196 @@
       const email = document.getElementById('auth-email').value.trim();
       const password = document.getElementById('auth-password').value;
       const errorBox = document.getElementById('auth-error');
-      const submitBtn = document.getElementById('auth-submit-btn');
-
       errorBox.classList.add('hidden');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Đang kết nối Celestia...';
 
       try {
         if (authMode === 'register') {
           const username = document.getElementById('auth-username').value.trim();
           const uid = document.getElementById('auth-uid').value.trim();
 
-          const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: { data: { username, uid } }
-          });
-          if (signUpError) throw signUpError;
+          const { data, error } = await supabaseClient.auth.signUp({ email, password });
+          if (error) throw error;
 
-          if (authData.user) {
+          if (data.user) {
             const { error: profileError } = await supabaseClient
               .from('users')
-              .upsert([{ id: authData.user.id, username, uid }], { onConflict: 'id' });
+              .insert([{ id: data.user.id, username, uid }]);
             if (profileError) throw profileError;
           }
 
-          if (!authData.session) {
-            alert('Đăng ký thành công! Vui lòng kiểm tra email xác nhận (hoặc tắt Confirm Email trong Supabase Auth) rồi đăng nhập.');
-            switchAuthTab('login');
+          if (!data.session) {
+            showAuthMsg('Đã tạo tài khoản. Hãy kiểm tra email để xác nhận, sau đó đăng nhập.', 'info');
           }
         } else {
-          const { error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (signInError) throw signInError;
+          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
         }
       } catch (err) {
-        errorBox.textContent = err.message || 'Có lỗi xảy ra khi xác thực.';
-        errorBox.classList.remove('hidden');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = authMode === 'login' ? 'Đăng nhập ngay' : 'Tạo tài khoản mới';
+        showAuthMsg('Lỗi: ' + (err.message || 'Không thể xác thực.'), 'error');
       }
     }
 
     async function handleLogout() {
-      stopPolling();
-      if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
       await supabaseClient.auth.signOut();
     }
 
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (session && session.user) {
-        currentUser = session.user;
-        appReadyPromise = initAppData();
+    // =========================================================================
+    // 1b. HIỆU ỨNG MỞ ĐẦU: SPLASH -> ĐĂNG NHẬP -> CÁNH CỬA -> VÀO APP
+    // =========================================================================
+    const $ = id => document.getElementById(id);
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-        if (event === 'SIGNED_IN') {
-          finishSplash();
-          const authSec = document.getElementById('auth-section');
-          if (!authSec.classList.contains('hidden')) {
-            authSec.classList.add('auth-leaving');
-            setTimeout(() => {
-              authSec.classList.add('hidden');
-              authSec.classList.remove('auth-leaving');
-              showCelestiaGate(session.user);
-            }, 680);
-          } else {
-            showCelestiaGate(session.user);
-          }
-        } else {
-          appReadyPromise.then(() => {
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('user-nav').classList.remove('hidden');
-            document.getElementById('app-section').classList.remove('hidden');
+    let entered = false;
+    let gateShown = false;
+    let gateState = 'idle';
+    let dataReady = Promise.resolve();
+    let realtimeChannel = null;
+
+    let splashResolved;
+    const splashDone = new Promise(r => { splashResolved = r; });
+
+    (function runSplash() {
+      const splash = $('splash');
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        splash.classList.add('out');
+        setTimeout(() => { splash.remove(); splashResolved(); }, 900);
+      };
+      setTimeout(finish, 3600);
+      splash.addEventListener('click', finish);
+    })();
+
+    function showAuth() {
+      const a = $('auth-section');
+      a.classList.remove('hidden', 'auth-leaving', 'fade-in');
+      void a.offsetWidth;
+      a.classList.add('fade-in');
+    }
+
+    splashDone.then(() => { if (!currentUser) showAuth(); });
+
+    async function showDoor() {
+      if (gateShown) return;
+      gateShown = true;
+      const door = $('door-gate');
+
+      const auth = $('auth-section');
+      if (!auth.classList.contains('hidden')) {
+        auth.classList.add('auth-leaving');
+        await sleep(750);
+        auth.classList.add('hidden');
+      }
+      if (!currentUser) return;
+
+      $('door-greet').textContent = '';
+      dataReady.then(() => {
+        const me = allUsers.find(u => u.id === currentUser?.id);
+        if (me) $('door-greet').textContent = 'Chào mừng, ' + me.username;
+      });
+      gateState = 'closed';
+      door.classList.remove('hidden');
+      requestAnimationFrame(() => requestAnimationFrame(() => door.classList.add('show')));
+
+      await sleep(1300);
+      if (!currentUser) return;
+      gateState = 'ready';
+      door.classList.add('ready');
+    }
+
+    async function openDoor() {
+      if (gateState !== 'ready') return;
+      gateState = 'opening';
+      const door = $('door-gate');
+      door.classList.add('opening');
+
+      await sleep(1300);
+      if (!currentUser) return;
+      $('app-section').classList.remove('hidden');
+      $('user-nav').classList.remove('hidden');
+
+      await sleep(500);
+      door.classList.add('leaving');
+      await sleep(1000);
+
+      door.classList.add('hidden');
+      door.classList.remove('show', 'ready', 'opening', 'leaving');
+      entered = true;
+      gateState = 'done';
+    }
+
+    $('door-gate').addEventListener('click', openDoor);
+    document.addEventListener('keydown', () => { if (gateState === 'ready') openDoor(); });
+
+    function resetToLogin() {
+      entered = false;
+      gateShown = false;
+      gateState = 'idle';
+      dataReady = Promise.resolve();
+      stopPolling();
+      if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
+
+      const door = $('door-gate');
+      door.classList.add('hidden');
+      door.classList.remove('show', 'ready', 'opening', 'leaving');
+      $('app-section').classList.add('hidden');
+      $('user-nav').classList.add('hidden');
+      $('auth-password').value = '';
+      $('auth-error').classList.add('hidden');
+      splashDone.then(showAuth);
+    }
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        const isNewUser = !currentUser || currentUser.id !== session.user.id;
+        currentUser = session.user;
+
+        if (isNewUser) {
+          dataReady = new Promise(resolve => {
+            setTimeout(async () => {
+              try {
+                await initAppData();
+              } catch (err) {
+                console.error('Lỗi tải dữ liệu:', err);
+              }
+              if (currentUser) setupRealtimeSubscriptions();
+              resolve();
+            }, 0);
           });
         }
+
+        splashDone.then(() => { if (!entered) showDoor(); });
       } else {
-        stopPolling();
         currentUser = null;
-        document.getElementById('user-nav').classList.add('hidden');
-        document.getElementById('app-section').classList.add('hidden');
-        document.getElementById('door-gate').classList.add('hidden');
-        if (splashDone) {
-          document.getElementById('auth-section').classList.remove('hidden');
-        }
+        resetToLogin();
       }
     });
 
     // =========================================================================
-    // 2. KHỞI TẠO & ĐỒNG BỘ REALTIME
+    // 2. TẢI DỮ LIỆU & ĐỒNG BỘ REALTIME + SMART POLLING (CHỐNG NHẤP NHÁY)
     // =========================================================================
     async function initAppData() {
-      const meta = currentUser.user_metadata || {};
-      if (meta.username && meta.uid) {
-        await supabaseClient
-          .from('users')
-          .upsert([{ id: currentUser.id, username: meta.username, uid: meta.uid }], { onConflict: 'id', ignoreDuplicates: true });
-      }
-
       const { data: chars } = await supabaseClient.from('characters').select('*').order('name');
       allCharacters = chars || [];
 
       await refreshBosses(true);
-      await refreshUsersAndRosters();
+      await refreshUsersAndRosters(true);
       await refreshLobbyResult(true);
       renderCharacterGrid();
-      setupRealtimeSubscriptions();
     }
 
-    async function refreshUsersAndRosters() {
-      if (!currentUser) return;
+    function syncSingleCharButtonDOM(charId, owned) {
+      const btn = document.querySelector(`#character-grid button[data-char-id="${charId}"]`);
+      if (!btn) return;
+      btn.classList.toggle('owned', owned);
+      const mark = btn.querySelector('.mark');
+      if (mark) mark.innerHTML = owned ? '&#10003;' : '';
+    }
+
+    async function refreshUsersAndRosters(forceGrid = false) {
       const { data: users } = await supabaseClient.from('users').select('*').order('stt');
-      if (users) allUsers = users;
+      allUsers = users || [];
 
       const me = allUsers.find(u => u.id === currentUser.id);
       if (me) {
@@ -1865,54 +1838,56 @@
         document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
       }
 
-      const { data: uChars, error } = await supabaseClient.from('user_characters').select('*');
-      if (error || !uChars) return;
+      const { data: uChars } = await supabaseClient.from('user_characters').select('*');
+      userCharactersMap = {};
+      const serverMyIds = new Set();
 
-      const nextMap = {};
-      const nextMyIds = new Set();
-
-      uChars.forEach(row => {
-        if (!nextMap[row.user_id]) nextMap[row.user_id] = [];
-        nextMap[row.user_id].push(row.character_id);
+      (uChars || []).forEach(row => {
+        if (!userCharactersMap[row.user_id]) userCharactersMap[row.user_id] = [];
+        userCharactersMap[row.user_id].push(row.character_id);
         if (row.user_id === currentUser.id) {
-          nextMyIds.add(row.character_id);
+          serverMyIds.add(row.character_id);
         }
       });
 
-      // Áp dụng lại các thao tác chọn/bỏ chọn đang chờ hoặc vừa hoàn tất (< 1.5s) để chống ghi đè ngược
+      // Áp dụng bộ đệm pendingCharOps (giữ trạng thái tích chọn trong 5 giây tránh ghi đè ngược từ Supabase)
       const now = Date.now();
-      const myList = nextMap[currentUser.id] ? [...nextMap[currentUser.id]] : [];
-
-      for (const [key, op] of pendingCharOps.entries()) {
+      for (const [cid, op] of pendingCharOps.entries()) {
         if (op.expiresAt <= now) {
-          pendingCharOps.delete(key);
-          continue;
-        }
-        const matchedChar = allCharacters.find(c => String(c.id) === key);
-        const actualId = matchedChar ? matchedChar.id : op.rawId;
-
-        if (op.action === 'add') {
-          nextMyIds.add(actualId);
-          if (!myList.some(id => String(id) === key)) myList.push(actualId);
-        } else if (op.action === 'remove') {
-          for (const id of Array.from(nextMyIds)) {
-            if (String(id) === key) nextMyIds.delete(id);
-          }
-          for (let i = myList.length - 1; i >= 0; i--) {
-            if (String(myList[i]) === key) myList.splice(i, 1);
+          pendingCharOps.delete(cid);
+        } else {
+          if (op.owned) {
+            serverMyIds.add(cid);
+          } else {
+            serverMyIds.delete(cid);
           }
         }
       }
 
-      nextMap[currentUser.id] = myList;
-      userCharactersMap = nextMap;
-      myCharacterIds = nextMyIds;
+      // Đồng bộ lại userCharactersMap cho chính user hiện tại theo tập đã hợp nhất
+      userCharactersMap[currentUser.id] = Array.from(serverMyIds);
 
+      const prevMyIds = myCharacterIds;
+      myCharacterIds = serverMyIds;
       document.getElementById('my-char-count').textContent = myCharacterIds.size;
-      syncCharacterGridStates();
+
+      // Chỉ cập nhật từng nút bị thay đổi trên DOM thay vì vẽ lại toàn bộ lưới (tránh mất cuộn & nhấp nháy)
+      if (!forceGrid) {
+        const allIds = new Set([...prevMyIds, ...myCharacterIds]);
+        allIds.forEach(cid => {
+          const wasOwned = prevMyIds.has(cid);
+          const isNowOwned = myCharacterIds.has(cid);
+          if (wasOwned !== isNowOwned) {
+            syncSingleCharButtonDOM(cid, isNowOwned);
+          }
+        });
+      }
+
       renderParticipantCheckboxes();
       renderBoardTable();
     }
+
+    let lastLobbySig = null;
 
     function updateMainActionVisibility() {
       const actionWrap = document.getElementById('random-main-action');
@@ -1952,7 +1927,7 @@
 
       const sig = JSON.stringify(lastLobbyResults.map(r => [r.user_id, r.character_id, r.random_number, Boolean(r.forced_main)]));
       if (!force && sig === lastLobbySig) {
-        metaDiv.textContent = (lastLobbyResults.length && spinnerName) ? `Quay bởi: ${spinnerName}` : 'Giữ chuột 3s vào thẻ để phóng to';
+        metaDiv.textContent = (lastLobbyResults.length && spinnerName) ? `Quay bởi: ${spinnerName}` : '';
         updateMainActionVisibility();
         return;
       }
@@ -1960,7 +1935,7 @@
 
       if (lastLobbyResults.length === 0) {
         resultDiv.innerHTML = `<div class="col-span-full text-center italic py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>`;
-        metaDiv.textContent = 'Giữ chuột 3s vào thẻ để phóng to';
+        metaDiv.textContent = '';
         updateMainActionVisibility();
         return;
       }
@@ -1990,7 +1965,7 @@
           ? `<div class="flex flex-wrap items-center gap-1.5 mt-1.5">${mainBadge}${wpBadge}${reqElBadge}</div>`
           : '';
         return `
-          <div class="slot-card hover-zoom-target ${isMainForced ? 'main-picked' : (isDuplicate ? 'dup' : '')}" style="animation-delay:${idx * 90}ms">
+          <div class="slot-card zoomable-card ${isMainForced ? 'main-picked' : (isDuplicate ? 'dup' : '')}" style="animation-delay:${idx * 90}ms">
             <div class="flex items-center gap-3.5 min-w-0">
               ${avatarHtml}
               <div class="min-w-0">
@@ -2003,40 +1978,40 @@
               <span class="slot-num">${isMainForced ? 'MAIN' : '#' + esc(item.random_number)}</span>
               ${isDuplicate && !isMainForced ? '<div class="dup-tag">Trùng nhân vật</div>' : ''}
             </div>
+            <span class="hold-progress"></span>
           </div>
         `;
       }).join('');
 
-      metaDiv.textContent = spinnerName ? `Quay bởi: ${spinnerName}` : 'Giữ chuột 3s vào thẻ để phóng to';
+      metaDiv.textContent = spinnerName ? `Quay bởi: ${spinnerName}` : '';
+      initDelayedHoverZoom(resultDiv);
       updateMainActionVisibility();
     }
 
     async function refreshBosses(force = false) {
       if (!force && Date.now() < bossMutationLockUntil) return;
       const { data: bosses } = await supabaseClient.from('bosses').select('*').order('id');
-      if (!bosses) return;
       if (!force && Date.now() < bossMutationLockUntil) return;
-      allBosses = bosses;
+      allBosses = bosses || [];
       renderBossLists(force);
     }
 
     async function refreshLobbyResult(force = false) {
-      if (!force && Date.now() < bossMutationLockUntil) return;
       const { data: lobby } = await supabaseClient.from('random_lobby').select('*').eq('id', 1).single();
       if (!lobby) return;
-      if (!force && Date.now() < bossMutationLockUntil) return;
-
       const spinner = allUsers.find(u => u.id === lobby.updated_by);
       renderLobbyCards(lobby.results_json || [], spinner ? spinner.username : '', force);
 
-      activeBoss = lobby.current_boss_json || null;
-      pendingBoss = lobby.pending_boss_json || null;
-      renderActiveBossBanner(force);
-      syncBossAlertModal(force);
-      updateMainActionVisibility();
+      if (force || Date.now() >= bossMutationLockUntil) {
+        activeBoss = lobby.current_boss_json || null;
+        pendingBoss = lobby.pending_boss_json || null;
+        renderActiveBossBanner(force);
+        syncBossAlertModal(force);
+        updateMainActionVisibility();
+      }
     }
 
-    // Đồng bộ HTTP định kỳ 2.5s song song với Realtime
+    // Đồng bộ HTTP định kỳ 2.5s song song với Realtime (đảm bảo chạy qua Vercel Proxy)
     let pollTimer = null;
     function startPolling() {
       if (pollTimer) return;
@@ -2066,24 +2041,8 @@
     }
 
     // =========================================================================
-    // 3. QUẢN LÝ KHO NHÂN VẬT CÁ NHÂN (FIX XUNG ĐỘT CHỌN NHÂN VẬT)
+    // 3. QUẢN LÝ KHO NHÂN VẬT CÁ NHÂN (CẬP NHẬT TRỰC TIẾP & GIỮ TRẠNG THÁI)
     // =========================================================================
-    function syncCharacterGridStates() {
-      const grid = document.getElementById('character-grid');
-      if (!grid) return;
-      const buttons = grid.querySelectorAll('button[data-char-id]');
-      buttons.forEach(btn => {
-        const key = btn.getAttribute('data-char-id');
-        let isOwned = false;
-        for (const id of myCharacterIds) {
-          if (String(id) === key) { isOwned = true; break; }
-        }
-        btn.classList.toggle('owned', isOwned);
-        const mark = btn.querySelector('.mark');
-        if (mark) mark.innerHTML = isOwned ? '&#10003;' : '';
-      });
-    }
-
     function renderCharacterGrid() {
       const keyword = document.getElementById('char-search').value.toLowerCase().trim();
       const grid = document.getElementById('character-grid');
@@ -2101,116 +2060,69 @@
       }
 
       grid.innerHTML = filtered.map(char => {
-        const key = String(char.id);
-        let owned = false;
-        for (const id of myCharacterIds) {
-          if (String(id) === key) { owned = true; break; }
-        }
+        const owned = myCharacterIds.has(char.id);
         const avatarHtml = renderAvatarImg(char, 'char-avatar', 'char-avatar-fallback');
         const wpText = char.weapon ? (WEAPON_LABELS[Object.keys(WEAPON_LABELS).find(k => k.toLowerCase() === String(char.weapon).trim().toLowerCase())] || char.weapon) : '';
         const metaParts = [char.element, wpText].filter(Boolean);
         const subMeta = metaParts.length > 0
-          ? `<div class="char-sub-text text-[10px] truncate mt-0.5" style="color: var(--ink-mute);">${esc(metaParts.join(' · '))}</div>`
+          ? `<div class="text-[10px] truncate mt-0.5" style="color: var(--ink-mute);">${esc(metaParts.join(' · '))}</div>`
           : '';
         return `
-          <button type="button" data-char-id="${esc(key)}" onclick="toggleCharacter(${esc(JSON.stringify(char.id))}, this)" class="char-card hover-zoom-target ${owned ? 'owned' : ''}">
+          <button type="button" data-char-id="${char.id}" onclick="toggleCharacter(${char.id})" class="char-card zoomable-card ${owned ? 'owned' : ''}">
             <div class="flex items-center gap-2.5 min-w-0">
               ${avatarHtml}
               <div class="min-w-0">
-                <div class="char-title-text truncate">${esc(char.name)}</div>
+                <div class="truncate">${esc(char.name)}</div>
                 ${subMeta}
               </div>
             </div>
             <span class="mark">${owned ? '&#10003;' : ''}</span>
+            <span class="hold-progress"></span>
           </button>
         `;
       }).join('');
+
+      initDelayedHoverZoom(grid);
     }
 
-    async function toggleCharacter(charId, btnEl) {
-      if (!currentUser) return;
-      const key = String(charId);
-
-      // Kiểm tra trạng thái sở hữu theo chuỗi ID chuẩn hóa để tránh lệch kiểu number/string
-      let existingId = null;
-      for (const id of myCharacterIds) {
-        if (String(id) === key) { existingId = id; break; }
-      }
-      const isOwned = existingId !== null;
+    async function toggleCharacter(charId) {
+      const isOwned = myCharacterIds.has(charId);
       const nextOwned = !isOwned;
-      const opId = ++charOpCounter;
 
-      // 1. Cập nhật ngay lập tức trên RAM + DOM nút bấm (không phá hủy lại toàn bộ grid gây nhảy vị trí)
-      if (isOwned) {
-        myCharacterIds.delete(existingId);
-      } else {
-        myCharacterIds.add(charId);
-      }
+      // Lưu trạng thái khóa tạm 5 giây để chống đồng bộ ngược từ Supabase
+      pendingCharOps.set(charId, { owned: nextOwned, expiresAt: Date.now() + 5000 });
 
-      if (!userCharactersMap[currentUser.id]) userCharactersMap[currentUser.id] = [];
       if (nextOwned) {
-        if (!userCharactersMap[currentUser.id].some(id => String(id) === key)) {
-          userCharactersMap[currentUser.id].push(charId);
-        }
+        myCharacterIds.add(charId);
       } else {
-        userCharactersMap[currentUser.id] = userCharactersMap[currentUser.id].filter(id => String(id) !== key);
+        myCharacterIds.delete(charId);
       }
-
-      pendingCharOps.set(key, {
-        action: nextOwned ? 'add' : 'remove',
-        rawId: charId,
-        opId,
-        expiresAt: Date.now() + 5000
-      });
-
+      userCharactersMap[currentUser.id] = Array.from(myCharacterIds);
       document.getElementById('my-char-count').textContent = myCharacterIds.size;
-      if (btnEl) {
-        btnEl.classList.toggle('owned', nextOwned);
-        const mark = btnEl.querySelector('.mark');
-        if (mark) mark.innerHTML = nextOwned ? '&#10003;' : '';
-      } else {
-        syncCharacterGridStates();
-      }
+
+      // Cập nhật trực tiếp vào nút bấm trên DOM (không vẽ lại toàn bộ lưới)
+      syncSingleCharButtonDOM(charId, nextOwned);
       renderParticipantCheckboxes();
       renderBoardTable();
 
-      // 2. Đồng bộ xuống Supabase
       try {
-        if (isOwned) {
+        if (!nextOwned) {
           const { error } = await supabaseClient.from('user_characters')
             .delete()
-            .match({ user_id: currentUser.id, character_id: existingId });
+            .match({ user_id: currentUser.id, character_id: charId });
           if (error) throw error;
         } else {
           const { error } = await supabaseClient.from('user_characters')
             .insert([{ user_id: currentUser.id, character_id: charId }]);
-          if (error && error.code !== '23505') throw error;
-        }
-
-        // Giữ grace period 1.5s sau khi DB xong để poll cũ đang bay về không ghi đè ngược
-        const curOp = pendingCharOps.get(key);
-        if (curOp && curOp.opId === opId) {
-          curOp.expiresAt = Date.now() + 1500;
+          if (error) throw error;
         }
       } catch (err) {
-        console.error('Lỗi đồng bộ nhân vật:', err);
-        const curOp = pendingCharOps.get(key);
-        if (curOp && curOp.opId === opId) {
-          pendingCharOps.delete(key);
-          // Hoàn tác nếu lỗi mạng thực sự
-          if (nextOwned) {
-            myCharacterIds.delete(charId);
-          } else {
-            myCharacterIds.add(charId);
-          }
-          document.getElementById('my-char-count').textContent = myCharacterIds.size;
-          syncCharacterGridStates();
-        }
+        console.error('Lỗi cập nhật nhân vật:', err);
       }
     }
 
     // =========================================================================
-    // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM
+    // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM (KHÔNG TRÙNG NHÂN VẬT)
     // =========================================================================
     function renderBoardTable() {
       const tbody = document.getElementById('board-tbody');
@@ -2222,27 +2134,29 @@
       tbody.innerHTML = allUsers.map((user, idx) => {
         const charIds = userCharactersMap[user.id] || [];
         const charObjs = charIds
-          .map(id => allCharacters.find(c => String(c.id) === String(id)))
+          .map(id => allCharacters.find(c => c.id === id))
           .filter(Boolean)
           .sort((a, b) => a.name.localeCompare(b.name));
 
-        const isMe = user.id === currentUser.id;
-        const badgesHtml = charObjs.length > 0
+        const badges = charObjs.length > 0
           ? charObjs.map(c => {
-              const avatar = renderAvatarImg(c, 'tag-avatar', 'tag-avatar');
-              return `<span class="tag-with-icon">${avatar}<span>${esc(c.name)}</span></span>`;
+              const iconUrl = getCharacterIconUrl(c);
+              const imgTag = iconUrl
+                ? `<img src="${esc(iconUrl)}" alt="" class="tag-avatar" loading="lazy" onerror="this.style.display='none'" />`
+                : '';
+              return `<span class="tag-with-icon">${imgTag}<span>${esc(c.name)}</span></span>`;
             }).join('')
-          : `<span class="italic text-xs" style="color: var(--ink-mute);">Chưa thêm nhân vật nào</span>`;
+          : `<span class="italic text-xs" style="color: var(--ink-mute);">Chưa chọn nhân vật nào</span>`;
 
         return `
           <tr>
             <td class="py-4 px-5 text-center"><span class="rank">${idx + 1}</span></td>
-            <td class="py-4 px-5 font-semibold" style="color: var(--ink-strong);">
-              ${esc(user.username)}
-              ${isMe ? '<span class="ml-2 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:rgba(227,194,122,.16); color:var(--gold-bright); border:1px solid var(--line);">Bạn</span>' : ''}
+            <td class="py-4 px-5">
+              <div class="font-display text-xl font-bold" style="color: var(--gold-bright);">${esc(user.username)}</div>
+              <div class="text-xs mt-0.5" style="color: var(--ink-mute);">${charObjs.length} nhân vật</div>
             </td>
             <td class="py-4 px-5 font-mono text-xs" style="color: var(--ink-dim);">${esc(user.uid)}</td>
-            <td class="py-4 px-5 leading-relaxed">${badgesHtml}</td>
+            <td class="py-4 px-5">${badges}</td>
           </tr>
         `;
       }).join('');
@@ -2250,40 +2164,42 @@
 
     function renderParticipantCheckboxes() {
       const container = document.getElementById('participant-checkboxes');
-      const prevChecked = new Set(
-        Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value)
+      const previouslyChecked = new Set(
+        Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value)
       );
-      const isFirstRender = container.children.length === 0;
+      const hadRendered = container.children.length > 0;
 
-      container.innerHTML = allUsers.map(u => {
-        const count = (userCharactersMap[u.id] || []).length;
-        const checked = isFirstRender ? true : prevChecked.has(u.id);
+      container.innerHTML = allUsers.map(user => {
+        const count = (userCharactersMap[user.id] || []).length;
+        const checked = hadRendered ? previouslyChecked.has(user.id) : count > 0;
         return `
           <label class="member-chip">
-            <input type="checkbox" value="${esc(u.id)}" class="participant-cb" ${checked ? 'checked' : ''} />
+            <input type="checkbox" value="${esc(user.id)}" class="participant-cb" ${checked ? 'checked' : ''} />
             <span class="dot"></span>
-            <span>${esc(u.username)}</span>
+            <span>${esc(user.username)}</span>
             <span class="cnt">(${count})</span>
           </label>
         `;
       }).join('');
     }
 
-    function toggleAllPlayers(state) {
-      document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = state);
+    function toggleAllPlayers(checked) {
+      document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = checked);
     }
 
     // =========================================================================
-    // 4b. QUẢN LÝ BOSS, VÒNG LẶP BOSS & CHỐNG NHẤP NHÁY KHI ĐỒNG BỘ
+    // 4b. QUẢN LÝ BOSS & VÒNG QUAY BOSS (CHỐNG NHẤP NHÁY + RESET CÓ XÁC NHẬN)
     // =========================================================================
     function toggleBossManager() {
-      document.getElementById('boss-manager-panel').classList.toggle('hidden');
+      const panel = document.getElementById('boss-manager-panel');
+      panel.classList.toggle('hidden');
     }
 
     function limitBossElements(changedCb) {
       const checked = Array.from(document.querySelectorAll('#new-boss-elements input:checked'));
       if (checked.length > 2) {
         changedCb.checked = false;
+        alert('Mỗi Boss chỉ được chọn tối đa 2 nguyên tố yêu cầu!');
       }
     }
 
@@ -2299,6 +2215,7 @@
 
       const required_elements = Array.from(document.querySelectorAll('#new-boss-elements input:checked')).map(cb => cb.value);
 
+      bossMutationLockUntil = Date.now() + 2500;
       const { error } = await supabaseClient
         .from('bosses')
         .insert([{ name, locate_url: locate_url || null, 'cần_main': can_main, required_elements, is_eliminated: false }]);
@@ -2316,21 +2233,25 @@
     }
 
     async function deleteBoss(bossId) {
+      bossMutationLockUntil = Date.now() + 2500;
+      allBosses = allBosses.filter(b => b.id !== bossId);
+      renderBossLists(true);
+
       const { error } = await supabaseClient.from('bosses').delete().eq('id', bossId);
       if (error) {
         alert('Lỗi xóa Boss: ' + error.message);
-        return;
+        await refreshBosses(true);
       }
-      await refreshBosses(true);
     }
 
     function renderBossLists(force = false) {
-      const sig = JSON.stringify(allBosses.map(b => [b.id, b.name, Boolean(b.is_eliminated), isBossRequireMain(b), b.required_elements || []]));
-      if (!force && sig === lastBossListSig) return;
-      lastBossListSig = sig;
-
       const remaining = allBosses.filter(b => !b.is_eliminated);
       document.getElementById('boss-remaining-badge').textContent = `Còn ${remaining.length}/${allBosses.length} Boss`;
+
+      const sig = JSON.stringify(allBosses.map(b => [b.id, b.name, b.is_eliminated, isBossRequireMain(b), b.required_elements || []]));
+      if (!force && sig === lastBossPoolSig && sig === lastBossManageSig) return;
+      lastBossPoolSig = sig;
+      lastBossManageSig = sig;
 
       const poolDiv = document.getElementById('boss-pool-chips');
       if (allBosses.length === 0) {
@@ -2370,9 +2291,14 @@
       const container = document.getElementById('active-boss-display');
       const meta = document.getElementById('boss-meta');
 
+      const sig = activeBoss
+        ? JSON.stringify([activeBoss.id, activeBoss.name, activeBoss.locate_url, isBossRequireMain(activeBoss), activeBoss.required_elements || [], activeBoss.spun_by_name])
+        : 'NONE';
+
+      if (!force && sig === lastActiveBossSig) return;
+      lastActiveBossSig = sig;
+
       if (!activeBoss) {
-        if (!force && lastActiveBossSig === 'NONE') return;
-        lastActiveBossSig = 'NONE';
         container.innerHTML = `
           <div class="text-center italic py-8 font-display text-lg" style="color: var(--ink-mute);">
             Chưa chọn Boss — Vòng quay nhân vật đang ở chế độ tự do
@@ -2385,24 +2311,6 @@
       const bossRecord = allBosses.find(b => b.id === activeBoss.id);
       const needMain = isBossRequireMain(activeBoss) || isBossRequireMain(bossRecord);
       const reqEls = activeBoss.required_elements || [];
-      const locateUrl = (activeBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
-
-      const sig = JSON.stringify({
-        id: activeBoss.id,
-        name: activeBoss.name,
-        needMain,
-        reqEls,
-        locateUrl,
-        spunBy: activeBoss.spun_by_name || ''
-      });
-
-      // Giữ nguyên DOM nếu dữ liệu Boss không đổi -> mất hoàn toàn hiện tượng nhấp nháy!
-      if (!force && sig === lastActiveBossSig) {
-        meta.textContent = activeBoss.spun_by_name ? `Quay bởi: ${activeBoss.spun_by_name}` : '';
-        return;
-      }
-      lastActiveBossSig = sig;
-
       const mainBadge = needMain ? `<span class="main-badge">✨ Cần Main (Aether / Lumine)</span>` : '';
       const elBadges = (reqEls.length > 0 || needMain)
         ? `${mainBadge} ${reqEls.map(renderElementBadge).join(' ')}`.trim()
@@ -2419,6 +2327,7 @@
         ? notes.join(' ')
         : 'Boss này không giới hạn nguyên tố — cả nhóm quay nhân vật tự do.';
 
+      const locateUrl = (activeBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
       const mapBlock = locateUrl
         ? `<div class="boss-locate-wrap mt-3 mb-1">
              <img src="${esc(locateUrl)}" alt="Bản đồ ${esc(activeBoss.name)}" class="boss-locate-img" style="max-height: 180px;" loading="lazy" onerror="this.parentElement.style.display='none'" />
@@ -2430,7 +2339,7 @@
           <div class="flex flex-wrap justify-between items-center gap-3">
             <div>
               <div class="text-[11px] uppercase tracking-widest font-semibold" style="color: var(--gold);">Boss đang khiêu chiến</div>
-              <div class="font-display text-3xl md:text-4xl font-bold mt-0.5" style="color: var(--ink-strong);">${esc(activeBoss.name)}</div>
+              <div class="font-display text-3xl md:text-4xl font-bold mt-0.5" style="color: var(--slot-name-color);">${esc(activeBoss.name)}</div>
             </div>
             <div class="flex flex-wrap gap-2">${elBadges}</div>
           </div>
@@ -2443,35 +2352,27 @@
 
     function syncBossAlertModal(force = false) {
       const modal = document.getElementById('boss-alert-modal');
+      const sig = pendingBoss
+        ? JSON.stringify([pendingBoss.id, pendingBoss.name, pendingBoss.locate_url, isBossRequireMain(pendingBoss), pendingBoss.required_elements || []])
+        : 'NONE';
+
+      if (!force && sig === lastPendingBossSig) return;
+      lastPendingBossSig = sig;
+
       if (!pendingBoss) {
-        lastPendingBossSig = 'NONE';
         modal.classList.add('hidden');
         return;
       }
 
+      document.getElementById('modal-boss-name').textContent = pendingBoss.name;
       const bossRecord = allBosses.find(b => b.id === pendingBoss.id);
       const needMain = isBossRequireMain(pendingBoss) || isBossRequireMain(bossRecord);
       const reqEls = pendingBoss.required_elements || [];
-      const locateUrl = (pendingBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
-
-      const sig = JSON.stringify({
-        id: pendingBoss.id,
-        name: pendingBoss.name,
-        needMain,
-        reqEls,
-        locateUrl
-      });
-
-      if (!force && sig === lastPendingBossSig && !modal.classList.contains('hidden')) {
-        return;
-      }
-      lastPendingBossSig = sig;
-
-      document.getElementById('modal-boss-name').textContent = pendingBoss.name;
       const elBox = document.getElementById('modal-boss-elements');
       const locateBox = document.getElementById('modal-boss-locate');
       const descBox = document.getElementById('modal-boss-desc');
 
+      const locateUrl = (pendingBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
       if (locateUrl) {
         locateBox.innerHTML = `
           <div class="boss-locate-wrap">
@@ -2499,7 +2400,7 @@
         }
         descBox.innerHTML = descParts.join(' ');
       } else {
-        elBox.innerHTML = `<span class="text-xs px-3 py-1 rounded-full" style="color: var(--ink-dim); background: var(--surface-tag);">Không yêu cầu nguyên tố</span>`;
+        elBox.innerHTML = `<span class="text-xs px-3 py-1 rounded-full" style="color: var(--ink-dim); background: rgba(255,255,255,.06);">Không yêu cầu nguyên tố</span>`;
         descBox.innerHTML = `Bấm <strong>Xác nhận</strong> để chốt Boss này và tạm xóa khỏi vòng lặp hiện tại.`;
       }
 
@@ -2513,7 +2414,7 @@
         return;
       }
 
-      bossMutationLockUntil = Date.now() + 2000;
+      bossMutationLockUntil = Date.now() + 2500;
       const chosen = availableBosses[Math.floor(Math.random() * availableBosses.length)];
       const me = allUsers.find(u => u.id === currentUser.id);
       const bossPayload = {
@@ -2539,7 +2440,8 @@
 
     async function confirmCurrentBoss() {
       if (!pendingBoss) return;
-      bossMutationLockUntil = Date.now() + 2000;
+      bossMutationLockUntil = Date.now() + 2500;
+
       const confirmed = { ...pendingBoss };
       pendingBoss = null;
       activeBoss = confirmed;
@@ -2548,6 +2450,7 @@
       renderActiveBossBanner(true);
       updateMainActionVisibility();
 
+      // Đánh dấu tạm xóa boss khỏi vòng lặp hiện tại
       const localBoss = allBosses.find(b => b.id === confirmed.id);
       if (localBoss) localBoss.is_eliminated = true;
       renderBossLists(true);
@@ -2573,7 +2476,7 @@
 
     async function confirmResetBossLoop() {
       closeResetBossModal();
-      bossMutationLockUntil = Date.now() + 2000;
+      bossMutationLockUntil = Date.now() + 2500;
 
       allBosses.forEach(b => b.is_eliminated = false);
       activeBoss = null;
@@ -2616,12 +2519,13 @@
         return;
       }
 
-      bossMutationLockUntil = Date.now() + 1800;
+      // 1. Trộn ngẫu nhiên danh sách người chơi và lấy tối đa desiredCount người
       const pickedUserIds = shuffleArray(validUsers).slice(0, Math.min(desiredCount, validUsers.length));
       const preselectedMainUid = (activeBoss && activeBoss.main_player && pickedUserIds.includes(activeBoss.main_player.user_id))
         ? activeBoss.main_player.user_id
         : null;
 
+      // 2. Gán ngẫu nhiên 1 hoặc 2 người chơi cho nguyên tố yêu cầu của Boss (ưu tiên người không cầm Main)
       const reqElements = (activeBoss && Array.isArray(activeBoss.required_elements))
         ? activeBoss.required_elements.slice(0, 2)
         : [];
@@ -2638,7 +2542,7 @@
             if (assignedUsers.has(uid)) return false;
             const roster = userCharactersMap[uid] || [];
             return roster.some(cid => {
-              const c = allCharacters.find(ch => String(ch.id) === String(cid));
+              const c = allCharacters.find(ch => ch.id === cid);
               return c && String(c.element || '').trim().toLowerCase() === targetEl;
             });
           });
@@ -2658,6 +2562,7 @@
         });
       }
 
+      // 3. Bốc nhân vật (vẫn bốc 1 nhân vật dự phòng cho người cầm Main để có thể Hủy dùng Main bất cứ lúc nào)
       const pickOrder = [...pickedUserIds].sort((a, b) => {
         const aReq = userRequiredElementMap[a] ? 0 : 1;
         const bReq = userRequiredElementMap[b] ? 0 : 1;
@@ -2676,21 +2581,21 @@
         if (reqEl) {
           const targetEl = String(reqEl).trim().toLowerCase();
           const matchingElRoster = roster.filter(cid => {
-            const c = allCharacters.find(ch => String(ch.id) === String(cid));
+            const c = allCharacters.find(ch => ch.id === cid);
             return c && String(c.element || '').trim().toLowerCase() === targetEl;
           });
           if (matchingElRoster.length > 0) candidatePool = matchingElRoster;
         }
 
-        const available = candidatePool.filter(charId => !usedCharacterIds.has(String(charId)));
+        const available = candidatePool.filter(charId => !usedCharacterIds.has(charId));
         const pool = available.length > 0 ? available : candidatePool;
 
         const chosenCharId = pool[Math.floor(Math.random() * pool.length)];
-        usedCharacterIds.add(String(chosenCharId));
+        usedCharacterIds.add(chosenCharId);
 
         const originalIndex = roster.indexOf(chosenCharId);
         const userObj = allUsers.find(u => u.id === uid);
-        const charObj = allCharacters.find(c => String(c.id) === String(chosenCharId));
+        const charObj = allCharacters.find(c => c.id === chosenCharId);
 
         pickedMap[uid] = {
           user_id: uid,
@@ -2714,6 +2619,7 @@
       };
 
       if (activeBoss && activeBoss.main_player && !preselectedMainUid) {
+        bossMutationLockUntil = Date.now() + 2500;
         delete activeBoss.main_player;
         lobbyPatch.current_boss_json = activeBoss;
       }
@@ -2736,10 +2642,11 @@
         return;
       }
 
-      bossMutationLockUntil = Date.now() + 1800;
+      bossMutationLockUntil = Date.now() + 2500;
       const me = allUsers.find(u => u.id === currentUser.id);
       const hasLobbyResults = Array.isArray(lastLobbyResults) && lastLobbyResults.length > 0;
 
+      // Trường hợp 1: Đã quay nhân vật rồi -> Chọn ngẫu nhiên 1 người trong đội hình hiện tại đổi sang Main
       if (hasLobbyResults) {
         const chosenIndex = Math.floor(Math.random() * lastLobbyResults.length);
         const updatedResults = lastLobbyResults.map((item, idx) => ({
@@ -2770,6 +2677,7 @@
         return;
       }
 
+      // Trường hợp 2: Vừa random xong Boss (chưa quay nhân vật) -> Chọn ngẫu nhiên 1 thành viên đang tham gia
       const checkedIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
       const candidateUsers = checkedIds.length > 0
         ? allUsers.filter(u => checkedIds.includes(u.id))
@@ -2803,7 +2711,7 @@
 
     function clearMainPlayer() {
       if (!activeBoss) return;
-      bossMutationLockUntil = Date.now() + 1800;
+      bossMutationLockUntil = Date.now() + 2500;
       const { main_player, ...restBoss } = activeBoss;
       activeBoss = restBoss;
 
@@ -2853,10 +2761,6 @@
         btnBoard.className = 'tab-main';
       }
     }
-
-    // Kích hoạt phóng to khi giữ chuột ~3 giây trên cả 2 khu vực nhân vật
-    initDelayedHoverZoom('character-grid', '.char-card');
-    initDelayedHoverZoom('lobby-result', '.slot-card');
   </script>
 </body>
 </html>
