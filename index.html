@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contents Nguyên Thần</title>
+  <link rel="stylesheet" href="/assets/characters.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
@@ -497,9 +498,10 @@
       to   { opacity: 1; transform: scale(1); }
     }
     .zoom-portrait {
+      display: block;
       width: 112px; height: 112px; margin: 10px auto 14px;
       border-radius: 50%; object-fit: cover; object-position: top center;
-      background: rgba(7, 11, 22, .92);
+      background-color: rgba(7, 11, 22, .92);
       border: 2px solid var(--gold);
       box-shadow: 0 10px 28px rgba(0, 0, 0, .65), 0 0 22px rgba(227, 194, 122, .38);
     }
@@ -656,10 +658,10 @@
       color: var(--gold-bright);
     }
 
-    /* ---------- Avatar nhân vật ---------- */
+    /* ---------- Avatar nhân vật (tương thích cả <img> và Sprite Sheet .char-icon) ---------- */
     .char-avatar {
       width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: top center;
-      flex-shrink: 0; background: rgba(7, 11, 22, 0.85);
+      flex-shrink: 0; background-color: rgba(7, 11, 22, 0.85);
       border: 1px solid rgba(227, 194, 122, 0.35);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
     }
@@ -676,7 +678,7 @@
     }
     .slot-avatar {
       width: 54px; height: 54px; border-radius: 50%; object-fit: cover; object-position: top center;
-      flex-shrink: 0; background: rgba(7, 11, 22, 0.9);
+      flex-shrink: 0; background-color: rgba(7, 11, 22, 0.9);
       border: 1.5px solid var(--gold);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(227, 194, 122, 0.25);
     }
@@ -700,7 +702,7 @@
     }
     .tag-avatar {
       width: 22px; height: 22px; border-radius: 50%; object-fit: cover; object-position: top center;
-      background: rgba(7, 11, 22, 0.9); border: 1px solid rgba(227, 194, 122, 0.3);
+      flex-shrink: 0; background-color: rgba(7, 11, 22, 0.9); border: 1px solid rgba(227, 194, 122, 0.3);
     }
 
     /* ---------- Lưới nhân vật ---------- */
@@ -709,6 +711,8 @@
       padding: 12px 14px; border-radius: 12px; text-align: left; font-size: 13px; font-weight: 500;
       color: var(--ink-dim); background: var(--card-bg);
       border: 1px solid var(--line-soft);
+      content-visibility: auto;
+      contain-intrinsic-size: auto 60px;
       transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .2s ease, background .2s ease, color .2s ease;
     }
     .char-card:hover { border-color: rgba(227,194,122,.45); color: var(--ink); transform: translateY(-1px); }
@@ -1540,6 +1544,7 @@
     let currentUser = null;
     let authMode = 'login';
     let allCharacters = [];
+    let spriteMap = {};
     let allUsers = [];
     let allBosses = [];
     let activeBoss = null;
@@ -1894,9 +1899,12 @@
       const extraMeta = card.dataset.zoomMeta || '';
       const charId = Number(card.dataset.charId || 0);
 
-      const portraitHtml = iconUrl
-        ? `<img src="${esc(iconUrl)}" alt="${esc(name)}" class="zoom-portrait" onerror="this.outerHTML='<div class=\'zoom-portrait-fallback\'>${esc(name.charAt(0).toUpperCase())}</div>'" />`
-        : `<div class="zoom-portrait-fallback">${esc(name.charAt(0).toUpperCase())}</div>`;
+      const spriteClass = iconUrl ? (spriteMap[iconUrl] || spriteMap[iconUrl.trim()]) : '';
+      const portraitHtml = spriteClass
+        ? `<div class="char-icon ${spriteClass} zoom-portrait" role="img" aria-label="${esc(name)}"></div>`
+        : (iconUrl
+            ? `<img src="${esc(iconUrl)}" alt="${esc(name)}" class="zoom-portrait" decoding="async" onerror="this.outerHTML='<div class=\'zoom-portrait-fallback\'>${esc(name.charAt(0).toUpperCase())}</div>'" />`
+            : `<div class="zoom-portrait-fallback">${esc(name.charAt(0).toUpperCase())}</div>`);
 
       let eyebrowText = 'Chi tiết nhân vật';
       let statusBadge = '';
@@ -2087,7 +2095,15 @@
       const initial = esc(name.charAt(0).toUpperCase());
       const url = getCharacterIconUrl(charObj);
       if (!url) return `<span class="${fallbackClass}">${initial}</span>`;
-      return `<img src="${esc(url)}" alt="${esc(name)}" class="${imgClass}" loading="lazy" onerror="this.outerHTML='<span class=\'${fallbackClass}\'>${initial}</span>'" />`;
+
+      // Ưu tiên dùng class từ Sprite Sheet (load 1 file duy nhất cho toàn bộ nhân vật)
+      const spriteClass = spriteMap[url] || spriteMap[url.trim()];
+      if (spriteClass) {
+        return `<span class="char-icon ${spriteClass} ${imgClass}" role="img" aria-label="${esc(name)}"></span>`;
+      }
+
+      // Dự phòng nếu thêm nhân vật mới chưa build lại sprite
+      return `<img src="${esc(url)}" alt="${esc(name)}" class="${imgClass}" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=\'${fallbackClass}\'>${initial}</span>'" />`;
     }
 
     function esc(str) {
@@ -2316,8 +2332,20 @@
     // 2. TẢI DỮ LIỆU & ĐỒNG BỘ REALTIME + SMART POLLING (CHỐNG NHẤP NHÁY)
     // =========================================================================
     async function initAppData() {
-      const { data: chars } = await supabaseClient.from('characters').select('*').order('name');
-      allCharacters = chars || [];
+      const [spriteRes, charsRes] = await Promise.all([
+        fetch('/assets/sprite-map.json').catch(() => null),
+        supabaseClient.from('characters').select('*').order('name')
+      ]);
+
+      if (spriteRes && spriteRes.ok) {
+        try {
+          spriteMap = await spriteRes.json();
+        } catch (e) {
+          console.warn('Không đọc được sprite-map.json, dùng ảnh dự phòng:', e);
+        }
+      }
+
+      allCharacters = charsRes.data || [];
 
       await refreshThemeBackgrounds(true);
       await refreshBosses(true);
@@ -2701,9 +2729,10 @@
         const badges = charObjs.length > 0
           ? charObjs.map(c => {
               const iconUrl = getCharacterIconUrl(c);
-              const imgTag = iconUrl
-                ? `<img src="${esc(iconUrl)}" alt="" class="tag-avatar" loading="lazy" onerror="this.style.display='none'" />`
-                : '';
+              const spriteClass = iconUrl ? (spriteMap[iconUrl] || spriteMap[iconUrl.trim()]) : '';
+              const imgTag = spriteClass
+                ? `<span class="char-icon ${spriteClass} tag-avatar" aria-hidden="true"></span>`
+                : (iconUrl ? `<img src="${esc(iconUrl)}" alt="" class="tag-avatar" loading="lazy" decoding="async" onerror="this.style.display='none'" />` : '');
               return `<span class="tag-with-icon">${imgTag}<span>${esc(c.name)}</span></span>`;
             }).join('')
           : `<span class="italic text-xs" style="color: var(--ink-mute);">Chưa chọn nhân vật nào</span>`;
