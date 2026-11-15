@@ -3526,7 +3526,20 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 12px;
-    pointer-events: none; /* Không chặn click vào các nút bên dưới trang */
+    pointer-events: none;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.35s;
+  }
+
+  /* Ẩn hoàn toàn khi đang ở màn hình đen HOYOVERSE (#splash) hoặc màn hình cánh cửa (#door-gate) */
+  body:has(#splash) #ngot-dc-widget,
+  body:has(#door-gate:not(.hidden)) #ngot-dc-widget,
+  #ngot-dc-widget.ngot-dc-intro-hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(16px) scale(0.85);
   }
 
   /* Nút tròn Discord */
@@ -3816,12 +3829,31 @@
 <script>
   (() => {
     'use strict';
+    const widget = document.getElementById('ngot-dc-widget');
     const launcher = document.getElementById('ngot-dc-launcher');
     const chatWindow = document.getElementById('ngot-dc-window');
     const minimizeBtn = document.getElementById('ngot-dc-minimize');
     const badge = document.getElementById('ngot-dc-badge');
 
-    if (!launcher || !chatWindow || !minimizeBtn) return;
+    if (!widget || !launcher || !chatWindow || !minimizeBtn) return;
+
+    // Theo dõi trạng thái màn hình đen (#splash) và cánh cửa Celestia (#door-gate)
+    const syncIntroVisibility = () => {
+      const splashEl = document.getElementById('splash');
+      const doorEl = document.getElementById('door-gate');
+      const isIntroActive = Boolean(splashEl) || (doorEl && !doorEl.classList.contains('hidden'));
+      widget.classList.toggle('ngot-dc-intro-hidden', isIntroActive);
+    };
+
+    syncIntroVisibility();
+
+    const observer = new MutationObserver(syncIntroVisibility);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class']
+    });
 
     const openChat = () => {
       chatWindow.classList.remove('ngot-dc-hidden');
