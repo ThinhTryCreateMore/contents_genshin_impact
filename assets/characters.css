@@ -1,0 +1,11 @@
+.char-icon {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  background-image: url('/assets/characters-sprite.webp');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Sigewinne */
+.char-0 { background-position: 0.0000% 0.0000%; }
