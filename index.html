@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> Contents Nguyên Thần </title>
+  <title>Contents Nguyên Thần</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -19,7 +19,7 @@
         }
       } catch (e) {}
     })();
-  </>
+  </script>
   <style>
     :root {
       /* Chế độ Hiện tại: Xanh biển dịu nhẹ, không chói mắt + Vàng rực rỡ nhưng không gắt */
@@ -201,7 +201,11 @@
 
     #page { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-    .font-display { font-family: 'Cormorant Garamond', 'Times New Roman', serif; }
+    /* ---------- Thiết kế chữ hiển thị (Typography Teyvat / Celestia) ---------- */
+    .font-display {
+      font-family: 'Cormorant Garamond', 'Cinzel', 'Times New Roman', serif;
+      letter-spacing: 0.015em;
+    }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -232,18 +236,25 @@
     .panel-gold::before { top: 8px; left: 8px; border-right: 0; border-bottom: 0; border-top-left-radius: 10px; }
     .panel-gold::after { bottom: 8px; right: 8px; border-left: 0; border-top: 0; border-bottom-right-radius: 10px; }
 
-    /* ---------- Tiêu đề ---------- */
+    /* ---------- Tiêu đề & Thiết kế chữ ánh kim ---------- */
     .eyebrow {
-      font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold-deep);
+      font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold);
       font-weight: 600;
+      text-shadow: 0 1px 10px rgba(236, 194, 101, 0.22);
+    }
+    html[data-theme="light"] .eyebrow {
+      color: var(--gold-deep);
+      text-shadow: none;
     }
     .title-gold {
-      background: linear-gradient(180deg, #fff3cf 0%, var(--gold) 55%, var(--gold-deep) 100%);
+      background: linear-gradient(180deg, #fff6d8 0%, var(--gold-bright) 38%, var(--gold) 72%, var(--gold-deep) 100%);
       -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 2px 14px rgba(236, 194, 101, 0.22));
     }
     html[data-theme="light"] .title-gold {
       background: linear-gradient(180deg, #b8892d 0%, #8f6519 55%, #63430c 100%);
       -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 1px 6px rgba(140, 100, 28, 0.14));
     }
     .divider {
       height: 1px; border: 0;
@@ -422,7 +433,13 @@
     .slot-card.dup { border-color: rgba(227,194,122,.6); box-shadow: 0 0 26px -10px rgba(227,194,122,.6); }
     @keyframes reveal { to { opacity: 1; transform: none; } }
     .slot-meta { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-    .slot-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; line-height: 1.1; font-weight: 700; color: var(--slot-name-color); margin-top: 4px; }
+    .slot-name {
+      font-family: 'Cormorant Garamond', 'Cinzel', serif;
+      font-size: 28px; line-height: 1.12; font-weight: 700;
+      color: var(--slot-name-color); margin-top: 4px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    }
+    html[data-theme="light"] .slot-name { text-shadow: none; }
     .slot-num {
       font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 12px;
       padding: 3px 10px; border-radius: 999px; color: var(--ink-dim);
@@ -490,7 +507,7 @@
       width: 112px; height: 112px; margin: 10px auto 14px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 46px;
+      font-family: 'Cormorant Garamond', 'Cinzel', serif; font-weight: 700; font-size: 46px;
       color: var(--gold-bright);
       background: rgba(227, 194, 122, .14);
       border: 2px solid var(--gold);
@@ -538,6 +555,7 @@
       border-color: #8cb9de;
       box-shadow: 0 0 28px -8px rgba(140, 185, 222, .75);
     }
+
     /* ---------- Huy hiệu Vũ khí ---------- */
     .wp-badge {
       display: inline-flex; align-items: center; gap: 3px;
@@ -545,6 +563,7 @@
       letter-spacing: .03em; color: var(--ink-dim);
       background: rgba(255, 255, 255, .05); border: 1px solid var(--line-soft);
     }
+
     /* ---------- Huy hiệu Nguyên tố ---------- */
     .el-badge {
       display: inline-flex; align-items: center; gap: 4px;
@@ -651,7 +670,7 @@
     .char-avatar-fallback {
       width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 15px;
+      font-family: 'Cormorant Garamond', 'Cinzel', serif; font-weight: 700; font-size: 15px;
       color: var(--gold); background: rgba(227, 194, 122, 0.1);
       border: 1px solid rgba(227, 194, 122, 0.25);
     }
@@ -664,7 +683,7 @@
     .slot-avatar-fallback {
       width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 22px;
+      font-family: 'Cormorant Garamond', 'Cinzel', serif; font-weight: 700; font-size: 22px;
       color: var(--gold-bright); background: rgba(227, 194, 122, 0.14);
       border: 1.5px solid var(--gold);
     }
@@ -720,14 +739,15 @@
     }
     #splash.out { opacity: 0; pointer-events: none; }
     .splash-word {
-      font-size: clamp(26px, 6vw, 54px); font-weight: 300; color: #fff;
+      font-family: 'Cinzel', 'Be Vietnam Pro', sans-serif;
+      font-size: clamp(26px, 6vw, 54px); font-weight: 600; color: #fff;
       letter-spacing: .42em; padding-left: .42em;
-      text-shadow: 0 0 28px rgba(255,255,255,.35);
+      text-shadow: 0 0 28px rgba(255,255,255,.35), 0 0 54px rgba(236,194,101,.28);
       opacity: 0; animation: splashWord 3.5s ease forwards;
     }
     .splash-sub {
       margin-top: 18px; font-size: 11px; letter-spacing: .4em; text-transform: uppercase;
-      color: rgba(255,255,255,.45); opacity: 0; animation: splashSub 3.5s ease forwards;
+      color: rgba(255,255,255,.5); opacity: 0; animation: splashSub 3.5s ease forwards;
     }
     @keyframes splashWord {
       0%   { opacity: 0; letter-spacing: .7em; filter: blur(8px); }
@@ -975,13 +995,9 @@
       </g>
 
       <!-- 2. CÁC TRỤ CỘT XA NHẤT (NHỎ & MỜ SƯƠNG PHÍA SAU TẦNG MÂY GIỮA) -->
-      <!-- Trụ xa trái 1 (Ngoài cùng bên trái) -->
       <use href="#roman-pillar" transform="translate(150, 485) scale(0.56)" opacity="0.52" />
-      <!-- Trụ xa trái 2 (Giữa khoảng cách bên trái) -->
       <use href="#roman-pillar" transform="translate(505, 515) scale(0.46)" opacity="0.48" />
-      <!-- Trụ xa phải 1 (Sát bên phải cổng) -->
       <use href="#roman-pillar" transform="translate(1195, 505) scale(0.58)" opacity="0.62" />
-      <!-- Trụ xa phải 2 (Xa tít bên phải) -->
       <use href="#roman-pillar" transform="translate(1510, 525) scale(0.42)" opacity="0.45" />
 
       <!-- 3. TẦNG MÂY GIỮA (TRẢI DÀI TOÀN MÀN HÌNH, CHE CHÂN CÁC TRỤ XA) -->
@@ -990,33 +1006,21 @@
               fill="url(#cloudMidGrad)" />
       </g>
 
-      <!-- 4. CÁC TRỤ CỘT TẦM TRUNG & CẬN CẢNH (LỚN DẦN VỀ HAI RÌA TẠO CHIỀU SÂU PHỐI CẢNH) -->
-      <!-- Trụ cận cảnh cực trái (Rất lớn, đứng gần tiền cảnh) -->
+      <!-- 4. CÁC TRỤ CỘT TẦM TRUNG & CẬN CẢNH -->
       <use href="#roman-pillar" transform="translate(275, 345) scale(1.18)" opacity="0.92" />
-      <!-- Trụ tầm trung trái (Lớn vừa, cạnh cổng như bản gốc) -->
       <use href="#roman-pillar" transform="translate(630, 420) scale(0.95)" opacity="0.96" />
-
-      <!-- Trụ tầm trung phải (Vừa phải, đối xứng lệch góc) -->
       <use href="#roman-pillar" transform="translate(1335, 445) scale(0.84)" opacity="0.9" />
-      <!-- Trụ cận cảnh cực phải (Lớn ở rìa phải màn hình) -->
       <use href="#roman-pillar" transform="translate(1655, 365) scale(1.12)" opacity="0.92" />
 
       <!-- 5. CÁNH CỔNG CHÍNH CELESTIA Ở TRUNG TÂM (TÂM X = 960) -->
       <g id="celestia-gate">
-        <!-- Khung viền ngoài cùng bậc cấp đặc trưng của Genshin -->
         <path d="M 826 720 L 826 406 Q 846 396 846 368 Q 905 338 960 300 Q 1015 338 1074 368 Q 1074 396 1094 406 L 1094 720 Z"
               fill="url(#archFrameGrad)" />
-
-        <!-- Lớp viền chìm thứ hai tạo chiều sâu kiến trúc -->
         <path d="M 840 720 L 840 414 Q 858 404 858 378 Q 910 350 960 316 Q 1010 350 1062 378 Q 1062 404 1080 414 L 1080 720 Z"
               fill="url(#archInnerRim)" />
 
-        <!-- Lòng cổng (chứa 2 cánh cửa & ánh sáng mở cổng) -->
         <g clip-path="url(#portalClip)">
-          <!-- Nền xanh chuyển sắc bên trong cổng -->
           <rect x="850" y="330" width="220" height="395" fill="url(#portalInnerGrad)" />
-
-          <!-- Luồng hào quang trắng rực sáng lên khi mở cổng -->
           <rect id="svg-door-glow" x="850" y="330" width="220" height="395" fill="url(#portalOpenGlow)" />
 
           <!-- CÁNH CỬA TRÁI -->
@@ -1060,29 +1064,19 @@
         </g>
       </g>
 
-      <!-- 6. BIỂN MÂY CUỘN XOÁY TIỀN CẢNH TRÀN HẾT MÀN HÌNH (TỪ -120 ĐẾN 2040, ĐÁY XUỐNG 940) -->
+      <!-- 6. BIỂN MÂY CUỘN XOÁY TIỀN CẢNH -->
       <g id="svg-clouds-front">
-        <!-- Làn sóng mây cuộn chính vắt ngang toàn bộ màn hình -->
         <path d="M -120 715 C 80 675, 260 725, 480 700 C 710 675, 860 695, 1060 682 C 1320 665, 1520 590, 1740 535 C 1860 505, 1960 490, 2040 480 L 2040 940 L -120 940 Z"
               fill="#d9eaf8" opacity="0.92" />
-
-        <!-- Lớp mây sáng nổi khối tiền cảnh phủ kín đáy màn hình -->
         <path d="M -120 755 C 120 720, 340 765, 590 735 C 840 705, 1040 675, 1310 700 C 1580 725, 1810 640, 2040 605 L 2040 940 L -120 940 Z"
               fill="url(#cloudFrontGrad)" />
-
-        <!-- Mây xoắn ốc trang trí bên trái cổng -->
         <path d="M 555 692 C 518 672, 488 628, 522 596 C 546 574, 586 592, 580 620 C 575 640, 550 642, 546 626 C 543 615, 555 608, 562 615 C 555 613, 550 620, 554 625 C 559 632, 570 628, 572 618 C 574 599, 546 587, 531 605 C 510 628, 535 665, 585 685 Z"
               fill="#eaf5fd" opacity="0.92" />
-
-        <!-- Mây xoắn ốc trang trí thêm ở góc trái xa -->
         <path d="M 210 715 C 175 698, 152 660, 182 632 C 202 614, 236 628, 230 652 C 226 668, 205 670, 202 657 C 200 648, 210 642, 216 648 C 210 646, 206 652, 209 656 C 214 662, 223 659, 224 650 C 226 634, 202 624, 189 639 C 172 659, 193 691, 236 708 Z"
               fill="#e3f1fc" opacity="0.78" />
-
-        <!-- Mây xoắn ốc trang trí góc phải tiền cảnh -->
         <path d="M 1495 665 C 1532 645, 1558 602, 1524 572 C 1500 552, 1462 568, 1468 595 C 1473 614, 1496 616, 1500 601 C 1503 590, 1491 584, 1485 590 C 1491 588, 1496 595, 1492 600 C 1487 606, 1477 603, 1475 593 C 1473 575, 1500 564, 1515 581 C 1535 603, 1511 638, 1465 658 Z"
               fill="#eaf5fd" opacity="0.86" />
 
-        <!-- Các mảnh tinh thể ánh sáng bay lơ lửng trên mặt biển mây -->
         <polygon points="682,662 692,656 688,668" fill="#ffffff" opacity="0.9" />
         <polygon points="704,674 712,669 709,678" fill="#ffffff" opacity="0.75" />
         <polygon points="1082,682 1102,674 1095,690 1076,692" fill="#ffffff" opacity="0.92" />
@@ -1104,7 +1098,7 @@
       <h1 class="font-display text-4xl md:text-5xl font-bold title-gold leading-tight">
         Genshin &amp; Co-op Randomizer
       </h1>
-      <p class="text-sm mt-2" style="color: var(--ink-dim);">Được hay ăn "Hành" theo vận may của chat<3 </p>
+      <p class="text-sm mt-2" style="color: var(--ink-dim);">Được hay ăn "Hành" theo vận may của chat &lt;3</p>
     </div>
     <div class="flex flex-wrap items-center gap-4">
       <!-- Bộ chuyển đổi 3 chế độ giao diện: Hiện tại / Dark / Light -->
@@ -1121,8 +1115,8 @@
       </div>
 
       <button id="btn-open-bg-manager" type="button" onclick="openBgManagerModal()" class="hidden btn-ghost px-3 py-1.5 text-xs font-semibold" title="Thêm hoặc quản lý ảnh nền cho từng chế độ">
-     + Ảnh nền
-    </button>
+        + Ảnh nền
+      </button>
 
       <div id="user-nav" class="hidden flex items-center gap-5">
         <div class="text-right">
@@ -1588,7 +1582,7 @@
 
       const preloader = new Image();
       const commitSwap = () => {
-        incoming.style.backgroundImage = `url("${url.replace(/"/g, '\"')}")`;
+        incoming.style.backgroundImage = `url("${url.replace(/"/g, '\\"')}")`;
         if (instant) {
           incoming.style.transition = 'none';
           outgoing.style.transition = 'none';
@@ -1714,7 +1708,7 @@
 
         const frames = document.querySelectorAll('.panel, .stage, header, footer');
         let minDist = Infinity;
-        const threshold = 72; // khoảng cách (px) tính là "gần khung tương tác"
+        const threshold = 72;
 
         for (let i = 0; i < frames.length; i++) {
           const el = frames[i];
@@ -1756,12 +1750,13 @@
         updateBlur();
       });
     })();
+
     function canCurrentUserEditBg() {
-  if (!currentUser) return false;
-  const me = allUsers.find(u => u.id === currentUser.id);
-  return Boolean(me && me.can_edit_bg);
-}
-    
+      if (!currentUser) return false;
+      const me = allUsers.find(u => u.id === currentUser.id);
+      return Boolean(me && me.can_edit_bg);
+    }
+
     function openBgManagerModal() {
       const uploadSelect = document.getElementById('bg-upload-mode');
       if (uploadSelect) uploadSelect.value = currentThemeMode;
@@ -1825,7 +1820,6 @@
         .order('id', { ascending: true });
 
       if (error) {
-        // Nếu bảng chưa được tạo trên Supabase, giữ nguyên nhẹ nhàng không làm gián đoạn app
         return;
       }
 
@@ -2000,7 +1994,6 @@
           }
         });
 
-        // Chặn sự kiện click toggle nhân vật nếu người dùng vừa giữ chuột đủ 3 giây để phóng to
         card.addEventListener('click', (e) => {
           if (didZoom) {
             e.preventDefault();
@@ -2288,7 +2281,6 @@
       $('user-nav').classList.add('hidden');
       $('auth-password').value = '';
       $('auth-error').classList.add('hidden');
-      $('user-nav').classList.add('hidden');
       $('btn-open-bg-manager')?.classList.add('hidden');
       closeBgManagerModal();
       splashDone.then(showAuth);
@@ -2335,23 +2327,24 @@
     }
 
     function updateRosterRequirementUI() {
-  const box = document.getElementById('roster-min-status');
-  if (!box) return;
-  const count = myCharacterIds.size;
-  const missing = Math.max(0, MIN_REQUIRED_CHARS - count);
+      const box = document.getElementById('roster-min-status');
+      if (!box) return;
+      const count = myCharacterIds.size;
+      const missing = Math.max(0, MIN_REQUIRED_CHARS - count);
 
-  if (missing === 0) {
-    box.style.color = 'var(--ok)';
-    box.style.background = 'rgba(111, 224, 184, 0.12)';
-    box.style.border = '1px solid rgba(111, 224, 184, 0.35)';
-    box.innerHTML = `✓ Đã đạt ${count}/${MIN_REQUIRED_CHARS} nhân vật — Đủ điều kiện tham gia Vòng Quay`;
-  } else {
-    box.style.color = '#ffb4bf';
-    box.style.background = 'rgba(244, 63, 94, 0.12)';
-    box.style.border = '1px solid rgba(244, 63, 94, 0.35)';
-    box.innerHTML = `⚠ Hiện có ${count}/${MIN_REQUIRED_CHARS} nhân vật — Cần chọn thêm tối thiểu ${missing} nhân vật nữa để được quay`;
-  }
-}
+      if (missing === 0) {
+        box.style.color = 'var(--ok)';
+        box.style.background = 'rgba(111, 224, 184, 0.12)';
+        box.style.border = '1px solid rgba(111, 224, 184, 0.35)';
+        box.innerHTML = `✓ Đã đạt ${count}/${MIN_REQUIRED_CHARS} nhân vật — Đủ điều kiện tham gia Vòng Quay`;
+      } else {
+        box.style.color = '#ffb4bf';
+        box.style.background = 'rgba(244, 63, 94, 0.12)';
+        box.style.border = '1px solid rgba(244, 63, 94, 0.35)';
+        box.innerHTML = `⚠ Hiện có ${count}/${MIN_REQUIRED_CHARS} nhân vật — Cần chọn thêm tối thiểu ${missing} nhân vật nữa để được quay`;
+      }
+    }
+
     function syncSingleCharButtonDOM(charId, owned) {
       const btn = document.querySelector(`#character-grid button[data-char-id="${charId}"]`);
       if (!btn) return;
@@ -2364,19 +2357,19 @@
       const { data: users } = await supabaseClient.from('users').select('*').order('stt');
       allUsers = users || [];
 
-     const me = allUsers.find(u => u.id === currentUser.id);
+      const me = allUsers.find(u => u.id === currentUser.id);
       if (me) {
-     document.getElementById('nav-username').textContent = me.username;
-     document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
-     updateRosterRequirementUI()
-}
+        document.getElementById('nav-username').textContent = me.username;
+        document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
+      }
 
-// Chỉ hiện nút "+ Ảnh nền" nếu user có cột can_edit_bg = true
-    const bgBtn = document.getElementById('btn-open-bg-manager');
-    if (bgBtn) {
-     bgBtn.classList.toggle('hidden', !Boolean(me && me.can_edit_bg));
-}
-       const { data: uChars } = await supabaseClient.from('user_characters').select('*');
+      // Chỉ hiện nút "+ Ảnh nền" nếu user có cột can_edit_bg = true
+      const bgBtn = document.getElementById('btn-open-bg-manager');
+      if (bgBtn) {
+        bgBtn.classList.toggle('hidden', !Boolean(me && me.can_edit_bg));
+      }
+
+      const { data: uChars } = await supabaseClient.from('user_characters').select('*');
       userCharactersMap = {};
       const serverMyIds = new Set();
 
@@ -2408,6 +2401,7 @@
       const prevMyIds = myCharacterIds;
       myCharacterIds = serverMyIds;
       document.getElementById('my-char-count').textContent = myCharacterIds.size;
+      updateRosterRequirementUI();
 
       // Chỉ cập nhật từng nút bị thay đổi trên DOM thay vì vẽ lại toàn bộ lưới (tránh mất cuộn & nhấp nháy)
       if (!forceGrid) {
@@ -2664,7 +2658,7 @@
       syncSingleCharButtonDOM(charId, nextOwned);
       renderParticipantCheckboxes();
       renderBoardTable();
-      updateRosterRequirementUI()
+      updateRosterRequirementUI();
 
       try {
         if (!nextOwned) {
@@ -2685,7 +2679,7 @@
     // =========================================================================
     // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM (KHÔNG TRÙNG NHÂN VẬT)
     // =========================================================================
-  function renderBoardTable() {
+    function renderBoardTable() {
       const tbody = document.getElementById('board-tbody');
       if (allUsers.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="py-12 text-center italic font-display text-lg" style="color: var(--ink-mute);">Chưa có thành viên nào đăng ký.</td></tr>`;
@@ -2727,42 +2721,36 @@
         `;
       }).join('');
     }
-function renderParticipantCheckboxes() {
-  const container = document.getElementById('participant-checkboxes');
-  const previouslyChecked = new Set(
-    Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value)
-  );
-  const hadRendered = container.children.length > 0;
 
-  container.innerHTML = allUsers.map(user => {
-    const count = (userCharactersMap[user.id] || []).length;
-    const isEligible = count >= MIN_REQUIRED_CHARS;
-    const checked = isEligible && (hadRendered ? previouslyChecked.has(user.id) : true);
+    function renderParticipantCheckboxes() {
+      const container = document.getElementById('participant-checkboxes');
+      const previouslyChecked = new Set(
+        Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value)
+      );
+      const hadRendered = container.children.length > 0;
 
-    return `
-      <label class="member-chip ${!isEligible ? 'opacity-45 cursor-not-allowed' : ''}"
-             title="${isEligible ? 'Đủ điều kiện tham gia' : `Cần tối thiểu ${MIN_REQUIRED_CHARS} nhân vật (hiện có ${count})`}">
-        <input type="checkbox" value="${esc(user.id)}" class="participant-cb"
-               ${checked ? 'checked' : ''} ${!isEligible ? 'disabled' : ''} />
-        <span class="dot"></span>
-        <span>${esc(user.username)}</span>
-        <span class="cnt">(${count}/${MIN_REQUIRED_CHARS}${!isEligible ? ' · Thiếu' : ''})</span>
-      </label>
-    `;
-  }).join('');
-}
+      container.innerHTML = allUsers.map(user => {
+        const count = (userCharactersMap[user.id] || []).length;
+        const isEligible = count >= MIN_REQUIRED_CHARS;
+        const checked = isEligible && (hadRendered ? previouslyChecked.has(user.id) : true);
 
-   function toggleAllPlayers(checked) {
-  document.querySelectorAll('.participant-cb:not(:disabled)').forEach(cb => cb.checked = checked);
-}
+        return `
+          <label class="member-chip ${!isEligible ? 'opacity-45 cursor-not-allowed' : ''}"
+                 title="${isEligible ? 'Đủ điều kiện tham gia' : `Cần tối thiểu ${MIN_REQUIRED_CHARS} nhân vật (hiện có ${count})`}">
+            <input type="checkbox" value="${esc(user.id)}" class="participant-cb"
+                   ${checked ? 'checked' : ''} ${!isEligible ? 'disabled' : ''} />
+            <span class="dot"></span>
+            <span>${esc(user.username)}</span>
+            <span class="cnt">(${count}/${MIN_REQUIRED_CHARS}${!isEligible ? ' · Thiếu' : ''})</span>
+          </label>
+        `;
+      }).join('');
+    }
 
-// Bên trong spinRandom(), thay dòng lọc validUsers cũ bằng:
-const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length >= MIN_REQUIRED_CHARS);
+    function toggleAllPlayers(checked) {
+      document.querySelectorAll('.participant-cb:not(:disabled)').forEach(cb => cb.checked = checked);
+    }
 
-if (validUsers.length === 0) {
-  alert(`Cần ít nhất 1 thành viên sở hữu tối thiểu ${MIN_REQUIRED_CHARS} nhân vật để bắt đầu quay!`);
-  return;
-}
     // =========================================================================
     // 4b. QUẢN LÝ BOSS & VÒNG QUAY BOSS (CHỐNG NHẤP NHÁY + RESET CÓ XÁC NHẬN)
     // =========================================================================
@@ -3087,11 +3075,11 @@ if (validUsers.length === 0) {
 
     function spinRandom() {
       const checkedUserIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
-      const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length > 0);
+      const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length >= MIN_REQUIRED_CHARS);
       const desiredCount = parseInt(document.getElementById('spin-count').value, 10);
 
       if (validUsers.length === 0) {
-        alert('Vui lòng chọn ít nhất 1 thành viên đã có nhân vật trong kho để quay!');
+        alert(`Cần ít nhất 1 thành viên sở hữu tối thiểu ${MIN_REQUIRED_CHARS} nhân vật để bắt đầu quay!`);
         return;
       }
 
