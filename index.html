@@ -1899,12 +1899,17 @@
       const extraMeta = card.dataset.zoomMeta || '';
       const charId = Number(card.dataset.charId || 0);
 
-      const spriteClass = iconUrl ? (spriteMap[iconUrl] || spriteMap[iconUrl.trim()]) : '';
+      const normalizedUrl = normalizeDriveUrl(iconUrl);
+      const fallbackCdnUrl = getEnkaCdnUrl(name);
+      const spriteClass = findSpriteClass({ name, icon_url: iconUrl }, normalizedUrl);
+      const primaryUrl = normalizedUrl || fallbackCdnUrl;
+      const secondaryUrl = (normalizedUrl && fallbackCdnUrl && normalizedUrl !== fallbackCdnUrl) ? fallbackCdnUrl : '';
+      const initial = esc(name.charAt(0).toUpperCase());
       const portraitHtml = spriteClass
         ? `<div class="char-icon ${spriteClass} zoom-portrait" role="img" aria-label="${esc(name)}"></div>`
-        : (iconUrl
-            ? `<img src="${esc(iconUrl)}" alt="${esc(name)}" class="zoom-portrait" decoding="async" onerror="this.outerHTML='<div class=\'zoom-portrait-fallback\'>${esc(name.charAt(0).toUpperCase())}</div>'" />`
-            : `<div class="zoom-portrait-fallback">${esc(name.charAt(0).toUpperCase())}</div>`);
+        : (primaryUrl
+            ? `<img src="${esc(primaryUrl)}" data-fallback-url="${esc(secondaryUrl)}" data-fallback-tag="div" data-fallback-class="zoom-portrait-fallback" data-initial="${initial}" alt="${esc(name)}" class="zoom-portrait" decoding="async" onerror="handleAvatarError(this)" />`
+            : `<div class="zoom-portrait-fallback">${initial}</div>`);
 
       let eyebrowText = 'Chi tiết nhân vật';
       let statusBadge = '';
@@ -2073,12 +2078,18 @@
       'xingqiu': 'Xingqiu', 'chongyun': 'Chongyun', 'tartaglia': 'Tartaglia', 'childe': 'Tartaglia'
     };
 
-    function getCharacterIconUrl(charObj) {
-      if (!charObj) return '';
-      if (charObj.icon_url && String(charObj.icon_url).trim()) {
-        return String(charObj.icon_url).trim();
+    function normalizeDriveUrl(rawUrl) {
+      const u = String(rawUrl || '').trim();
+      if (!u) return '';
+      const m = u.match(/(?:lh3\.google\.com\/u\/\d+\/d\/|lh3\.googleusercontent\.com\/d\/|drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?[^#]*id=))([a-zA-Z0-9_-]+)/);
+      if (m && m[1]) {
+        return `https://lh3.googleusercontent.com/d/${m[1]}=s256`;
       }
-      const rawName = String(charObj.name || '').trim();
+      return u;
+    }
+
+    function getEnkaCdnUrl(rawNameInput) {
+      const rawName = String(rawNameInput || '').trim();
       if (!rawName) return '';
       const lower = rawName.toLowerCase();
       let slug = CDN_SLUG_OVERRIDES[lower];
@@ -2090,20 +2101,63 @@
       return slug ? `https://enka.network/ui/UI_AvatarIcon_${slug}.png` : '';
     }
 
+    function findSpriteClass(charObj, normalizedUrl) {
+      if (!spriteMap || typeof spriteMap !== 'object') return '';
+      const rawUrl = (charObj && charObj.icon_url) ? String(charObj.icon_url).trim() : '';
+      const name = (charObj && charObj.name) ? String(charObj.name).trim() : '';
+      return (
+        (rawUrl && spriteMap[rawUrl]) ||
+        (normalizedUrl && spriteMap[normalizedUrl]) ||
+        (name && spriteMap[name]) ||
+        (name && spriteMap[name.toLowerCase()]) ||
+        ''
+      );
+    }
+
+    function handleAvatarError(img) {
+      const fallbackUrl = img.dataset.fallbackUrl || '';
+      if (fallbackUrl && img.src !== fallbackUrl) {
+        img.dataset.fallbackUrl = '';
+        img.src = fallbackUrl;
+        return;
+      }
+      if (img.dataset.hideOnError === '1') {
+        img.style.display = 'none';
+        return;
+      }
+      const tag = img.dataset.fallbackTag || 'span';
+      const el = document.createElement(tag);
+      el.className = img.dataset.fallbackClass || 'char-avatar-fallback';
+      el.textContent = img.dataset.initial || '?';
+      img.replaceWith(el);
+    }
+
+    function getCharacterIconUrl(charObj) {
+      if (!charObj) return '';
+      if (charObj.icon_url && String(charObj.icon_url).trim()) {
+        return normalizeDriveUrl(charObj.icon_url);
+      }
+      return getEnkaCdnUrl(charObj.name);
+    }
+
     function renderAvatarImg(charObj, imgClass, fallbackClass) {
       const name = charObj ? charObj.name : '?';
       const initial = esc(name.charAt(0).toUpperCase());
       const url = getCharacterIconUrl(charObj);
-      if (!url) return `<span class="${fallbackClass}">${initial}</span>`;
+      const enkaUrl = getEnkaCdnUrl(name);
 
       // Ưu tiên dùng class từ Sprite Sheet (load 1 file duy nhất cho toàn bộ nhân vật)
-      const spriteClass = spriteMap[url] || spriteMap[url.trim()];
+      const spriteClass = findSpriteClass(charObj, url);
       if (spriteClass) {
         return `<span class="char-icon ${spriteClass} ${imgClass}" role="img" aria-label="${esc(name)}"></span>`;
       }
 
-      // Dự phòng nếu thêm nhân vật mới chưa build lại sprite
-      return `<img src="${esc(url)}" alt="${esc(name)}" class="${imgClass}" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=\'${fallbackClass}\'>${initial}</span>'" />`;
+      const primaryUrl = url || enkaUrl;
+      if (!primaryUrl) return `<span class="${fallbackClass}">${initial}</span>`;
+      const secondaryUrl = (url && enkaUrl && url !== enkaUrl) ? enkaUrl : '';
+
+      // Dự phòng an toàn không dính lỗi dấu nháy onerror
+      return `<img src="${esc(primaryUrl)}" data-fallback-url="${esc(secondaryUrl)}" data-fallback-class="${esc(fallbackClass)}" data-initial="${initial}" alt="${esc(name)}" class="${imgClass}" loading="lazy" decoding="async" onerror="handleAvatarError(this)" />`;
     }
 
     function esc(str) {
@@ -2601,6 +2655,7 @@
 
     function setupRealtimeSubscriptions() {
       startPolling();
+      if (!SUPABASE_URL.includes('.supabase.co')) return;
       if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
       realtimeChannel = supabaseClient.channel('genshin-sync-channel')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'theme_backgrounds' }, () => refreshThemeBackgrounds())
@@ -2729,10 +2784,13 @@
         const badges = charObjs.length > 0
           ? charObjs.map(c => {
               const iconUrl = getCharacterIconUrl(c);
-              const spriteClass = iconUrl ? (spriteMap[iconUrl] || spriteMap[iconUrl.trim()]) : '';
+              const enkaUrl = getEnkaCdnUrl(c.name);
+              const spriteClass = findSpriteClass(c, iconUrl);
+              const primaryUrl = iconUrl || enkaUrl;
+              const secondaryUrl = (iconUrl && enkaUrl && iconUrl !== enkaUrl) ? enkaUrl : '';
               const imgTag = spriteClass
                 ? `<span class="char-icon ${spriteClass} tag-avatar" aria-hidden="true"></span>`
-                : (iconUrl ? `<img src="${esc(iconUrl)}" alt="" class="tag-avatar" loading="lazy" decoding="async" onerror="this.style.display='none'" />` : '');
+                : (primaryUrl ? `<img src="${esc(primaryUrl)}" data-fallback-url="${esc(secondaryUrl)}" data-hide-on-error="1" alt="" class="tag-avatar" loading="lazy" decoding="async" onerror="handleAvatarError(this)" />` : '');
               return `<span class="tag-with-icon">${imgTag}<span>${esc(c.name)}</span></span>`;
             }).join('')
           : `<span class="italic text-xs" style="color: var(--ink-mute);">Chưa chọn nhân vật nào</span>`;

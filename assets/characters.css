@@ -1,11 +1,132 @@
+/* Tự động sinh bởi build_sprite.py — Hỗ trợ đa kích thước (22px, 34px, 54px, 112px) */
 .char-icon {
   display: inline-block;
-  width: 64px;
-  height: 64px;
-  background-image: url('/assets/characters-sprite.webp');
-  background-size: 100% 100%;
+  background-image: url('/assets/characters.webp');
   background-repeat: no-repeat;
+  background-size: 1200% 1100%;
 }
 
-/* Sigewinne */
-.char-0 { background-position: 0.0000% 0.0000%; }
+.char-icon.icon-aino { background-position: 0.0000% 0.0000%; }
+.char-icon.icon-albedo { background-position: 9.0909% 0.0000%; }
+.char-icon.icon-alhaitham { background-position: 18.1818% 0.0000%; }
+.char-icon.icon-aloy { background-position: 27.2727% 0.0000%; }
+.char-icon.icon-alyosha { background-position: 36.3636% 0.0000%; }
+.char-icon.icon-amber { background-position: 45.4545% 0.0000%; }
+.char-icon.icon-arataki-itto { background-position: 54.5455% 0.0000%; }
+.char-icon.icon-arlecchino { background-position: 63.6364% 0.0000%; }
+.char-icon.icon-baizhu { background-position: 72.7273% 0.0000%; }
+.char-icon.icon-barbara { background-position: 81.8182% 0.0000%; }
+.char-icon.icon-beidou { background-position: 90.9091% 0.0000%; }
+.char-icon.icon-bennett { background-position: 100.0000% 0.0000%; }
+.char-icon.icon-candace { background-position: 0.0000% 10.0000%; }
+.char-icon.icon-charlotte { background-position: 9.0909% 10.0000%; }
+.char-icon.icon-chasca { background-position: 18.1818% 10.0000%; }
+.char-icon.icon-chevreuse { background-position: 27.2727% 10.0000%; }
+.char-icon.icon-chiori { background-position: 36.3636% 10.0000%; }
+.char-icon.icon-chongyun { background-position: 45.4545% 10.0000%; }
+.char-icon.icon-citlali { background-position: 54.5455% 10.0000%; }
+.char-icon.icon-clorinde { background-position: 63.6364% 10.0000%; }
+.char-icon.icon-collei { background-position: 72.7273% 10.0000%; }
+.char-icon.icon-columbina { background-position: 81.8182% 10.0000%; }
+.char-icon.icon-cyno { background-position: 90.9091% 10.0000%; }
+.char-icon.icon-dahlia { background-position: 100.0000% 10.0000%; }
+.char-icon.icon-dehya { background-position: 0.0000% 20.0000%; }
+.char-icon.icon-diluc { background-position: 9.0909% 20.0000%; }
+.char-icon.icon-diona { background-position: 18.1818% 20.0000%; }
+.char-icon.icon-dori { background-position: 27.2727% 20.0000%; }
+.char-icon.icon-durin { background-position: 36.3636% 20.0000%; }
+.char-icon.icon-emilie { background-position: 45.4545% 20.0000%; }
+.char-icon.icon-escoffier { background-position: 54.5455% 20.0000%; }
+.char-icon.icon-eula { background-position: 63.6364% 20.0000%; }
+.char-icon.icon-faruzan { background-position: 72.7273% 20.0000%; }
+.char-icon.icon-fischl { background-position: 81.8182% 20.0000%; }
+.char-icon.icon-flins { background-position: 90.9091% 20.0000%; }
+.char-icon.icon-freminet { background-position: 100.0000% 20.0000%; }
+.char-icon.icon-furina { background-position: 0.0000% 30.0000%; }
+.char-icon.icon-gaming { background-position: 9.0909% 30.0000%; }
+.char-icon.icon-ganyu { background-position: 18.1818% 30.0000%; }
+.char-icon.icon-gorou { background-position: 27.2727% 30.0000%; }
+.char-icon.icon-hu-tao { background-position: 36.3636% 30.0000%; }
+.char-icon.icon-iansan { background-position: 45.4545% 30.0000%; }
+.char-icon.icon-ifa { background-position: 54.5455% 30.0000%; }
+.char-icon.icon-illuga { background-position: 63.6364% 30.0000%; }
+.char-icon.icon-ineffa { background-position: 72.7273% 30.0000%; }
+.char-icon.icon-jahoda { background-position: 81.8182% 30.0000%; }
+.char-icon.icon-jean { background-position: 90.9091% 30.0000%; }
+.char-icon.icon-kachina { background-position: 100.0000% 30.0000%; }
+.char-icon.icon-kaedehara-kazuha { background-position: 0.0000% 40.0000%; }
+.char-icon.icon-kaeya { background-position: 9.0909% 40.0000%; }
+.char-icon.icon-kamisato-ayaka { background-position: 18.1818% 40.0000%; }
+.char-icon.icon-kamisato-ayato { background-position: 27.2727% 40.0000%; }
+.char-icon.icon-kaveh { background-position: 36.3636% 40.0000%; }
+.char-icon.icon-keqing { background-position: 45.4545% 40.0000%; }
+.char-icon.icon-kinich { background-position: 54.5455% 40.0000%; }
+.char-icon.icon-kirara { background-position: 63.6364% 40.0000%; }
+.char-icon.icon-klee { background-position: 72.7273% 40.0000%; }
+.char-icon.icon-kujou-sara { background-position: 81.8182% 40.0000%; }
+.char-icon.icon-kuki-shinobu { background-position: 90.9091% 40.0000%; }
+.char-icon.icon-lan-yan { background-position: 100.0000% 40.0000%; }
+.char-icon.icon-lauma { background-position: 0.0000% 50.0000%; }
+.char-icon.icon-layla { background-position: 9.0909% 50.0000%; }
+.char-icon.icon-linnea { background-position: 18.1818% 50.0000%; }
+.char-icon.icon-lisa { background-position: 27.2727% 50.0000%; }
+.char-icon.icon-lohen { background-position: 36.3636% 50.0000%; }
+.char-icon.icon-lynette { background-position: 45.4545% 50.0000%; }
+.char-icon.icon-lyney { background-position: 54.5455% 50.0000%; }
+.char-icon.icon-manekin { background-position: 63.6364% 50.0000%; }
+.char-icon.icon-mavuika { background-position: 72.7273% 50.0000%; }
+.char-icon.icon-mika { background-position: 81.8182% 50.0000%; }
+.char-icon.icon-mitya { background-position: 90.9091% 50.0000%; }
+.char-icon.icon-mona { background-position: 100.0000% 50.0000%; }
+.char-icon.icon-mualani { background-position: 0.0000% 60.0000%; }
+.char-icon.icon-nahida { background-position: 9.0909% 60.0000%; }
+.char-icon.icon-navia { background-position: 18.1818% 60.0000%; }
+.char-icon.icon-nefer { background-position: 27.2727% 60.0000%; }
+.char-icon.icon-neuvillette { background-position: 36.3636% 60.0000%; }
+.char-icon.icon-nicole { background-position: 45.4545% 60.0000%; }
+.char-icon.icon-nilou { background-position: 54.5455% 60.0000%; }
+.char-icon.icon-ningguang { background-position: 63.6364% 60.0000%; }
+.char-icon.icon-noelle { background-position: 72.7273% 60.0000%; }
+.char-icon.icon-odette { background-position: 81.8182% 60.0000%; }
+.char-icon.icon-ororon { background-position: 90.9091% 60.0000%; }
+.char-icon.icon-prune { background-position: 100.0000% 60.0000%; }
+.char-icon.icon-qiqi { background-position: 0.0000% 70.0000%; }
+.char-icon.icon-raiden-shogun { background-position: 9.0909% 70.0000%; }
+.char-icon.icon-razor { background-position: 18.1818% 70.0000%; }
+.char-icon.icon-rosaria { background-position: 27.2727% 70.0000%; }
+.char-icon.icon-sandrone { background-position: 36.3636% 70.0000%; }
+.char-icon.icon-sangonomiya-kokomi { background-position: 45.4545% 70.0000%; }
+.char-icon.icon-sayu { background-position: 54.5455% 70.0000%; }
+.char-icon.icon-sethos { background-position: 63.6364% 70.0000%; }
+.char-icon.icon-shenhe { background-position: 72.7273% 70.0000%; }
+.char-icon.icon-shikanoin-heizou { background-position: 81.8182% 70.0000%; }
+.char-icon.icon-sigewinne { background-position: 90.9091% 70.0000%; }
+.char-icon.icon-skirk { background-position: 100.0000% 70.0000%; }
+.char-icon.icon-sucrose { background-position: 0.0000% 80.0000%; }
+.char-icon.icon-tartaglia { background-position: 9.0909% 80.0000%; }
+.char-icon.icon-thoma { background-position: 18.1818% 80.0000%; }
+.char-icon.icon-tighnari { background-position: 27.2727% 80.0000%; }
+.char-icon.icon-traveler { background-position: 36.3636% 80.0000%; }
+.char-icon.icon-valeriy { background-position: 45.4545% 80.0000%; }
+.char-icon.icon-varesa { background-position: 54.5455% 80.0000%; }
+.char-icon.icon-varka { background-position: 63.6364% 80.0000%; }
+.char-icon.icon-venti { background-position: 72.7273% 80.0000%; }
+.char-icon.icon-vesna { background-position: 81.8182% 80.0000%; }
+.char-icon.icon-vodyanitsa { background-position: 90.9091% 80.0000%; }
+.char-icon.icon-wanderer { background-position: 100.0000% 80.0000%; }
+.char-icon.icon-wriothesley { background-position: 0.0000% 90.0000%; }
+.char-icon.icon-xiangling { background-position: 9.0909% 90.0000%; }
+.char-icon.icon-xianyun { background-position: 18.1818% 90.0000%; }
+.char-icon.icon-xiao { background-position: 27.2727% 90.0000%; }
+.char-icon.icon-xilonen { background-position: 36.3636% 90.0000%; }
+.char-icon.icon-xingqiu { background-position: 45.4545% 90.0000%; }
+.char-icon.icon-xinyan { background-position: 54.5455% 90.0000%; }
+.char-icon.icon-yae-miko { background-position: 63.6364% 90.0000%; }
+.char-icon.icon-yanfei { background-position: 72.7273% 90.0000%; }
+.char-icon.icon-yaoyao { background-position: 81.8182% 90.0000%; }
+.char-icon.icon-yelan { background-position: 90.9091% 90.0000%; }
+.char-icon.icon-yoimiya { background-position: 100.0000% 90.0000%; }
+.char-icon.icon-yumemizuki-mizuki { background-position: 0.0000% 100.0000%; }
+.char-icon.icon-yun-jin { background-position: 9.0909% 100.0000%; }
+.char-icon.icon-zhongli { background-position: 18.1818% 100.0000%; }
+.char-icon.icon-zibai { background-position: 27.2727% 100.0000%; }
