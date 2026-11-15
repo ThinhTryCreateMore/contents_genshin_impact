@@ -1,51 +1,168 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="default">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contents Nguyên Thần</title>
+  <title>Genshin Roster & Randomizer Sync</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/hywenhei" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
+    @font-face {
+      font-family: 'GenshinImpact';
+      src: local('HYWenHei-85W'), local('HYWenHei'),
+           url('https://cdn.jsdelivr.net/gh/Nice-1/Genshin-Font@main/HYWenHei-85W.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root,
+    html[data-theme="default"] {
+      --font-genshin: 'GenshinImpact', 'HYWenHei', 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
+      --font-body: 'GenshinImpact', 'HYWenHei', 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
+
       --bg-0: #070b16;
       --bg-1: #0d1426;
       --bg-2: #141d36;
+      --bg-radial-1: rgba(88, 101, 190, 0.28);
+      --bg-radial-2: rgba(184, 145, 74, 0.16);
+      --bg-radial-3: rgba(60, 80, 150, 0.22);
+      --star-opacity: 1;
+
       --ink: #eef0f6;
+      --ink-strong: #ffffff;
       --ink-dim: #a3adc4;
       --ink-mute: #6b7794;
       --gold: #e3c27a;
       --gold-bright: #f6dfa4;
       --gold-deep: #b8914a;
-      --line: rgba(227, 194, 122, 0.22);
-      --line-soft: rgba(163, 173, 196, 0.14);
+      --title-grad: linear-gradient(180deg, #fff3cf 0%, #e3c27a 55%, #b8914a 100%);
+      --line: rgba(227, 194, 122, 0.24);
+      --line-soft: rgba(163, 173, 196, 0.15);
       --ok: #7fd1b0;
+
+      --surface-panel: linear-gradient(160deg, rgba(24, 34, 62, .84), rgba(13, 20, 38, .90));
+      --surface-sub: rgba(7, 11, 22, .56);
+      --surface-input: rgba(7, 11, 22, .65);
+      --surface-input-focus: rgba(7, 11, 22, .88);
+      --surface-stage: radial-gradient(500px 220px at 50% 0%, rgba(227,194,122,.12), transparent 70%), linear-gradient(160deg, rgba(20,29,54,.92), rgba(9,14,28,.96));
+      --surface-slot: linear-gradient(135deg, rgba(30,42,76,.88), rgba(14,21,40,.94));
+      --surface-slot-zoom: linear-gradient(135deg, rgba(34,48,86,.99), rgba(14,21,40,.99));
+      --surface-card: rgba(10, 16, 32, .62);
+      --surface-card-zoom: rgba(16, 25, 48, .98);
+      --surface-thead: rgba(10, 16, 32, .96);
+      --surface-tag: rgba(255, 255, 255, .045);
+      --surface-boss-banner: linear-gradient(135deg, rgba(227,194,122,.16), rgba(30,42,76,.74));
+      --surface-footer: rgba(7, 11, 22, .72);
+      --surface-icon-btn: rgba(255, 255, 255, .05);
+      --shadow-panel: 0 24px 60px -24px rgba(0,0,0,.72), inset 0 1px 0 rgba(255,255,255,.04);
+      --modal-backdrop: rgba(4, 7, 15, .82);
+    }
+
+    html[data-theme="dark"] {
+      --bg-0: #09090b;
+      --bg-1: #111115;
+      --bg-2: #18181f;
+      --bg-radial-1: rgba(227, 194, 122, 0.08);
+      --bg-radial-2: rgba(120, 120, 135, 0.08);
+      --bg-radial-3: rgba(39, 39, 46, 0.25);
+      --star-opacity: 0.35;
+
+      --ink: #f4f4f6;
+      --ink-strong: #ffffff;
+      --ink-dim: #a1a1aa;
+      --ink-mute: #71717a;
+      --gold: #e5c174;
+      --gold-bright: #fae3a8;
+      --gold-deep: #b58d3d;
+      --title-grad: linear-gradient(180deg, #fff5d6 0%, #e5c174 55%, #b58d3d 100%);
+      --line: rgba(229, 193, 116, 0.26);
+      --line-soft: rgba(255, 255, 255, 0.10);
+      --ok: #6ee7b7;
+
+      --surface-panel: linear-gradient(160deg, rgba(24, 24, 29, .92), rgba(14, 14, 18, .95));
+      --surface-sub: rgba(10, 10, 13, .72);
+      --surface-input: rgba(10, 10, 13, .82);
+      --surface-input-focus: rgba(15, 15, 20, .96);
+      --surface-stage: radial-gradient(500px 220px at 50% 0%, rgba(229,193,116,.09), transparent 70%), linear-gradient(160deg, rgba(24,24,29,.95), rgba(12,12,15,.98));
+      --surface-slot: linear-gradient(135deg, rgba(32,32,39,.92), rgba(18,18,23,.96));
+      --surface-slot-zoom: linear-gradient(135deg, rgba(38,38,46,.99), rgba(20,20,26,.99));
+      --surface-card: rgba(20, 20, 25, .78);
+      --surface-card-zoom: rgba(28, 28, 35, .99);
+      --surface-thead: rgba(15, 15, 19, .98);
+      --surface-tag: rgba(255, 255, 255, .05);
+      --surface-boss-banner: linear-gradient(135deg, rgba(229,193,116,.14), rgba(32,32,39,.85));
+      --surface-footer: rgba(12, 12, 16, .88);
+      --surface-icon-btn: rgba(255, 255, 255, .06);
+      --shadow-panel: 0 24px 60px -24px rgba(0,0,0,.88), inset 0 1px 0 rgba(255,255,255,.04);
+      --modal-backdrop: rgba(0, 0, 0, .86);
+    }
+
+    html[data-theme="light"] {
+      --bg-0: #f3efe4;
+      --bg-1: #faf7f0;
+      --bg-2: #ebe4d5;
+      --bg-radial-1: rgba(201, 154, 70, 0.16);
+      --bg-radial-2: rgba(110, 152, 204, 0.14);
+      --bg-radial-3: rgba(184, 145, 74, 0.12);
+      --star-opacity: 0;
+
+      --ink: #1e2433;
+      --ink-strong: #111624;
+      --ink-dim: #4c566e;
+      --ink-mute: #758099;
+      --gold: #9e6d1c;
+      --gold-bright: #7d520c;
+      --gold-deep: #855812;
+      --title-grad: linear-gradient(180deg, #b88228 0%, #8e5f12 60%, #684208 100%);
+      --line: rgba(158, 109, 28, 0.30);
+      --line-soft: rgba(30, 36, 51, 0.12);
+      --ok: #15805d;
+
+      --surface-panel: linear-gradient(160deg, rgba(255, 253, 248, .92), rgba(247, 242, 231, .95));
+      --surface-sub: rgba(236, 229, 214, .62);
+      --surface-input: rgba(255, 255, 255, .86);
+      --surface-input-focus: #ffffff;
+      --surface-stage: radial-gradient(500px 220px at 50% 0%, rgba(184,134,45,.11), transparent 70%), linear-gradient(160deg, rgba(252,249,242,.96), rgba(241,235,221,.98));
+      --surface-slot: linear-gradient(135deg, rgba(255,255,255,.95), rgba(244,238,225,.96));
+      --surface-slot-zoom: linear-gradient(135deg, #ffffff, #f6efe0);
+      --surface-card: rgba(255, 255, 255, .82);
+      --surface-card-zoom: #ffffff;
+      --surface-thead: rgba(243, 236, 222, .98);
+      --surface-tag: rgba(30, 36, 51, .05);
+      --surface-boss-banner: linear-gradient(135deg, rgba(201,154,70,.18), rgba(255,253,247,.92));
+      --surface-footer: rgba(244, 238, 225, .90);
+      --surface-icon-btn: rgba(30, 36, 51, .06);
+      --shadow-panel: 0 20px 48px -22px rgba(72, 56, 28, .22), inset 0 1px 0 rgba(255,255,255,.85);
+      --modal-backdrop: rgba(26, 24, 20, .58);
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
       color: var(--ink);
-      font-family: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
+      font-family: var(--font-body);
       background-color: var(--bg-0);
       background-image:
-        radial-gradient(1200px 600px at 12% -10%, rgba(88, 101, 190, 0.28), transparent 60%),
-        radial-gradient(900px 500px at 100% 0%, rgba(184, 145, 74, 0.16), transparent 55%),
-        radial-gradient(800px 600px at 50% 120%, rgba(60, 80, 150, 0.22), transparent 60%),
+        radial-gradient(1200px 600px at 12% -10%, var(--bg-radial-1), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, var(--bg-radial-2), transparent 55%),
+        radial-gradient(800px 600px at 50% 120%, var(--bg-radial-3), transparent 60%),
         linear-gradient(180deg, var(--bg-1), var(--bg-0));
       background-attachment: fixed;
       -webkit-font-smoothing: antialiased;
+      transition: background-color .3s ease, color .3s ease;
     }
 
     /* Bầu trời sao */
     body::before, #door-gate::before {
       content: "";
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: var(--star-opacity);
       background-image:
         radial-gradient(1.2px 1.2px at 8% 18%, rgba(255,255,255,.75), transparent 60%),
         radial-gradient(1px 1px at 22% 72%, rgba(255,255,255,.55), transparent 60%),
@@ -59,28 +176,28 @@
         radial-gradient(1.2px 1.2px at 55% 52%, rgba(255,255,255,.4), transparent 60%);
       animation: twinkle 7s ease-in-out infinite alternate;
     }
-    @keyframes twinkle { from { opacity: .55; } to { opacity: 1; } }
+    @keyframes twinkle { from { opacity: calc(var(--star-opacity) * .55); } to { opacity: var(--star-opacity); } }
 
-    #page { position: relative; z-index: 1; }
+    #page { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-    .font-display { font-family: 'Cormorant Garamond', 'Times New Roman', serif; }
+    .font-display { font-family: var(--font-genshin); letter-spacing: .01em; }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(227,194,122,.28); border-radius: 8px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(227,194,122,.5); }
+    ::-webkit-scrollbar-thumb { background: rgba(227,194,122,.32); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(227,194,122,.55); }
 
-    ::selection { background: rgba(227,194,122,.35); color: #fff; }
+    ::selection { background: rgba(227,194,122,.35); color: var(--ink-strong); }
 
     /* ---------- Panel có khung vàng ---------- */
     .panel {
       position: relative;
-      background: linear-gradient(160deg, rgba(24, 34, 62, .82), rgba(13, 20, 38, .88));
+      background: var(--surface-panel);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--line-soft);
       border-radius: 18px;
-      box-shadow: 0 24px 60px -24px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow: var(--shadow-panel);
     }
     .panel-gold { border-color: var(--line); }
     .panel-gold::before, .panel-gold::after {
@@ -93,11 +210,11 @@
 
     /* ---------- Tiêu đề ---------- */
     .eyebrow {
-      font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold-deep);
+      font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold-deep);
       font-weight: 600;
     }
     .title-gold {
-      background: linear-gradient(180deg, #fff3cf 0%, var(--gold) 55%, var(--gold-deep) 100%);
+      background: var(--title-grad);
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
     .divider {
@@ -117,19 +234,37 @@
       background: var(--gold); box-shadow: 0 0 12px rgba(227,194,122,.8);
     }
 
+    /* ---------- Chuyển đổi Mode (Hiện tại / Dark / Light) ---------- */
+    .theme-switcher {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 4px; border-radius: 12px;
+      background: var(--surface-sub);
+      border: 1px solid var(--line);
+    }
+    .theme-btn {
+      padding: 6px 11px; border-radius: 9px; font-size: 12px; font-weight: 600;
+      color: var(--ink-dim); transition: all .2s ease; white-space: nowrap;
+    }
+    .theme-btn:hover { color: var(--ink-strong); }
+    .theme-btn.active {
+      background: linear-gradient(180deg, rgba(246,223,164,.24), rgba(227,194,122,.12));
+      color: var(--gold-bright);
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
     /* ---------- Form ---------- */
     .field-label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 8px; font-weight: 500; }
     .field {
       width: 100%; padding: 12px 16px; border-radius: 12px;
-      background: rgba(7, 11, 22, .6);
+      background: var(--surface-input);
       border: 1px solid var(--line-soft);
       color: var(--ink); font-size: 14px; transition: all .2s ease;
     }
     .field::placeholder { color: var(--ink-mute); }
     .field:focus {
       outline: none; border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(227,194,122,.14);
-      background: rgba(7, 11, 22, .85);
+      box-shadow: 0 0 0 3px rgba(227,194,122,.16);
+      background: var(--surface-input-focus);
     }
 
     /* ---------- Nút ---------- */
@@ -152,23 +287,23 @@
 
     .btn-ghost {
       border: 1px solid var(--line-soft); color: var(--ink-dim);
-      border-radius: 10px; background: rgba(255,255,255,.02);
+      border-radius: 10px; background: var(--surface-icon-btn);
       transition: all .2s ease;
     }
-    .btn-ghost:hover { border-color: var(--gold); color: var(--gold-bright); background: rgba(227,194,122,.06); }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold-bright); background: rgba(227,194,122,.10); }
 
     .link-gold { color: var(--gold); transition: color .2s; }
     .link-gold:hover { color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px; }
 
     /* ---------- Tab đăng nhập (segmented) ---------- */
-    .seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(7,11,22,.7); border: 1px solid var(--line-soft); }
+    .seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface-sub); border: 1px solid var(--line-soft); }
     .seg-btn {
       flex: 1; padding: 10px 0; border-radius: 10px; font-weight: 600; font-size: 14px;
       color: var(--ink-dim); transition: all .25s ease;
     }
-    .seg-btn:hover { color: var(--ink); }
+    .seg-btn:hover { color: var(--ink-strong); }
     .seg-btn.active {
-      background: linear-gradient(180deg, rgba(246,223,164,.18), rgba(227,194,122,.08));
+      background: linear-gradient(180deg, rgba(246,223,164,.22), rgba(227,194,122,.10));
       color: var(--gold-bright); box-shadow: inset 0 0 0 1px var(--line);
     }
 
@@ -178,7 +313,7 @@
       font-weight: 600; font-size: 15px; color: var(--ink-mute);
       transition: color .2s ease;
     }
-    .tab-main:hover { color: var(--ink); }
+    .tab-main:hover { color: var(--ink-strong); }
     .tab-main::after {
       content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
@@ -189,7 +324,7 @@
     .tab-count {
       display: inline-block; min-width: 24px; padding: 1px 8px; margin-left: 6px;
       border-radius: 999px; font-size: 12px; text-align: center;
-      background: rgba(227,194,122,.12); color: var(--gold); border: 1px solid var(--line);
+      background: rgba(227,194,122,.14); color: var(--gold); border: 1px solid var(--line);
     }
 
     /* ---------- Chọn thành viên quay ---------- */
@@ -197,10 +332,10 @@
       position: relative; cursor: pointer; user-select: none;
       display: inline-flex; align-items: center; gap: 8px;
       padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--ink-dim);
-      background: rgba(7,11,22,.55); border: 1px solid var(--line-soft);
+      background: var(--surface-sub); border: 1px solid var(--line-soft);
       transition: all .2s ease;
     }
-    .member-chip:hover { border-color: rgba(227,194,122,.5); color: var(--ink); }
+    .member-chip:hover { border-color: var(--gold); color: var(--ink-strong); }
     .member-chip input { position: absolute; opacity: 0; pointer-events: none; }
     .member-chip .dot {
       width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--ink-mute);
@@ -208,14 +343,14 @@
     }
     .member-chip:has(input:checked) {
       color: var(--gold-bright); border-color: var(--gold);
-      background: linear-gradient(180deg, rgba(227,194,122,.16), rgba(227,194,122,.05));
+      background: linear-gradient(180deg, rgba(227,194,122,.18), rgba(227,194,122,.07));
       box-shadow: 0 0 18px -6px rgba(227,194,122,.6);
     }
     .member-chip:has(input:checked) .dot { background: var(--gold); border-color: var(--gold-bright); box-shadow: 0 0 8px var(--gold); }
     .member-chip .cnt { font-size: 11px; color: var(--ink-mute); }
 
     .select-gold {
-      background: rgba(7,11,22,.7); color: var(--gold-bright); font-weight: 600;
+      background: var(--surface-input); color: var(--gold-bright); font-weight: 600;
       border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; cursor: pointer;
     }
     .select-gold:focus { outline: none; box-shadow: 0 0 0 3px rgba(227,194,122,.14); }
@@ -223,7 +358,7 @@
     .live-badge {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 6px 14px; border-radius: 999px; font-size: 12px; letter-spacing: .06em;
-      color: var(--ok); background: rgba(127,209,176,.08); border: 1px solid rgba(127,209,176,.28);
+      color: var(--ok); background: rgba(127,209,176,.10); border: 1px solid rgba(127,209,176,.32);
     }
     .live-badge::before {
       content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok);
@@ -238,19 +373,18 @@
     /* ---------- Thẻ kết quả quay ---------- */
     .stage {
       position: relative; border-radius: 16px; padding: 20px;
-      background:
-        radial-gradient(500px 220px at 50% 0%, rgba(227,194,122,.12), transparent 70%),
-        linear-gradient(160deg, rgba(20,29,54,.9), rgba(9,14,28,.95));
+      background: var(--surface-stage);
       border: 1px solid var(--line);
     }
     .slot-card {
       position: relative; overflow: hidden;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
       padding: 16px 18px 16px 22px; border-radius: 14px;
-      background: linear-gradient(135deg, rgba(30,42,76,.85), rgba(14,21,40,.9));
+      background: var(--surface-slot);
       border: 1px solid var(--line-soft);
       opacity: 0; transform: translateY(10px) scale(.98);
       animation: reveal .55s cubic-bezier(.2,.8,.2,1) forwards;
+      transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .28s ease, background .28s ease;
     }
     .slot-card::before {
       content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
@@ -258,48 +392,106 @@
     }
     .slot-card.dup { border-color: rgba(227,194,122,.6); box-shadow: 0 0 26px -10px rgba(227,194,122,.6); }
     @keyframes reveal { to { opacity: 1; transform: none; } }
-    .slot-meta { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-    .slot-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; line-height: 1.1; font-weight: 700; color: #fff; margin-top: 4px; }
+    .slot-meta { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+    .slot-name { font-family: var(--font-genshin); font-size: 22px; line-height: 1.2; font-weight: 700; color: var(--ink-strong); margin-top: 4px; }
     .slot-num {
       font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 12px;
       padding: 3px 10px; border-radius: 999px; color: var(--ink-dim);
-      background: rgba(7,11,22,.7); border: 1px solid var(--line-soft);
+      background: var(--surface-sub); border: 1px solid var(--line-soft);
     }
     .dup-tag { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-top: 6px; font-weight: 600; }
+
+    /* ---------- Phóng to khung nhân vật khi giữ chuột 3 giây ---------- */
+    .hover-zoom-target {
+      position: relative;
+    }
+    .hover-zoom-target::after {
+      content: "";
+      position: absolute; left: 10px; right: 10px; bottom: 0; height: 2px;
+      background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+      border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left center;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .hover-zoom-target.hover-charging::after {
+      opacity: .85;
+      transform: scaleX(1);
+      transition: transform 3s linear, opacity .2s ease;
+    }
+    .hover-zoom-target.card-zoomed::after {
+      opacity: 0;
+      transition: opacity .15s ease;
+    }
+
+    .char-card.card-zoomed {
+      z-index: 45;
+      transform: scale(1.24) translateY(-3px) !important;
+      background: var(--surface-card-zoom) !important;
+      border-color: var(--gold) !important;
+      box-shadow: 0 20px 44px -10px rgba(0, 0, 0, .75), 0 0 0 1.5px var(--gold) !important;
+      overflow: visible;
+    }
+    .char-card.card-zoomed .char-avatar,
+    .char-card.card-zoomed .char-avatar-fallback {
+      width: 52px;
+      height: 52px;
+      transition: width .25s ease, height .25s ease;
+    }
+    .char-card.card-zoomed .char-title-text,
+    .char-card.card-zoomed .char-sub-text {
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: unset !important;
+      word-break: break-word;
+      line-height: 1.25;
+    }
+
+    .slot-card.card-zoomed {
+      z-index: 45;
+      transform: scale(1.14) translateY(-4px) !important;
+      background: var(--surface-slot-zoom) !important;
+      border-color: var(--gold) !important;
+      box-shadow: 0 24px 52px -12px rgba(0, 0, 0, .8), 0 0 0 1.5px var(--gold) !important;
+      overflow: visible;
+    }
+    .slot-card.card-zoomed .slot-avatar,
+    .slot-card.card-zoomed .slot-avatar-fallback {
+      width: 74px;
+      height: 74px;
+      transition: width .25s ease, height .25s ease;
+    }
+    .slot-card.card-zoomed .slot-name {
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: unset !important;
+      word-break: break-word;
+      font-size: 25px;
+    }
 
     /* ---------- Bảng ---------- */
     .board-table thead th {
       position: sticky; top: 0; z-index: 2;
-      background: rgba(10,16,32,.96);
-      color: var(--gold); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600;
+      background: var(--surface-thead);
+      color: var(--gold); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600;
       border-bottom: 1px solid var(--line);
     }
     .board-table tbody tr { transition: background .2s ease; }
-    .board-table tbody tr:hover { background: rgba(227,194,122,.045); }
+    .board-table tbody tr:hover { background: rgba(227,194,122,.05); }
     .board-table tbody td { border-bottom: 1px solid var(--line-soft); vertical-align: top; }
     .board-table tbody tr:last-child td { border-bottom: 0; }
     .rank {
       display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center;
       border-radius: 50%; font-size: 12px; font-weight: 700; color: var(--gold);
-      border: 1px solid var(--line); background: rgba(227,194,122,.06);
+      border: 1px solid var(--line); background: rgba(227,194,122,.08);
     }
-    .tag {
-      display: inline-block; padding: 4px 11px; margin: 3px 3px 3px 0;
-      border-radius: 8px; font-size: 12px; color: #d8def0;
-      background: rgba(255,255,255,.035); border: 1px solid var(--line-soft);
-      transition: all .2s ease;
-    }
-    .tag:hover { border-color: rgba(227,194,122,.5); color: var(--gold-bright); background: rgba(227,194,122,.07); }
-
-
-
-
 
     /* ---------- Huy hiệu Cần Main (Nhà Lữ Hành) ---------- */
     .main-badge {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700;
-      letter-spacing: .04em; color: #ffe7a3;
+      letter-spacing: .04em; color: var(--gold-bright);
       background: linear-gradient(135deg, rgba(227, 194, 122, .24), rgba(140, 185, 222, .22));
       border: 1px solid var(--gold);
       box-shadow: 0 0 12px -4px rgba(227, 194, 122, .65);
@@ -308,13 +500,15 @@
       border-color: #8cb9de;
       box-shadow: 0 0 28px -8px rgba(140, 185, 222, .75);
     }
+
     /* ---------- Huy hiệu Vũ khí ---------- */
     .wp-badge {
       display: inline-flex; align-items: center; gap: 3px;
       padding: 1px 7px; border-radius: 999px; font-size: 10px; font-weight: 600;
       letter-spacing: .03em; color: var(--ink-dim);
-      background: rgba(255, 255, 255, .05); border: 1px solid var(--line-soft);
+      background: var(--surface-tag); border: 1px solid var(--line-soft);
     }
+
     /* ---------- Huy hiệu Nguyên tố ---------- */
     .el-badge {
       display: inline-flex; align-items: center; gap: 4px;
@@ -328,23 +522,30 @@
     .el-Dendro  { color: #9ce06c; background: rgba(124, 198, 68, .14); }
     .el-Cryo    { color: #9ee8ff; background: rgba(118, 214, 245, .14); }
     .el-Geo     { color: #f5cc6c; background: rgba(235, 184, 68, .14); }
+    html[data-theme="light"] .el-Pyro    { color: #c93b28; background: rgba(255, 102, 77, .15); }
+    html[data-theme="light"] .el-Hydro   { color: #126eb8; background: rgba(56, 168, 255, .15); }
+    html[data-theme="light"] .el-Anemo   { color: #127d5f; background: rgba(68, 214, 170, .16); }
+    html[data-theme="light"] .el-Electro { color: #7932b8; background: rgba(178, 102, 255, .14); }
+    html[data-theme="light"] .el-Dendro  { color: #437a1a; background: rgba(124, 198, 68, .16); }
+    html[data-theme="light"] .el-Cryo    { color: #197696; background: rgba(118, 214, 245, .18); }
+    html[data-theme="light"] .el-Geo     { color: #94660c; background: rgba(235, 184, 68, .18); }
 
     /* ---------- Khu vực Boss ---------- */
     .boss-pill {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 7px 13px; border-radius: 12px; font-size: 13px;
-      background: rgba(7, 11, 22, .62); border: 1px solid var(--line-soft);
+      background: var(--surface-sub); border: 1px solid var(--line-soft);
       color: var(--ink); transition: all .2s ease;
     }
     .boss-pill.eliminated {
-      opacity: .42; text-decoration: line-through;
+      opacity: .45; text-decoration: line-through;
       border-style: dashed;
     }
     .boss-active-banner {
       padding: 16px 20px; border-radius: 14px;
-      background: linear-gradient(135deg, rgba(227,194,122,.16), rgba(30,42,76,.7));
+      background: var(--surface-boss-banner);
       border: 1px solid var(--gold);
-      box-shadow: 0 10px 28px -14px rgba(227,194,122,.6);
+      box-shadow: 0 10px 28px -14px rgba(227,194,122,.55);
     }
 
     /* ---------- Nút chọn nguyên tố khi tạo Boss ---------- */
@@ -352,22 +553,22 @@
       cursor: pointer; user-select: none;
       display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
-      background: rgba(7, 11, 22, .6); border: 1px solid var(--line-soft);
+      background: var(--surface-sub); border: 1px solid var(--line-soft);
       color: var(--ink-dim); transition: all .2s ease;
     }
     .el-toggle input { display: none; }
     .el-toggle:has(input:checked) {
       border-color: var(--gold);
       color: var(--gold-bright);
-      background: rgba(227, 194, 122, .16);
+      background: rgba(227, 194, 122, .18);
       box-shadow: 0 0 14px -5px rgba(227,194,122,.65);
     }
 
-    /* ---------- Modal thông báo Boss & Xác nhận Reset ---------- */
+    /* ---------- Modal ---------- */
     .modal-backdrop {
       position: fixed; inset: 0; z-index: 80;
       display: flex; align-items: center; justify-content: center; padding: 16px;
-      background: rgba(4, 7, 15, .82);
+      background: var(--modal-backdrop);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       animation: fadeIn .25s ease both;
@@ -381,8 +582,8 @@
       margin: 14px auto 18px;
       border-radius: 14px; overflow: hidden;
       border: 1px solid var(--line);
-      background: rgba(7, 11, 22, .85);
-      box-shadow: 0 10px 30px -12px rgba(0,0,0,.8);
+      background: var(--surface-sub);
+      box-shadow: 0 10px 30px -12px rgba(0,0,0,.65);
     }
     .boss-locate-img {
       display: block; width: 100%; max-height: 270px;
@@ -392,16 +593,16 @@
       display: inline-flex; align-items: center; gap: 6px;
       margin-top: 6px; padding: 3px 10px; border-radius: 999px;
       font-size: 11px; font-weight: 600;
-      background: rgba(227, 194, 122, .14); border: 1px solid var(--gold);
+      background: rgba(227, 194, 122, .16); border: 1px solid var(--gold);
       color: var(--gold-bright);
     }
 
     /* ---------- Avatar nhân vật ---------- */
     .char-avatar {
       width: 34px; height: 34px; border-radius: 50%; object-fit: cover; object-position: top center;
-      flex-shrink: 0; background: rgba(7, 11, 22, 0.85);
+      flex-shrink: 0; background: var(--surface-sub);
       border: 1px solid rgba(227, 194, 122, 0.35);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
     }
     .char-card.owned .char-avatar {
       border-color: var(--gold-bright);
@@ -410,47 +611,48 @@
     .char-avatar-fallback {
       width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 15px;
-      color: var(--gold); background: rgba(227, 194, 122, 0.1);
+      font-family: var(--font-genshin); font-weight: 700; font-size: 15px;
+      color: var(--gold); background: rgba(227, 194, 122, 0.12);
       border: 1px solid rgba(227, 194, 122, 0.25);
     }
     .slot-avatar {
       width: 54px; height: 54px; border-radius: 50%; object-fit: cover; object-position: top center;
-      flex-shrink: 0; background: rgba(7, 11, 22, 0.9);
+      flex-shrink: 0; background: var(--surface-sub);
       border: 1.5px solid var(--gold);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(227, 194, 122, 0.25);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 12px rgba(227, 194, 122, 0.25);
     }
     .slot-avatar-fallback {
       width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 22px;
+      font-family: var(--font-genshin); font-weight: 700; font-size: 22px;
       color: var(--gold-bright); background: rgba(227, 194, 122, 0.14);
       border: 1.5px solid var(--gold);
     }
     .tag-with-icon {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 3px 10px 3px 4px; margin: 3px 4px 3px 0;
-      border-radius: 999px; font-size: 12px; color: #d8def0;
-      background: rgba(255, 255, 255, 0.045); border: 1px solid var(--line-soft);
+      border-radius: 999px; font-size: 12px; color: var(--ink);
+      background: var(--surface-tag); border: 1px solid var(--line-soft);
       transition: all .2s ease;
     }
     .tag-with-icon:hover {
-      border-color: rgba(227, 194, 122, 0.55); color: var(--gold-bright);
-      background: rgba(227, 194, 122, 0.09);
+      border-color: var(--gold); color: var(--gold-bright);
+      background: rgba(227, 194, 122, 0.10);
     }
     .tag-avatar {
       width: 22px; height: 22px; border-radius: 50%; object-fit: cover; object-position: top center;
-      background: rgba(7, 11, 22, 0.9); border: 1px solid rgba(227, 194, 122, 0.3);
+      background: var(--surface-sub); border: 1px solid rgba(227, 194, 122, 0.3);
     }
 
     /* ---------- Lưới nhân vật ---------- */
     .char-card {
       position: relative; display: flex; align-items: center; justify-content: space-between; gap: 8px;
       padding: 12px 14px; border-radius: 12px; text-align: left; font-size: 13px; font-weight: 500;
-      color: var(--ink-dim); background: rgba(10,16,32,.55);
-      border: 1px solid var(--line-soft); transition: all .2s ease;
+      color: var(--ink-dim); background: var(--surface-card);
+      border: 1px solid var(--line-soft);
+      transition: transform .25s cubic-bezier(.2,.8,.2,1), border-color .2s ease, background .2s ease, box-shadow .25s ease, color .2s ease;
     }
-    .char-card:hover { border-color: rgba(227,194,122,.45); color: var(--ink); transform: translateY(-1px); }
+    .char-card:hover { border-color: rgba(227,194,122,.55); color: var(--ink-strong); transform: translateY(-1px); }
     .char-card .mark {
       flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
       display: inline-flex; align-items: center; justify-content: center;
@@ -458,11 +660,42 @@
     }
     .char-card.owned {
       color: var(--gold-bright);
-      background: linear-gradient(135deg, rgba(227,194,122,.17), rgba(227,194,122,.05));
+      background: linear-gradient(135deg, rgba(227,194,122,.20), rgba(227,194,122,.07));
       border-color: var(--gold);
-      box-shadow: 0 8px 22px -12px rgba(227,194,122,.7), inset 0 0 0 1px rgba(246,223,164,.08);
+      box-shadow: 0 8px 22px -12px rgba(227,194,122,.65), inset 0 0 0 1px rgba(246,223,164,.10);
     }
     .char-card.owned .mark { background: var(--gold); border-color: var(--gold-bright); color: #2a1f0a; font-weight: 700; }
+
+    /* ---------- Footer Credit & Discord ---------- */
+    .site-footer {
+      margin-top: auto;
+      border-top: 1px solid var(--line-soft);
+      background: var(--surface-footer);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .footer-icon-btn {
+      width: 42px; height: 42px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 12px;
+      background: var(--surface-icon-btn);
+      border: 1px solid var(--line-soft);
+      color: var(--ink);
+      transition: all .2s ease;
+    }
+    .footer-icon-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold-bright);
+      background: rgba(227, 194, 122, .12);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -8px rgba(227, 194, 122, .45);
+    }
+    .footer-discord-btn:hover {
+      border-color: #5865F2;
+      color: #ffffff;
+      background: #5865F2;
+      box-shadow: 0 8px 22px -6px rgba(88, 101, 242, .65);
+    }
 
     /* ---------- Hiệu ứng chuyển cảnh ---------- */
     .fade-in { animation: fadeIn .5s ease both; }
@@ -499,13 +732,11 @@
       100% { opacity: 0; }
     }
 
-    /* Khung đăng nhập mờ dần khi vào thành công */
     .auth-leaving { animation: authLeave .75s ease forwards; pointer-events: none; }
     @keyframes authLeave {
       to { opacity: 0; filter: blur(14px); transform: scale(.95) translateY(-8px); }
     }
 
-    /* Cánh cửa Celestia trên mây (Tràn viền toàn màn hình) */
     #door-gate {
       position: fixed; inset: 0; z-index: 60;
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
@@ -518,317 +749,343 @@
     #door-gate.show { opacity: 1; }
     #door-gate.leaving { opacity: 0; transition: opacity 1s ease; pointer-events: none; }
 
-    /* Hào quang sáng phía sau cánh cổng */
-    .celestia-aura {
-      position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%);
-      width: min(92vw, 900px); height: min(92vw, 900px);
-      background: radial-gradient(circle, rgba(255,255,255,0.68) 0%, rgba(203,234,255,0.38) 38%, transparent 72%);
-      pointer-events: none; z-index: 1;
-      transition: transform 2s ease, opacity 1.6s ease;
+    .celestia-sky {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(60% 45% at 50% 44%, rgba(255, 250, 232, 0.55) 0%, rgba(255, 244, 214, 0.14) 55%, transparent 80%),
+        linear-gradient(180deg, rgba(44, 84, 130, 0.35) 0%, rgba(140, 185, 222, 0.05) 45%, rgba(226, 241, 252, 0.45) 100%);
     }
 
-    /* Cảnh vật SVG phủ kín 100% khung nhìn màn hình */
     .celestia-scene {
-      position: fixed; inset: 0; z-index: 2;
-      width: 100vw; height: 100vh;
+      position: absolute; inset: 0; width: 100%; height: 100%;
       pointer-events: none;
-      transition: transform 2.4s cubic-bezier(.4,.1,.2,1);
     }
-    .celestia-svg {
-      width: 100%; height: 100%;
-      display: block;
+    .celestia-scene svg {
+      width: 100%; height: 100%; display: block;
     }
 
-    /* Hiệu ứng SVG khi mở cổng */
-    #svg-leaf-left {
-      transform-box: fill-box;
-      transform-origin: left center;
-      transition: transform 1.8s cubic-bezier(.6,.05,.2,1);
+    .door-caption {
+      position: relative; z-index: 4; text-align: center;
+      padding: 10px 26px; border-radius: 999px;
+      background: rgba(20, 40, 68, 0.36);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 248, 226, 0.35);
+      box-shadow: 0 10px 30px rgba(15, 35, 62, 0.25);
     }
-    #svg-leaf-right {
-      transform-box: fill-box;
-      transform-origin: right center;
-      transition: transform 1.8s cubic-bezier(.6,.05,.2,1);
+    .door-caption .eyebrow {
+      color: #fff6dc;
+      text-shadow: 0 1px 10px rgba(16, 36, 64, 0.7);
+      letter-spacing: .34em;
     }
-    #svg-door-glow {
-      opacity: 0.25;
-      transition: opacity 1.4s ease;
-    }
-    #svg-top-star {
-      transform-box: fill-box;
-      transform-origin: center;
-      animation: starPulse 2.4s ease-in-out infinite;
-    }
-    @keyframes starPulse {
-      0%, 100% { transform: scale(0.92); opacity: 0.85; filter: drop-shadow(0 0 6px #fff); }
-      50% { transform: scale(1.16); opacity: 1; filter: drop-shadow(0 0 18px #fff) drop-shadow(0 0 28px #e8f6ff); }
+    .door-caption .door-welcome {
+      color: #ffffff;
+      text-shadow: 0 2px 18px rgba(16, 36, 64, 0.65);
     }
 
-    #svg-clouds-back { animation: cloudFloatSlow 16s ease-in-out infinite alternate; }
-    #svg-clouds-mid { animation: cloudFloatMid 12s ease-in-out infinite alternate; }
-    #svg-clouds-front { animation: cloudFloatFast 9s ease-in-out infinite alternate; }
-    @keyframes cloudFloatSlow {
-      from { transform: translateX(-18px); }
-      to   { transform: translateX(18px); }
-    }
-    @keyframes cloudFloatMid {
-      from { transform: translateX(14px); }
-      to   { transform: translateX(-14px); }
-    }
-    @keyframes cloudFloatFast {
-      from { transform: translateX(-20px) translateY(2px); }
-      to   { transform: translateX(20px) translateY(-2px); }
-    }
-
-    #door-gate.opening #svg-leaf-left { transform: scaleX(0.14) skewY(-8deg); }
-    #door-gate.opening #svg-leaf-right { transform: scaleX(0.14) skewY(8deg); }
-    #door-gate.opening #svg-door-glow { opacity: 1; }
-    #door-gate.opening .celestia-aura { transform: translate(-50%, -50%) scale(1.9); opacity: 1; }
-    #door-gate.opening .celestia-scene { transform: scale(1.16); }
-
-    .door-title { position: relative; z-index: 4; text-align: center; transition: opacity .6s ease; }
-    .door-title .eyebrow { color: #eef7ff; text-shadow: 0 2px 10px rgba(23, 52, 86, 0.55); }
-    .door-greet { margin-top: 6px; text-shadow: 0 4px 20px rgba(20, 44, 74, 0.55); }
     .door-hint {
       position: relative; z-index: 4;
-      font-size: 13px; letter-spacing: .38em; text-transform: uppercase;
-      color: #21456b; font-weight: 700;
-      text-shadow: 0 1px 10px rgba(255,255,255,0.95), 0 0 18px rgba(255,255,255,0.9);
-      padding-left: .38em;
-      opacity: 0; transition: opacity .8s ease;
+      padding: 10px 26px; border-radius: 999px;
+      font-size: 12px; letter-spacing: .32em; text-transform: uppercase;
+      color: #fffdf5; font-weight: 600;
+      background: rgba(18, 38, 66, 0.42);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 248, 226, 0.42);
+      text-shadow: 0 1px 10px rgba(14, 30, 54, 0.8);
+      box-shadow: 0 8px 24px rgba(14, 30, 54, 0.3);
+      animation: hintBlink 2.2s ease-in-out infinite;
     }
-    #door-gate.ready .door-hint { opacity: 1; animation: hintPulse 2s ease-in-out infinite; }
-    #door-gate.opening .door-hint, #door-gate.opening .door-title { opacity: 0 !important; animation: none; }
-    @keyframes hintPulse { 0%, 100% { opacity: .65; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.03); } }
+    @keyframes hintBlink { 0%, 100% { opacity: .65; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
 
-    @media (prefers-reduced-motion: reduce) {
-      body::before, #door-gate::before, #svg-clouds-back, #svg-clouds-mid, #svg-clouds-front, #svg-top-star { animation: none; }
-      .splash-word, .splash-sub { animation-duration: 1.2s; }
+    .door-leaf-l, .door-leaf-r {
+      transition: transform 1.45s cubic-bezier(.22, .75, .18, 1), opacity 1.2s ease;
     }
+    #door-gate.opening .door-leaf-l {
+      transform: translateX(-82px) scaleX(0.32);
+      opacity: 0.15;
+    }
+    #door-gate.opening .door-leaf-r {
+      transform: translateX(82px) scaleX(0.32);
+      opacity: 0.15;
+    }
+    .portal-core {
+      transition: opacity 1.1s ease, transform 1.4s ease;
+      transform-origin: 800px 395px;
+    }
+    #door-gate.opening .portal-core {
+      opacity: 1 !important;
+      transform: scale(1.22);
+    }
+    .celestia-flash {
+      position: fixed; inset: 0; z-index: 65; pointer-events: none; opacity: 0;
+      background: radial-gradient(circle at 50% 48%, #ffffff 0%, #fff8e2 42%, rgba(255, 248, 226, 0) 78%);
+      transition: opacity .85s ease;
+    }
+    .celestia-flash.on { opacity: 1; }
   </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-<!-- MÀN HÌNH MỞ ĐẦU (SPLASH) -->
-<div id="splash">
-  <div class="splash-word">HOYOVERSE</div>
-  <div class="splash-sub">Made by Ngọt</div>
+<!-- MÀN 1: SPLASH ĐEN TỐI GIẢN -->
+<div id="splash" onclick="finishSplash()" title="Nhấn để tiếp tục">
+  <div class="splash-word">GENSHIN</div>
+  <div class="splash-sub">Teyvat Co-op Registry</div>
 </div>
 
-<!-- CÁNH CỬA: HIỆN SAU KHI ĐĂNG NHẬP (CELESTIA FULLSCREEN SVG SCENE) -->
-<div id="door-gate" class="hidden">
-  <div class="celestia-aura"></div>
+<!-- LỚP ÁNH SÁNG TRẮNG KHI CÁNH CỬA MỞ RA -->
+<div id="celestia-flash" class="celestia-flash"></div>
 
-  <div class="door-title">
-    <div class="eyebrow">Teyvat đang chờ bạn</div>
-    <div id="door-greet" class="door-greet font-display text-3xl md:text-4xl font-bold title-gold"></div>
+<!-- MÀN 3: CÁNH CỬA CELESTIA TRÊN BIỂN MÂY (TRÀN VIỀN FULLSCREEN) -->
+<div id="door-gate" class="hidden" onclick="openCelestiaDoor()">
+  <div class="celestia-sky"></div>
+
+  <div class="door-caption">
+    <div class="eyebrow mb-1">Cánh cổng Celestia đã hiện ra</div>
+    <div id="door-welcome" class="font-display text-2xl md:text-3xl font-bold door-welcome"></div>
   </div>
 
-  <!-- CẢNH CỔNG CELESTIA TRÀN MÀN HÌNH (1920x900) VỚI 8 TRỤ CỘT XA-GẦN & BIỂN MÂY VÔ TẬN -->
+  <!-- Toàn cảnh đại sảnh cột đá trắng, cổng vòm Celestia & biển mây tầng tầng lớp lớp -->
   <div class="celestia-scene">
-    <svg class="celestia-svg" viewBox="0 0 1920 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <!-- Reusable Roman Pillar (Đỉnh răng cưa, cổ cột rãnh dọc, gờ chỉ nổi) -->
-        <g id="roman-pillar">
-          <rect x="0" y="0" width="84" height="14" rx="3" fill="url(#pillarGrad)" />
-          <path d="M 4 14 L 80 14 L 74 28 L 10 28 Z" fill="#9dbad5" />
-          <rect x="10" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
-          <rect x="36" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
-          <rect x="62" y="16" width="12" height="10" rx="1" fill="#e6f1fa" />
-          <rect x="14" y="28" width="56" height="10" rx="2" fill="#cde0f0" />
-          <rect x="18" y="38" width="48" height="32" fill="url(#pillarGrad)" />
-          <rect x="25" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
-          <rect x="39" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
-          <rect x="53" y="43" width="6" height="22" rx="2" fill="#7c9ec0" />
-          <rect x="12" y="70" width="60" height="8" rx="3" fill="#e3eff9" />
-          <rect x="15" y="78" width="54" height="7" rx="2" fill="#9ab8d4" />
-          <rect x="12" y="85" width="60" height="8" rx="3" fill="#d3e4f3" />
-          <rect x="19" y="93" width="46" height="360" fill="url(#pillarGrad)" />
-          <line x1="28" y1="98" x2="28" y2="445" stroke="#e8f3fc" stroke-width="2" opacity="0.55" />
-          <line x1="54" y1="98" x2="54" y2="445" stroke="#7c9ec0" stroke-width="2" opacity="0.45" />
-        </g>
-
-        <!-- Gradient bầu trời & ánh sáng bên trong cánh cổng -->
-        <linearGradient id="portalInnerGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#608db6" />
-          <stop offset="55%" stop-color="#87b8d8" />
-          <stop offset="100%" stop-color="#c9edfa" />
-        </linearGradient>
-
-        <radialGradient id="portalOpenGlow" cx="50%" cy="55%" r="55%">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
-          <stop offset="55%" stop-color="#e3f6ff" stop-opacity="0.92" />
-          <stop offset="100%" stop-color="#a5d5f2" stop-opacity="0.4" />
+        <radialGradient id="skySun" cx="50%" cy="40%" r="52%">
+          <stop offset="0%" stop-color="#fffdf2" stop-opacity="0.95" />
+          <stop offset="32%" stop-color="#fff4d2" stop-opacity="0.52" />
+          <stop offset="68%" stop-color="#a8d0ee" stop-opacity="0.16" />
+          <stop offset="100%" stop-color="#4e7ea9" stop-opacity="0" />
         </radialGradient>
-
-        <!-- Gradient khung viền đá cẩm thạch trắng xanh -->
-        <linearGradient id="archFrameGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#f2f8fd" />
-          <stop offset="50%" stop-color="#d2e2f0" />
-          <stop offset="100%" stop-color="#b4cde3" />
+        <radialGradient id="portalGlow" cx="50%" cy="48%" r="50%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+          <stop offset="48%" stop-color="#fff7db" stop-opacity="0.95" />
+          <stop offset="82%" stop-color="#f7dfa0" stop-opacity="0.72" />
+          <stop offset="100%" stop-color="#cbe4f8" stop-opacity="0.15" />
+        </radialGradient>
+        <linearGradient id="stoneLight" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="55%" stop-color="#eef4fa" />
+          <stop offset="100%" stop-color="#cfdcec" />
         </linearGradient>
-
-        <linearGradient id="archInnerRim" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#9cb8d1" />
-          <stop offset="100%" stop-color="#7fa2c2" />
+        <linearGradient id="stoneShadow" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#dce7f3" />
+          <stop offset="60%" stop-color="#b9cce0" />
+          <stop offset="100%" stop-color="#96b0cb" />
         </linearGradient>
-
-        <!-- Gradient cột đá La Mã -->
-        <linearGradient id="pillarGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#dbe8f4" />
-          <stop offset="55%" stop-color="#b6cde2" />
-          <stop offset="100%" stop-color="#91b0cd" />
+        <linearGradient id="goldTrim" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fff0c2" />
+          <stop offset="50%" stop-color="#e5c174" />
+          <stop offset="100%" stop-color="#b78c3e" />
         </linearGradient>
-
-        <!-- Gradient biển mây nhiều tầng tràn ngang 1920px -->
-        <linearGradient id="cloudFarGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#a7c7e4" stop-opacity="0.72" />
-          <stop offset="100%" stop-color="#8bb2d6" stop-opacity="0.85" />
+        <linearGradient id="bridgeTop" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#e8f1fa" />
+          <stop offset="45%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#d5e3f1" />
         </linearGradient>
-
-        <linearGradient id="cloudMidGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#d7e9f7" stop-opacity="0.9" />
-          <stop offset="100%" stop-color="#aac9e4" stop-opacity="0.95" />
+        <linearGradient id="cloudDeep" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b8d5ec" stop-opacity="0.88" />
+          <stop offset="100%" stop-color="#7fa8ce" stop-opacity="0.96" />
         </linearGradient>
-
-        <linearGradient id="cloudFrontGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#cfe4f6" stop-opacity="0.95" />
-          <stop offset="50%" stop-color="#f5fbff" stop-opacity="0.98" />
-          <stop offset="100%" stop-color="#c6dff3" stop-opacity="0.95" />
+        <linearGradient id="cloudMid" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#e5f2fc" stop-opacity="0.94" />
+          <stop offset="100%" stop-color="#b2d0ea" stop-opacity="0.98" />
         </linearGradient>
-
-        <!-- Clip path lòng cánh cổng -->
-        <clipPath id="portalClip">
-          <path d="M 852 720 L 852 422 Q 866 412 866 388 Q 912 362 960 332 Q 1008 362 1054 388 Q 1054 412 1068 422 L 1068 720 Z" />
-        </clipPath>
+        <linearGradient id="cloudBright" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.98" />
+          <stop offset="65%" stop-color="#eef7fe" stop-opacity="0.96" />
+          <stop offset="100%" stop-color="#cbe1f4" stop-opacity="0.98" />
+        </linearGradient>
+        <filter id="softGlow" x="-25%" y="-25%" width="150%" height="150%">
+          <feGaussianBlur stdDeviation="8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="cloudBlur" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="3.5" />
+        </filter>
       </defs>
 
-      <!-- 1. TẦNG MÂY XA & LUỒNG GIÓ XOÁY TRÊN CAO (TRÀN KHẮP BẦU TRỜI) -->
-      <g id="svg-clouds-back">
-        <!-- Dải mây xoáy góc trên trái -->
-        <path d="M 380 40 C 445 100, 540 125, 515 178 C 500 208, 458 198, 460 170 C 462 150, 485 150, 488 165 C 478 158, 468 165, 472 176 C 480 188, 500 183, 502 163 C 507 128, 422 98, 340 40 Z" fill="#b4d0e8" opacity="0.55" />
-        <!-- Dải mây uốn lượn mềm ở rìa cực trái -->
-        <path d="M -80 280 C 80 240, 210 310, 340 270 C 220 335, 90 310, -80 350 Z" fill="#b7d3ec" opacity="0.4" />
-        <!-- Luồng gió mây uốn lượn lớn bên phải -->
-        <path d="M 1240 140 C 1360 280, 1385 480, 1215 660 C 1310 510, 1305 320, 1190 165 Z" fill="#b8d4ec" opacity="0.48" />
-        <path d="M 1305 210 C 1435 360, 1425 560, 1255 695 C 1360 550, 1370 385, 1265 245 Z" fill="#cbe0f3" opacity="0.42" />
-        <!-- Dải mây xoáy rìa cực phải -->
-        <path d="M 1620 230 C 1730 190, 1850 240, 1980 200 L 1980 290 C 1850 310, 1720 265, 1620 230 Z" fill="#b7d3ec" opacity="0.38" />
+      <!-- Hào quang mặt trời sau cánh cổng -->
+      <circle cx="800" cy="365" r="520" fill="url(#skySun)" />
 
-        <!-- Biển mây tầng xa trải dài từ -120 đến 2040 -->
-        <path d="M -120 630 Q 120 560 360 615 Q 620 550 880 605 Q 1140 550 1420 610 Q 1700 545 2040 615 L 2040 940 L -120 940 Z"
-              fill="url(#cloudFarGrad)" />
+      <!-- Các cụm mây xa trên bầu trời -->
+      <g opacity="0.62" filter="url(#cloudBlur)">
+        <path d="M 40 250 Q 130 210 230 235 Q 310 205 400 245 Q 470 255 510 290 L 20 290 Z" fill="#dceefa" />
+        <path d="M 1110 235 Q 1200 195 1305 225 Q 1395 190 1495 230 Q 1565 245 1600 275 L 1090 275 Z" fill="#dceefa" />
       </g>
 
-      <!-- 2. CÁC TRỤ CỘT XA NHẤT (NHỎ & MỜ SƯƠNG PHÍA SAU TẦNG MÂY GIỮA) -->
-      <!-- Trụ xa trái 1 (Ngoài cùng bên trái) -->
-      <use href="#roman-pillar" transform="translate(150, 485) scale(0.56)" opacity="0.52" />
-      <!-- Trụ xa trái 2 (Giữa khoảng cách bên trái) -->
-      <use href="#roman-pillar" transform="translate(505, 515) scale(0.46)" opacity="0.48" />
-      <!-- Trụ xa phải 1 (Sát bên phải cổng) -->
-      <use href="#roman-pillar" transform="translate(1195, 505) scale(0.58)" opacity="0.62" />
-      <!-- Trụ xa phải 2 (Xa tít bên phải) -->
-      <use href="#roman-pillar" transform="translate(1510, 525) scale(0.42)" opacity="0.45" />
-
-      <!-- 3. TẦNG MÂY GIỮA (TRẢI DÀI TOÀN MÀN HÌNH, CHE CHÂN CÁC TRỤ XA) -->
-      <g id="svg-clouds-mid">
-        <path d="M -120 675 Q 160 615 440 665 Q 720 610 960 655 Q 1240 605 1540 660 Q 1800 610 2040 665 L 2040 940 L -120 940 Z"
-              fill="url(#cloudMidGrad)" />
+      <!-- Các đảo đá / tàn tích bay lơ lửng phía xa hai bên -->
+      <g opacity="0.72">
+        <polygon points="315,280 348,272 342,322 322,315" fill="#bfd4e8" />
+        <polygon points="348,272 365,282 356,318 342,322" fill="#99b6d4" />
+        <polygon points="1245,260 1278,268 1272,316 1250,310" fill="#bfd4e8" />
+        <polygon points="1278,268 1295,278 1285,312 1272,316" fill="#99b6d4" />
+        <polygon points="415,175 432,168 428,195 412,190" fill="#d8e8f6" />
+        <polygon points="1165,165 1184,172 1178,196 1160,192" fill="#d8e8f6" />
       </g>
 
-      <!-- 4. CÁC TRỤ CỘT TẦM TRUNG & CẬN CẢNH (LỚN DẦN VỀ HAI RÌA TẠO CHIỀU SÂU PHỐI CẢNH) -->
-      <!-- Trụ cận cảnh cực trái (Rất lớn, đứng gần tiền cảnh) -->
-      <use href="#roman-pillar" transform="translate(275, 345) scale(1.18)" opacity="0.92" />
-      <!-- Trụ tầm trung trái (Lớn vừa, cạnh cổng như bản gốc) -->
-      <use href="#roman-pillar" transform="translate(630, 420) scale(0.95)" opacity="0.96" />
+      <!-- =================================================================
+           HÀNG CỘT ĐÁ TRẮNG DẪN LỐI PHỐI CẢNH HAI BÊN ĐẠI SẢNH
+           ================================================================= -->
+      <!-- Cặp cột xa nhất (cặp 3) -->
+      <g>
+        <polygon points="488,535 552,535 546,562 494,562" fill="url(#stoneShadow)" />
+        <rect x="502" y="255" width="36" height="280" fill="url(#stoneLight)" />
+        <rect x="524" y="255" width="14" height="280" fill="#b7cbe0" opacity="0.75" />
+        <line x1="511" y1="262" x2="511" y2="530" stroke="#b9cde2" stroke-width="1.3" />
+        <line x1="519" y1="262" x2="519" y2="530" stroke="#b9cde2" stroke-width="1.3" />
+        <polygon points="486,255 554,255 544,236 496,236" fill="url(#stoneLight)" />
+        <rect x="492" y="230" width="56" height="6" fill="url(#goldTrim)" />
+        <polygon points="502,230 538,230 520,172" fill="url(#stoneLight)" />
+        <polygon points="520,230 538,230 520,172" fill="#b7cbe0" />
 
-      <!-- Trụ tầm trung phải (Vừa phải, đối xứng lệch góc) -->
-      <use href="#roman-pillar" transform="translate(1335, 445) scale(0.84)" opacity="0.9" />
-      <!-- Trụ cận cảnh cực phải (Lớn ở rìa phải màn hình) -->
-      <use href="#roman-pillar" transform="translate(1655, 365) scale(1.12)" opacity="0.92" />
+        <polygon points="1048,535 1112,535 1106,562 1054,562" fill="url(#stoneShadow)" />
+        <rect x="1062" y="255" width="36" height="280" fill="url(#stoneLight)" />
+        <rect x="1062" y="255" width="14" height="280" fill="#b7cbe0" opacity="0.75" />
+        <line x1="1081" y1="262" x2="1081" y2="530" stroke="#b9cde2" stroke-width="1.3" />
+        <line x1="1089" y1="262" x2="1089" y2="530" stroke="#b9cde2" stroke-width="1.3" />
+        <polygon points="1046,255 1114,255 1104,236 1056,236" fill="url(#stoneLight)" />
+        <rect x="1052" y="230" width="56" height="6" fill="url(#goldTrim)" />
+        <polygon points="1062,230 1098,230 1080,172" fill="url(#stoneLight)" />
+        <polygon points="1062,230 1080,230 1080,172" fill="#b7cbe0" />
+      </g>
 
-      <!-- 5. CÁNH CỔNG CHÍNH CELESTIA Ở TRUNG TÂM (TÂM X = 960) -->
-      <g id="celestia-gate">
-        <!-- Khung viền ngoài cùng bậc cấp đặc trưng của Genshin -->
-        <path d="M 826 720 L 826 406 Q 846 396 846 368 Q 905 338 960 300 Q 1015 338 1074 368 Q 1074 396 1094 406 L 1094 720 Z"
-              fill="url(#archFrameGrad)" />
+      <!-- Cặp cột giữa (cặp 2) -->
+      <g>
+        <polygon points="342,575 434,575 426,612 350,612" fill="url(#stoneShadow)" />
+        <rect x="362" y="185" width="52" height="390" fill="url(#stoneLight)" />
+        <rect x="394" y="185" width="20" height="390" fill="#b4c9df" opacity="0.8" />
+        <line x1="374" y1="194" x2="374" y2="568" stroke="#b8cde2" stroke-width="1.6" />
+        <line x1="385" y1="194" x2="385" y2="568" stroke="#b8cde2" stroke-width="1.6" />
+        <polygon points="340,185 436,185 422,158 354,158" fill="url(#stoneLight)" />
+        <rect x="348" y="150" width="80" height="8" fill="url(#goldTrim)" />
+        <polygon points="362,150 414,150 388,68" fill="url(#stoneLight)" />
+        <polygon points="388,150 414,150 388,68" fill="#b4c9df" />
 
-        <!-- Lớp viền chìm thứ hai tạo chiều sâu kiến trúc -->
-        <path d="M 840 720 L 840 414 Q 858 404 858 378 Q 910 350 960 316 Q 1010 350 1062 378 Q 1062 404 1080 414 L 1080 720 Z"
-              fill="url(#archInnerRim)" />
+        <polygon points="1166,575 1258,575 1250,612 1174,612" fill="url(#stoneShadow)" />
+        <rect x="1186" y="185" width="52" height="390" fill="url(#stoneLight)" />
+        <rect x="1186" y="185" width="20" height="390" fill="#b4c9df" opacity="0.8" />
+        <line x1="1215" y1="194" x2="1215" y2="568" stroke="#b8cde2" stroke-width="1.6" />
+        <line x1="1226" y1="194" x2="1226" y2="568" stroke="#b8cde2" stroke-width="1.6" />
+        <polygon points="1164,185 1260,185 1246,158 1178,158" fill="url(#stoneLight)" />
+        <rect x="1172" y="150" width="80" height="8" fill="url(#goldTrim)" />
+        <polygon points="1186,150 1238,150 1212,68" fill="url(#stoneLight)" />
+        <polygon points="1186,150 1212,150 1212,68" fill="#b4c9df" />
+      </g>
 
-        <!-- Lòng cổng (chứa 2 cánh cửa & ánh sáng mở cổng) -->
-        <g clip-path="url(#portalClip)">
-          <!-- Nền xanh chuyển sắc bên trong cổng -->
-          <rect x="850" y="330" width="220" height="395" fill="url(#portalInnerGrad)" />
+      <!-- Cặp cột tiền cảnh lớn hai bên (cặp 1) -->
+      <g>
+        <polygon points="148,625 276,625 266,675 158,675" fill="url(#stoneShadow)" />
+        <rect x="176" y="95" width="72" height="530" fill="url(#stoneLight)" />
+        <rect x="220" y="95" width="28" height="530" fill="#afc5dd" opacity="0.82" />
+        <line x1="192" y1="105" x2="192" y2="616" stroke="#b5cbe0" stroke-width="2" />
+        <line x1="206" y1="105" x2="206" y2="616" stroke="#b5cbe0" stroke-width="2" />
+        <polygon points="144,95 280,95 260,58 164,58" fill="url(#stoneLight)" />
+        <rect x="156" y="48" width="112" height="10" fill="url(#goldTrim)" />
+        <polygon points="176,48 248,48 212,-45" fill="url(#stoneLight)" />
+        <polygon points="212,48 248,48 212,-45" fill="#afc5dd" />
 
-          <!-- Luồng hào quang trắng rực sáng lên khi mở cổng -->
-          <rect id="svg-door-glow" x="850" y="330" width="220" height="395" fill="url(#portalOpenGlow)" />
+        <polygon points="1324,625 1452,625 1442,675 1334,675" fill="url(#stoneShadow)" />
+        <rect x="1352" y="95" width="72" height="530" fill="url(#stoneLight)" />
+        <rect x="1352" y="95" width="28" height="530" fill="#afc5dd" opacity="0.82" />
+        <line x1="1394" y1="105" x2="1394" y2="616" stroke="#b5cbe0" stroke-width="2" />
+        <line x1="1408" y1="105" x2="1408" y2="616" stroke="#b5cbe0" stroke-width="2" />
+        <polygon points="1320,95 1456,95 1436,58 1340,58" fill="url(#stoneLight)" />
+        <rect x="1332" y="48" width="112" height="10" fill="url(#goldTrim)" />
+        <polygon points="1352,48 1424,48 1388,-45" fill="url(#stoneLight)" />
+        <polygon points="1352,48 1388,48 1388,-45" fill="#afc5dd" />
+      </g>
 
-          <!-- CÁNH CỬA TRÁI -->
-          <g id="svg-leaf-left">
-            <rect x="852" y="332" width="108" height="388" fill="url(#portalInnerGrad)" fill-opacity="0.88" />
-            <line x1="959" y1="332" x2="959" y2="720" stroke="#dcebf7" stroke-width="2" />
-            <path d="M 865 710 L 865 428 Q 878 418 878 396 Q 918 372 958 348"
-                  fill="none" stroke="#e4f1fb" stroke-width="3.5" stroke-linecap="round" />
-            <path d="M 958 388 C 928 408, 898 438, 888 482 C 912 472, 936 484, 958 510"
-                  fill="none" stroke="#e4f1fb" stroke-width="4" stroke-linejoin="round" />
-            <path d="M 888 482 C 885 522, 912 545, 958 545"
-                  fill="none" stroke="#e4f1fb" stroke-width="3.5" />
-            <path d="M 958 558 L 928 578 L 944 596 L 920 616 L 958 632"
-                  fill="none" stroke="#e4f1fb" stroke-width="3.5" stroke-linejoin="round" />
-            <path d="M 958 646 C 932 656, 916 676, 916 705"
-                  fill="none" stroke="#e4f1fb" stroke-width="3" />
-          </g>
+      <!-- =================================================================
+           BIỂN MÂY TẦNG TRUNG (BÊN DƯỚI HÀNG CỘT & CÂY CẦU)
+           ================================================================= -->
+      <path d="M -40 585 Q 90 535 230 568 Q 370 520 530 562 Q 670 535 800 555 Q 930 535 1070 562 Q 1230 520 1370 568 Q 1510 535 1640 585 L 1640 900 L -40 900 Z"
+            fill="url(#cloudDeep)" />
 
-          <!-- CÁNH CỬA PHẢI -->
-          <g id="svg-leaf-right">
-            <rect x="960" y="332" width="108" height="388" fill="url(#portalInnerGrad)" fill-opacity="0.88" />
-            <line x1="961" y1="332" x2="961" y2="720" stroke="#dcebf7" stroke-width="2" />
-            <path d="M 1055 710 L 1055 428 Q 1042 418 1042 396 Q 1002 372 962 348"
-                  fill="none" stroke="#e4f1fb" stroke-width="3.5" stroke-linecap="round" />
-            <path d="M 962 388 C 992 408, 1022 438, 1032 482 C 1008 472, 984 484, 962 510"
-                  fill="none" stroke="#e4f1fb" stroke-width="4" stroke-linejoin="round" />
-            <path d="M 1032 482 C 1035 522, 1008 545, 962 545"
-                  fill="none" stroke="#e4f1fb" stroke-width="3.5" />
-            <path d="M 962 558 L 992 578 L 976 596 L 1000 616 L 962 632"
-                  fill="none" stroke="#e4f1fb" stroke-width="3.5" stroke-linejoin="round" />
-            <path d="M 962 646 C 988 656, 1004 676, 1004 705"
-                  fill="none" stroke="#e4f1fb" stroke-width="3" />
-          </g>
+      <!-- =================================================================
+           CÂY CẦU ĐÁ TRẮNG & BẬC THANG DẪN LÊN CÁNH CỬA CELESTIA
+           ================================================================= -->
+      <g>
+        <polygon points="440,900 1160,900 945,548 655,548" fill="url(#bridgeTop)" />
+        <polygon points="440,900 475,900 668,548 655,548" fill="#c7d8ea" />
+        <polygon points="1160,900 1125,900 932,548 945,548" fill="#b5cae0" />
+
+        <line x1="800" y1="548" x2="800" y2="900" stroke="#c3d5e8" stroke-width="2" />
+        <line x1="726" y1="548" x2="620" y2="900" stroke="#d0dfee" stroke-width="1.5" />
+        <line x1="874" y1="548" x2="980" y2="900" stroke="#d0dfee" stroke-width="1.5" />
+        <line x1="635" y1="605" x2="965" y2="605" stroke="#c6d7e9" stroke-width="2" />
+        <line x1="600" y1="668" x2="1000" y2="668" stroke="#c6d7e9" stroke-width="2" />
+        <line x1="558" y1="742" x2="1042" y2="742" stroke="#c6d7e9" stroke-width="2.2" />
+        <line x1="508" y1="825" x2="1092" y2="825" stroke="#c6d7e9" stroke-width="2.5" />
+
+        <rect x="645" y="534" width="310" height="14" rx="2" fill="#ffffff" stroke="#c3d4e6" stroke-width="1.2" />
+        <rect x="662" y="520" width="276" height="14" rx="2" fill="#f3f8fd" stroke="#c3d4e6" stroke-width="1.2" />
+        <rect x="678" y="506" width="244" height="14" rx="2" fill="#ffffff" stroke="#c3d4e6" stroke-width="1.2" />
+      </g>
+
+      <!-- =================================================================
+           CÁNH CỬA VÒM CELESTIA TRUNG TÂM
+           ================================================================= -->
+      <g id="celestia-arch">
+        <ellipse cx="800" cy="365" rx="190" ry="225" fill="#fff7dc" opacity="0.45" filter="url(#softGlow)" />
+
+        <path d="M 672 506 L 672 345 C 672 238, 738 175, 800 148 C 862 175, 928 238, 928 345 L 928 506 Z"
+              fill="url(#stoneLight)" stroke="#b8cde2" stroke-width="2" />
+        <path d="M 692 506 L 692 350 C 692 256, 748 200, 800 176 C 852 200, 908 256, 908 350 L 908 506 Z"
+              fill="none" stroke="url(#goldTrim)" stroke-width="3.5" />
+
+        <g transform="translate(800, 128)" filter="url(#softGlow)">
+          <polygon points="0,-24 6,-6 24,0 6,6 0,24 -6,6 -24,0 -6,-6" fill="#fff8df" stroke="#e3c27a" stroke-width="1.5" />
+          <circle cx="0" cy="0" r="4.5" fill="#ffffff" />
         </g>
 
-        <!-- NGÔI SAO 4 CÁNH TRÊN ĐỈNH VÒM CỔNG -->
-        <g id="svg-top-star" transform="translate(960, 312)">
-          <circle cx="0" cy="0" r="24" fill="#ffffff" opacity="0.35" />
-          <path d="M 0 -24 Q 3 -3 24 0 Q 3 3 0 24 Q -3 3 -24 0 Q -3 -3 0 -24 Z" fill="#ffffff" />
-          <circle cx="0" cy="0" r="4" fill="#eef8ff" />
+        <path d="M 642 355 C 605 335, 588 292, 616 266 C 636 248, 666 264, 658 288 C 652 304, 634 302, 634 288"
+              fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity="0.92" />
+        <path d="M 656 420 C 618 408, 602 374, 624 352 C 640 336, 664 348, 658 368"
+              fill="none" stroke="#e4effa" stroke-width="5" stroke-linecap="round" opacity="0.88" />
+        <path d="M 958 355 C 995 335, 1012 292, 984 266 C 964 248, 934 264, 942 288 C 948 304, 966 302, 966 288"
+              fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity="0.92" />
+        <path d="M 944 420 C 982 408, 998 374, 976 352 C 960 336, 936 348, 942 368"
+              fill="none" stroke="#e4effa" stroke-width="5" stroke-linecap="round" opacity="0.88" />
+
+        <path d="M 706 506 L 706 355 C 706 270, 754 218, 800 196 C 846 218, 894 270, 894 355 L 894 506 Z"
+              fill="url(#portalGlow)" class="portal-core" opacity="0.88" />
+
+        <g class="door-leaf-l">
+          <path d="M 708 506 L 708 356 C 708 273, 755 221, 799 199 L 799 506 Z"
+                fill="url(#stoneLight)" fill-opacity="0.92" stroke="#c3d5e8" stroke-width="1.5" />
+          <rect x="722" y="340" width="62" height="146" rx="3" fill="none" stroke="url(#goldTrim)" stroke-width="2" />
+          <path d="M 722 325 C 722 276, 754 240, 784 224 L 784 325 Z" fill="none" stroke="url(#goldTrim)" stroke-width="2" />
+          <circle cx="786" cy="396" r="5" fill="url(#goldTrim)" />
+        </g>
+
+        <g class="door-leaf-r">
+          <path d="M 892 506 L 892 356 C 892 273, 845 221, 801 199 L 801 506 Z"
+                fill="url(#stoneLight)" fill-opacity="0.92" stroke="#c3d5e8" stroke-width="1.5" />
+          <rect x="816" y="340" width="62" height="146" rx="3" fill="none" stroke="url(#goldTrim)" stroke-width="2" />
+          <path d="M 878 325 C 878 276, 846 240, 816 224 L 816 325 Z" fill="none" stroke="url(#goldTrim)" stroke-width="2" />
+          <circle cx="814" cy="396" r="5" fill="url(#goldTrim)" />
         </g>
       </g>
 
-      <!-- 6. BIỂN MÂY CUỘN XOÁY TIỀN CẢNH TRÀN HẾT MÀN HÌNH (TỪ -120 ĐẾN 2040, ĐÁY XUỐNG 940) -->
-      <g id="svg-clouds-front">
-        <!-- Làn sóng mây cuộn chính vắt ngang toàn bộ màn hình -->
-        <path d="M -120 715 C 80 675, 260 725, 480 700 C 710 675, 860 695, 1060 682 C 1320 665, 1520 590, 1740 535 C 1860 505, 1960 490, 2040 480 L 2040 940 L -120 940 Z"
-              fill="#d9eaf8" opacity="0.92" />
+      <!-- =================================================================
+           BIỂN MÂY TIỀN CẢNH BỒNG BỀNH CHE PHỦ HAI BÊN & CHÂN CẦU
+           ================================================================= -->
+      <g>
+        <path d="M -60 660 Q 70 595 215 638 Q 340 580 485 635 Q 585 660 640 725 L 640 920 L -60 920 Z"
+              fill="url(#cloudMid)" />
+        <path d="M 1660 655 Q 1525 590 1380 636 Q 1250 578 1110 632 Q 1010 658 955 725 L 955 920 L 1660 920 Z"
+              fill="url(#cloudMid)" />
 
-        <!-- Lớp mây sáng nổi khối tiền cảnh phủ kín đáy màn hình -->
-        <path d="M -120 755 C 120 720, 340 765, 590 735 C 840 705, 1040 675, 1310 700 C 1580 725, 1810 640, 2040 605 L 2040 940 L -120 940 Z"
-              fill="url(#cloudFrontGrad)" />
+        <path d="M -80 735 Q 60 665 210 715 Q 350 660 495 722 Q 615 760 695 835 Q 800 865 905 835 Q 985 760 1105 722 Q 1250 660 1390 715 Q 1540 665 1680 735 L 1680 930 L -80 930 Z"
+              fill="url(#cloudBright)" />
 
-        <!-- Mây xoắn ốc trang trí bên trái cổng -->
-        <path d="M 555 692 C 518 672, 488 628, 522 596 C 546 574, 586 592, 580 620 C 575 640, 550 642, 546 626 C 543 615, 555 608, 562 615 C 555 613, 550 620, 554 625 C 559 632, 570 628, 572 618 C 574 599, 546 587, 531 605 C 510 628, 535 665, 585 685 Z"
-              fill="#eaf5fd" opacity="0.92" />
-
-        <!-- Mây xoắn ốc trang trí thêm ở góc trái xa -->
-        <path d="M 210 715 C 175 698, 152 660, 182 632 C 202 614, 236 628, 230 652 C 226 668, 205 670, 202 657 C 200 648, 210 642, 216 648 C 210 646, 206 652, 209 656 C 214 662, 223 659, 224 650 C 226 634, 202 624, 189 639 C 172 659, 193 691, 236 708 Z"
+        <path d="M 95 665 C 58 645, 32 602, 66 572 C 90 552, 128 568, 122 595 C 117 614, 94 616, 90 601 C 87 590, 99 584, 105 590 C 99 588, 94 595, 98 600 C 103 606, 113 603, 115 593 C 117 575, 90 564, 75 581 C 55 603, 79 638, 125 658 Z"
               fill="#e3f1fc" opacity="0.78" />
-
-        <!-- Mây xoắn ốc trang trí góc phải tiền cảnh -->
         <path d="M 1495 665 C 1532 645, 1558 602, 1524 572 C 1500 552, 1462 568, 1468 595 C 1473 614, 1496 616, 1500 601 C 1503 590, 1491 584, 1485 590 C 1491 588, 1496 595, 1492 600 C 1487 606, 1477 603, 1475 593 C 1473 575, 1500 564, 1515 581 C 1535 603, 1511 638, 1465 658 Z"
               fill="#eaf5fd" opacity="0.86" />
 
-        <!-- Các mảnh tinh thể ánh sáng bay lơ lửng trên mặt biển mây -->
         <polygon points="682,662 692,656 688,668" fill="#ffffff" opacity="0.9" />
         <polygon points="704,674 712,669 709,678" fill="#ffffff" opacity="0.75" />
         <polygon points="1082,682 1102,674 1095,690 1076,692" fill="#ffffff" opacity="0.92" />
@@ -844,26 +1101,42 @@
 <div id="page" class="min-h-screen p-4 md:p-8">
 
   <!-- HEADER -->
-  <header class="max-w-7xl mx-auto flex flex-wrap justify-between items-end gap-4 mb-10 pb-6 relative">
+  <header class="w-full max-w-7xl mx-auto flex flex-wrap justify-between items-end gap-4 mb-10 pb-6 relative">
     <div>
-      <div class="eyebrow mb-2">Teyvat Co-op</div>
-      <h1 class="font-display text-4xl md:text-5xl font-bold title-gold leading-tight">
-        Genshin Impact &amp; Co-op Randomizer
+      <div class="eyebrow mb-2">Teyvat Co-op Registry</div>
+      <h1 class="font-display text-3xl sm:text-4xl md:text-5xl font-bold title-gold leading-tight">
+        Genshin Roster &amp; Co-op Randomizer
       </h1>
       <p class="text-sm mt-2" style="color: var(--ink-dim);">Đồng bộ kho nhân vật &amp; quay ngẫu nhiên thời gian thực</p>
     </div>
-    <div id="user-nav" class="hidden flex items-center gap-5">
-      <div class="text-right">
-        <div id="nav-username" class="font-display text-xl font-semibold" style="color: var(--gold-bright);"></div>
-        <div id="nav-uid" class="text-xs font-mono" style="color: var(--ink-mute);"></div>
+
+    <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+      <!-- BỘ CHUYỂN ĐỔI MODE: HIỆN TẠI / DARK / LIGHT -->
+      <div class="theme-switcher" role="group" aria-label="Chuyển đổi giao diện">
+        <button type="button" data-theme-btn="default" onclick="setThemeMode('default')" class="theme-btn active" title="Giao diện Teyvat mặc định">
+          ✦ Hiện tại
+        </button>
+        <button type="button" data-theme-btn="dark" onclick="setThemeMode('dark')" class="theme-btn" title="Giao diện tối thuần">
+          🌙 Dark
+        </button>
+        <button type="button" data-theme-btn="light" onclick="setThemeMode('light')" class="theme-btn" title="Giao diện sáng ban ngày">
+          ☀️ Light
+        </button>
       </div>
-      <button onclick="handleLogout()" class="btn-ghost px-4 py-2 text-sm font-medium">Đăng xuất</button>
+
+      <div id="user-nav" class="hidden flex items-center gap-4">
+        <div class="text-right">
+          <div id="nav-username" class="font-display text-lg sm:text-xl font-semibold" style="color: var(--gold-bright);"></div>
+          <div id="nav-uid" class="text-xs font-mono" style="color: var(--ink-mute);"></div>
+        </div>
+        <button onclick="handleLogout()" class="btn-ghost px-4 py-2 text-sm font-medium">Đăng xuất</button>
+      </div>
     </div>
     <hr class="divider absolute left-0 right-0 bottom-0" />
   </header>
 
   <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ -->
-  <section id="auth-section" class="hidden panel panel-gold max-w-md mx-auto p-7 md:p-9 mt-8 fade-in">
+  <section id="auth-section" class="hidden panel panel-gold w-full max-w-md mx-auto p-7 md:p-9 mt-6 mb-12 fade-in">
     <div class="text-center mb-7">
       <div class="eyebrow mb-2">Chào mừng, Lữ khách</div>
       <h2 class="font-display text-3xl font-bold title-gold">Bước vào Teyvat</h2>
@@ -884,7 +1157,6 @@
         <input type="password" id="auth-password" required minlength="6" placeholder="••••••••" class="field" />
       </div>
 
-      <!-- Trường mở rộng khi Đăng ký -->
       <div id="register-fields" class="hidden space-y-5 pt-5">
         <div class="ornament"><i></i></div>
         <div>
@@ -897,7 +1169,7 @@
         </div>
       </div>
 
-      <div id="auth-error" class="text-sm hidden px-4 py-3 rounded-xl" style="color:#ffb4bf; background: rgba(244,63,94,.1); border:1px solid rgba(244,63,94,.3);"></div>
+      <div id="auth-error" class="text-sm hidden px-4 py-3 rounded-xl" style="color:#f43f5e; background: rgba(244,63,94,.12); border:1px solid rgba(244,63,94,.32);"></div>
 
       <button type="submit" id="auth-submit-btn" class="btn-gold w-full py-3.5 text-base mt-1">
         Đăng nhập ngay
@@ -906,7 +1178,7 @@
   </section>
 
   <!-- MÀN HÌNH CHÍNH (SAU KHI ĐĂNG NHẬP) -->
-  <main id="app-section" class="hidden max-w-7xl mx-auto space-y-10 fade-in">
+  <main id="app-section" class="hidden w-full max-w-7xl mx-auto space-y-10 mb-12 fade-in">
 
     <!-- KHU VỰC 0: VÒNG QUAY BOSS & RÀNG BUỘC NGUYÊN TỐ -->
     <div class="panel panel-gold p-6 md:p-8">
@@ -916,7 +1188,7 @@
           <h2 class="font-display text-3xl font-bold title-gold">Vòng Quay Boss</h2>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
-          <span id="boss-remaining-badge" class="text-xs px-3.5 py-2 rounded-xl font-semibold" style="color: var(--gold-bright); background: rgba(7,11,22,.65); border: 1px solid var(--line);">
+          <span id="boss-remaining-badge" class="text-xs px-3.5 py-2 rounded-xl font-semibold" style="color: var(--gold-bright); background: var(--surface-sub); border: 1px solid var(--line);">
             Còn 0/0 Boss
           </span>
           <button onclick="toggleBossManager()" class="btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-wider">
@@ -926,7 +1198,7 @@
       </div>
 
       <!-- Khung thêm / quản lý Boss (ẩn/hiện) -->
-      <div id="boss-manager-panel" class="hidden mt-5 p-5 rounded-2xl fade-in" style="background: rgba(7,11,22,.65); border: 1px solid var(--line);">
+      <div id="boss-manager-panel" class="hidden mt-5 p-5 rounded-2xl fade-in" style="background: var(--surface-sub); border: 1px solid var(--line);">
         <div class="flex justify-between items-center mb-4">
           <span class="text-xs uppercase tracking-widest font-semibold" style="color: var(--gold);">Thêm Boss mới vào danh sách</span>
           <button onclick="toggleBossManager()" class="text-xs" style="color: var(--ink-mute);">Đóng ✕</button>
@@ -979,7 +1251,7 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         <!-- Cột điều khiển Quay Boss & Reset -->
-        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between gap-5" style="background: rgba(7,11,22,.45); border:1px solid var(--line-soft);">
+        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between gap-5" style="background: var(--surface-sub); border:1px solid var(--line-soft);">
           <div>
             <div class="text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--ink-dim);">Boss trong vòng lặp hiện tại</div>
             <div id="boss-pool-chips" class="flex flex-wrap gap-2 max-h-44 overflow-y-auto pr-1">
@@ -1000,7 +1272,7 @@
           </div>
         </div>
 
-        <!-- Cột hiển thị Boss hiện tại đang áp dụng cho lượt quay nhân vật -->
+        <!-- Cột hiển thị Boss hiện tại -->
         <div class="lg:col-span-2 stage flex flex-col justify-between">
           <div class="flex justify-between items-center mb-3">
             <span class="eyebrow">Mục tiêu Boss hiện tại</span>
@@ -1036,7 +1308,7 @@
           <h2 class="font-display text-3xl font-bold title-gold">Vòng Quay Ngẫu Nhiên (2–4 Người)</h2>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
-          <label class="text-sm flex items-center gap-3 px-4 py-2 rounded-xl" style="color: var(--ink-dim); background: rgba(7,11,22,.6); border:1px solid var(--line-soft);">
+          <label class="text-sm flex items-center gap-3 px-4 py-2 rounded-xl" style="color: var(--ink-dim); background: var(--surface-sub); border:1px solid var(--line-soft);">
             <span>Số người quay</span>
             <select id="spin-count" class="select-gold">
               <option value="2">2 người</option>
@@ -1044,7 +1316,7 @@
               <option value="4" selected>4 người</option>
             </select>
           </label>
-          <span class="live-badge">Syns</span>
+          <span class="live-badge">Instant Sync</span>
         </div>
       </div>
 
@@ -1052,14 +1324,14 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         <!-- Cột chọn người tham gia quay -->
-        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between" style="background: rgba(7,11,22,.45); border:1px solid var(--line-soft);">
+        <div class="lg:col-span-1 p-5 rounded-2xl flex flex-col justify-between" style="background: var(--surface-sub); border:1px solid var(--line-soft);">
           <div>
             <div class="flex justify-between items-center mb-4">
               <span class="text-xs uppercase tracking-widest font-semibold" style="color: var(--ink-dim);">Thành viên tham gia</span>
               <div class="space-x-2 text-xs">
                 <button onclick="toggleAllPlayers(true)" class="link-gold">Tất cả</button>
                 <span style="color: var(--ink-mute);">/</span>
-                <button onclick="toggleAllPlayers(false)" style="color: var(--ink-mute);" class="hover:text-white transition">Bỏ chọn</button>
+                <button onclick="toggleAllPlayers(false)" style="color: var(--ink-mute);" class="hover:opacity-80 transition">Bỏ chọn</button>
               </div>
             </div>
             <div id="participant-checkboxes" class="flex flex-wrap gap-2"></div>
@@ -1074,7 +1346,7 @@
         <div class="lg:col-span-2 stage flex flex-col">
           <div class="flex justify-between items-center mb-4">
             <span class="eyebrow">Đội hình ngẫu nhiên hiện tại</span>
-            <span id="lobby-meta" class="text-xs" style="color: var(--ink-mute);"></span>
+            <span id="lobby-meta" class="text-xs" style="color: var(--ink-mute);">Giữ chuột 3s vào thẻ để phóng to</span>
           </div>
           <div id="lobby-result" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-auto">
             <div class="col-span-full text-center italic text-sm py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>
@@ -1116,19 +1388,59 @@
         <div class="flex flex-wrap justify-between items-end gap-4 mb-6">
           <div>
             <h3 class="font-display text-2xl font-bold" style="color: var(--gold-bright);">Chọn các nhân vật bạn đang sở hữu</h3>
-            <p class="text-xs mt-1" style="color: var(--ink-mute);">Hệ thống tự động lưu và đồng bộ ngay khi bạn bấm chọn / bỏ chọn.</p>
+            <p class="text-xs mt-1" style="color: var(--ink-mute);">Bấm chọn / bỏ chọn tự động lưu · Giữ chuột 3s vào khung nhân vật để phóng to tên &amp; icon.</p>
           </div>
           <input type="text" id="char-search" oninput="renderCharacterGrid()" placeholder="Tìm tên nhân vật..."
             class="field sm:!w-72" />
         </div>
 
-        <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[560px] overflow-y-auto pr-2"></div>
+        <div id="character-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[560px] overflow-y-auto pr-2 py-2"></div>
       </div>
     </div>
 
   </main>
 
-<!-- MODAL 1: THÔNG BÁO QUAY TRÚNG BOSS (CHỈ CÓ DUY NHẤT 1 NÚT XÁC NHẬN) -->
+  <!-- FOOTER CREDIT & DISCORD (LẤY CẢM HỨNG TỪ LUNARIS FOOTER) -->
+  <footer class="site-footer w-full max-w-7xl mx-auto rounded-2xl px-6 py-5 mt-8">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="text-center md:text-left space-y-2">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 text-xs sm:text-sm font-medium" style="color: var(--ink-dim);">
+          <button type="button" onclick="openRulesModal()" class="hover:underline underline-offset-4 transition" style="color: var(--gold-bright);">
+            Luật &amp; Nguyên tắc
+          </button>
+          <button type="button" onclick="openRulesModal()" class="hover:underline underline-offset-4 transition">
+            Bản quyền Server
+          </button>
+          <span>
+            Credit: <strong style="color: var(--gold);">Ngọt</strong>
+          </span>
+        </div>
+        <p class="text-xs leading-relaxed" style="color: var(--ink-mute);">
+          Dự án cộng đồng Co-op Randomizer được thực hiện bởi <strong style="color: var(--ink-dim);">Ngọt</strong> · Sản phẩm thuộc bản quyền server. Genshin Impact và toàn bộ hình ảnh nhân vật thuộc quyền sở hữu của HoYoverse.
+        </p>
+      </div>
+
+      <!-- Nhóm nút biểu tượng bên phải (Luật/Nguyên tắc + Discord ẩn link) -->
+      <div class="flex items-center gap-2.5 shrink-0">
+        <button type="button" onclick="openRulesModal()" class="footer-icon-btn" title="Luật &amp; Nguyên tắc" aria-label="Luật và Nguyên tắc">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <path d="M9 12h6"></path>
+            <path d="M9 16h6"></path>
+          </svg>
+        </button>
+
+        <a href="https://discord.gg/jmdkN5jBVa" target="_blank" rel="noopener noreferrer" class="footer-icon-btn footer-discord-btn" title="Tham gia Discord Server" aria-label="Discord Server">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+<!-- MODAL 1: THÔNG BÁO QUAY TRÚNG BOSS -->
 <div id="boss-alert-modal" class="modal-backdrop hidden">
   <div class="panel panel-gold modal-box">
     <div class="eyebrow mb-2">Mục tiêu đã được chọn</div>
@@ -1157,9 +1469,71 @@
   </div>
 </div>
 
+<!-- MODAL 3: LUẬT & NGUYÊN TẮC / BẢN QUYỀN SERVER -->
+<div id="rules-credit-modal" class="modal-backdrop hidden" onclick="if(event.target===this) closeRulesModal()">
+  <div class="panel panel-gold modal-box text-left">
+    <div class="text-center mb-4">
+      <div class="eyebrow mb-1">Server Guidelines &amp; Copyright</div>
+      <h3 class="font-display text-3xl font-bold title-gold">Luật &amp; Nguyên Tắc</h3>
+    </div>
+
+    <div class="ornament my-4"><i></i></div>
+
+    <div class="space-y-3 text-sm leading-relaxed" style="color: var(--ink-dim);">
+      <div class="p-4 rounded-xl" style="background: var(--surface-sub); border: 1px solid var(--line-soft);">
+        <ul class="space-y-2 list-disc pl-4">
+          <li>Mỗi thành viên cập nhật trung thực danh sách nhân vật mình đang sở hữu trong mục <strong>Kho Nhân Vật Của Tôi</strong>.</li>
+          <li>Khi quay Boss &amp; quay đội hình ngẫu nhiên, cả nhóm tuân thủ đúng nguyên tố yêu cầu và nhân vật hệ thống đã chỉ định.</li>
+          <li>Giữ tinh thần giao lưu vui vẻ, hỗ trợ lẫn nhau trong mọi lượt khiêu chiến Co-op.</li>
+        </ul>
+      </div>
+
+      <div class="p-4 rounded-xl text-center" style="background: rgba(227,194,122,.12); border: 1px solid var(--gold);">
+        <p class="font-display text-lg font-bold" style="color: var(--gold-bright);">
+          ✦ Sản phẩm thuộc bản quyền server ✦
+        </p>
+        <p class="text-sm mt-1 font-medium" style="color: var(--ink);">
+          Thực hiện bởi <strong>Ngọt</strong> — Chúc mọi người chơi game vui vẻ!
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <button type="button" onclick="closeRulesModal()" class="btn-gold w-full py-3 text-sm uppercase tracking-widest">
+        Đã hiểu
+      </button>
+    </div>
+  </div>
+</div>
+
 </div>
 
   <script>
+    // =========================================================================
+    // 0. QUẢN LÝ THEME MODE (HIỆN TẠI / DARK MODE / LIGHT MODE)
+    // =========================================================================
+    function setThemeMode(mode) {
+      const valid = ['default', 'dark', 'light'].includes(mode) ? mode : 'default';
+      document.documentElement.setAttribute('data-theme', valid);
+      try { localStorage.setItem('genshin_theme_mode', valid); } catch (_) {}
+      document.querySelectorAll('[data-theme-btn]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme-btn') === valid);
+      });
+    }
+
+    (function initThemeMode() {
+      let saved = 'default';
+      try { saved = localStorage.getItem('genshin_theme_mode') || 'default'; } catch (_) {}
+      setThemeMode(saved);
+    })();
+
+    function openRulesModal() {
+      document.getElementById('rules-credit-modal').classList.remove('hidden');
+    }
+    function closeRulesModal() {
+      document.getElementById('rules-credit-modal').classList.add('hidden');
+    }
+
     // =========================================================================
     // CẤU HÌNH KẾT NỐI SUPABASE
     // =========================================================================
@@ -1168,17 +1542,30 @@
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Biến trạng thái toàn cục
-    let currentUser = null;
     let authMode = 'login';
+    let currentUser = null;
     let allCharacters = [];
     let allUsers = [];
+    let userCharactersMap = {};
+    let myCharacterIds = new Set();
+    let realtimeChannel = null;
+
+    // Theo dõi thao tác chọn/bỏ chọn nhân vật đang chờ đồng bộ để chống xung đột polling/realtime
+    const pendingCharOps = new Map();
+    let charOpCounter = 0;
+
+    // Trạng thái Boss & Ràng buộc nguyên tố
     let allBosses = [];
     let activeBoss = null;
     let pendingBoss = null;
     let lastLobbyResults = [];
-    let userCharactersMap = {};
-    let myCharacterIds = new Set();
+
+    // Chữ ký DOM chống nhấp nháy khi đồng bộ định kỳ
+    let lastLobbySig = null;
+    let lastActiveBossSig = null;
+    let lastPendingBossSig = null;
+    let lastBossListSig = null;
+    let bossMutationLockUntil = 0;
 
     const ELEMENT_LABELS = {
       Pyro: '🔥 Pyro',
@@ -1190,131 +1577,192 @@
       Geo: '🪨 Geo'
     };
 
+    const WEAPON_LABELS = {
+      Sword: 'Kiếm Đơn',
+      Claymore: 'Trọng Kiếm',
+      Polearm: 'Vũ Khí Cán Dài',
+      Bow: 'Cung',
+      Catalyst: 'Pháp Khí'
+    };
 
-    function isBossRequireMain(bossObj) {
-      if (!bossObj) return false;
-      return Boolean(bossObj['cần_main'] ?? bossObj.can_main ?? bossObj['cần-main']);
+    function isBossRequireMain(boss) {
+      if (!boss) return false;
+      return Boolean(boss['cần_main'] ?? boss.can_main ?? boss.require_main);
+    }
+
+    function esc(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function renderElementBadge(el) {
       if (!el) return '';
-      const label = ELEMENT_LABELS[el] || el;
-      return `<span class="el-badge el-${esc(el)}">${esc(label)}</span>`;
+      const key = Object.keys(ELEMENT_LABELS).find(k => k.toLowerCase() === String(el).trim().toLowerCase()) || el;
+      const label = ELEMENT_LABELS[key] || el;
+      return `<span class="el-badge el-${esc(key)}">${esc(label)}</span>`;
     }
-
-    const WEAPON_LABELS = {
-      Sword: '⚔️ Kiếm Đơn',
-      Claymore: '🗡️ Trọng Kiếm',
-      Polearm: '🔱 Vũ Khí Cán Dài',
-      Bow: '🏹 Cung',
-      Catalyst: '📖 Pháp Khí'
-    };
 
     function renderWeaponBadge(wp) {
       if (!wp) return '';
-      const key = Object.keys(WEAPON_LABELS).find(k => k.toLowerCase() === String(wp).trim().toLowerCase());
-      const label = key ? WEAPON_LABELS[key] : wp;
-      return `<span class="wp-badge">${esc(label)}</span>`;
+      const key = Object.keys(WEAPON_LABELS).find(k => k.toLowerCase() === String(wp).trim().toLowerCase()) || wp;
+      const label = WEAPON_LABELS[key] || wp;
+      return `<span class="wp-badge">⚔️ ${esc(label)}</span>`;
     }
 
-
-    // Tự động ánh xạ tên nhân vật sang link icon chuẩn Enka/Ambr CDN nếu cột icon_url chưa có
-    const CDN_SLUG_OVERRIDES = {
-      'traveller': 'PlayerBoy', 'traveler': 'PlayerBoy', 'aether': 'PlayerBoy', 'lumine': 'PlayerGirl',
-      'nhà lữ hành': 'PlayerBoy', 'nha lu hanh': 'PlayerBoy',
-      'hu tao': 'Hutao', 'raiden shogun': 'Shougun', 'raiden': 'Shougun',
-      'kamisato ayaka': 'Ayaka', 'kamisato ayato': 'Ayato',
-      'kaedehara kazuha': 'Kazuha', 'sangonomiya kokomi': 'Kokomi',
-      'arataki itto': 'Itto', 'kujou sara': 'Sara', 'kuki shinobu': 'Shinobu',
-      'shikanoin heizou': 'Heizou', 'yae miko': 'Yae', 'yoimiya': 'Yoimiya',
-      'kirara': 'Momoka', 'chiori': 'Chiori', 'thoma': 'Tohma', 'gorou': 'Gorou', 'sayu': 'Sayu',
-      'yun jin': 'Yunjin', 'yanfei': 'Feiyan', 'xianyun': 'Liuyun', 'baizhu': 'Baizhuer',
-      'alhaitham': 'Alhatham', 'wanderer': 'Wanderer', 'scaramouche': 'Wanderer',
-      'lyney': 'Liney', 'lynette': 'Linette', 'freminet': 'Freminet',
-      'neuvillette': 'Neuvillette', 'wriothesley': 'Wriothesley', 'furina': 'Furina',
-      'charlotte': 'Charlotte', 'navia': 'Navia', 'chevreuse': 'Chevreuse',
-      'gaming': 'Gaming', 'arlecchino': 'Arlecchino', 'clorinde': 'Clorinde',
-      'sigewinne': 'Sigewinne', 'emilie': 'Emilie',
-      'kachina': 'Kachina', 'kinich': 'Kinich', 'mualani': 'Mualani', 'xilonen': 'Xilonen',
-      'chasca': 'Chasca', 'ororon': 'Olorun', 'mavuika': 'Mavuika', 'citlali': 'Citlali',
-      'lan yan': 'Lanyan', 'yumemizuki mizuki': 'Mizuki', 'varesa': 'Varesa', 'iansan': 'Iansan',
-      'escofier': 'Escoffier', 'escoffier': 'Escoffier', 'ifa': 'Ifa', 'skirk': 'Skirk', 'dahlia': 'Dahlia',
-      'jean': 'Qin', 'amber': 'Ambor', 'noelle': 'Noel', 'ningguang': 'Ningguang',
-      'xingqiu': 'Xingqiu', 'chongyun': 'Chongyun', 'tartaglia': 'Tartaglia', 'childe': 'Tartaglia'
-    };
-
-    function getCharacterIconUrl(charObj) {
-      if (!charObj) return '';
-      if (charObj.icon_url && String(charObj.icon_url).trim()) {
-        return String(charObj.icon_url).trim();
-      }
-      const rawName = String(charObj.name || '').trim();
-      if (!rawName) return '';
-      const lower = rawName.toLowerCase();
-      let slug = CDN_SLUG_OVERRIDES[lower];
-      if (!slug) {
-        const parts = rawName.split(/\s+/);
-        const lastWord = parts[parts.length - 1].replace(/[^a-zA-Z0-9]/g, '');
-        slug = lastWord ? lastWord.charAt(0).toUpperCase() + lastWord.slice(1) : '';
-      }
+    function getCharacterIconUrl(char) {
+      if (!char) return '';
+      const raw = (char.icon_url || '').trim();
+      if (raw) return raw;
+      const name = (char.name || '').trim();
+      if (!name) return '';
+      const slug = name.replace(/[^a-zA-Z0-9]/g, '');
       return slug ? `https://enka.network/ui/UI_AvatarIcon_${slug}.png` : '';
     }
 
-    function renderAvatarImg(charObj, imgClass, fallbackClass) {
-      const name = charObj ? charObj.name : '?';
-      const initial = esc(name.charAt(0).toUpperCase());
-      const url = getCharacterIconUrl(charObj);
-      if (!url) return `<span class="${fallbackClass}">${initial}</span>`;
-      return `<img src="${esc(url)}" alt="${esc(name)}" class="${imgClass}" loading="lazy" onerror="this.outerHTML='<span class=\'${fallbackClass}\'>${initial}</span>'" />`;
-    }
-
-    function esc(str) {
-      return String(str ?? '').replace(/[&<>"']/g, ch => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[ch]));
+    function renderAvatarImg(char, imgClass, fallbackClass) {
+      const url = getCharacterIconUrl(char);
+      const initial = esc(((char && char.name) || '?').charAt(0).toUpperCase());
+      if (!url) {
+        return `<span class="${fallbackClass}">${initial}</span>`;
+      }
+      return `<img src="${esc(url)}" alt="${esc(char.name || '')}" class="${imgClass}" loading="lazy" onerror="this.outerHTML='<span class=&quot;${fallbackClass}&quot;>${initial}</span>'" />`;
     }
 
     // =========================================================================
-    // 1. XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ
+    // HIỆU ỨNG PHÓNG TO KHUNG NHÂN VẬT KHI GIỮ CHUỘT ~3 GIÂY
+    // =========================================================================
+    function initDelayedHoverZoom(containerId, cardSelector) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      let activeCard = null;
+      let hoverTimer = null;
+
+      function clearCardZoom(card) {
+        if (hoverTimer) {
+          clearTimeout(hoverTimer);
+          hoverTimer = null;
+        }
+        if (card) {
+          card.classList.remove('hover-charging', 'card-zoomed');
+        }
+      }
+
+      container.addEventListener('mouseover', (e) => {
+        const card = e.target.closest(cardSelector);
+        if (!card || !container.contains(card)) return;
+        if (card === activeCard) return;
+
+        clearCardZoom(activeCard);
+        activeCard = card;
+
+        // Kích hoạt thanh tiến trình 3 giây
+        void card.offsetWidth;
+        card.classList.add('hover-charging');
+
+        hoverTimer = setTimeout(() => {
+          if (activeCard === card && document.body.contains(card)) {
+            card.classList.remove('hover-charging');
+            card.classList.add('card-zoomed');
+          }
+        }, 3000);
+      });
+
+      container.addEventListener('mouseout', (e) => {
+        if (!activeCard) return;
+        const related = e.relatedTarget;
+        if (related && activeCard.contains(related)) return;
+        clearCardZoom(activeCard);
+        activeCard = null;
+      });
+    }
+
+    // =========================================================================
+    // 0. LUỒNG MỞ ĐẦU: SPLASH ĐEN -> ĐĂNG NHẬP -> CÁNH CỬA CELESTIA -> APP
+    // =========================================================================
+    let splashDone = false;
+    let appReadyPromise = null;
+    let isEnteringDoor = false;
+
+    function finishSplash() {
+      if (splashDone) return;
+      splashDone = true;
+      const splash = document.getElementById('splash');
+      splash.classList.add('out');
+      setTimeout(() => splash.remove(), 950);
+
+      if (!currentUser) {
+        document.getElementById('auth-section').classList.remove('hidden');
+      }
+    }
+
+    setTimeout(finishSplash, 3500);
+
+    function showCelestiaGate(user) {
+      const displayName = (user && user.user_metadata && user.user_metadata.username) || (user && user.email) || 'Lữ khách';
+      document.getElementById('door-welcome').textContent = `Chào mừng, ${displayName}`;
+      const gate = document.getElementById('door-gate');
+      gate.classList.remove('hidden', 'opening', 'leaving');
+      requestAnimationFrame(() => gate.classList.add('show'));
+    }
+
+    async function openCelestiaDoor() {
+      if (isEnteringDoor) return;
+      isEnteringDoor = true;
+
+      const gate = document.getElementById('door-gate');
+      const flash = document.getElementById('celestia-flash');
+
+      gate.classList.add('opening');
+      setTimeout(() => flash.classList.add('on'), 550);
+
+      if (appReadyPromise) await appReadyPromise;
+
+      setTimeout(() => {
+        gate.classList.add('leaving');
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('app-section').classList.remove('hidden');
+        flash.classList.remove('on');
+
+        setTimeout(() => {
+          gate.classList.add('hidden');
+          gate.classList.remove('show', 'opening', 'leaving');
+          isEnteringDoor = false;
+        }, 1000);
+      }, 1150);
+    }
+
+    // =========================================================================
+    // 1. QUẢN LÝ ĐĂNG NHẬP & ĐĂNG KÝ
     // =========================================================================
     function switchAuthTab(mode) {
       authMode = mode;
       const regFields = document.getElementById('register-fields');
       const submitBtn = document.getElementById('auth-submit-btn');
       const tabLogin = document.getElementById('tab-login');
-      const tabReg = document.getElementById('tab-register');
+      const tabRegister = document.getElementById('tab-register');
       document.getElementById('auth-error').classList.add('hidden');
 
-      if (mode === 'register') {
-        regFields.classList.remove('hidden');
-        document.getElementById('auth-username').required = true;
-        document.getElementById('auth-uid').required = true;
-        submitBtn.textContent = 'Tạo tài khoản & Tham gia';
-        tabReg.className = 'seg-btn active';
-        tabLogin.className = 'seg-btn';
-      } else {
+      if (mode === 'login') {
         regFields.classList.add('hidden');
-        document.getElementById('auth-username').required = false;
-        document.getElementById('auth-uid').required = false;
         submitBtn.textContent = 'Đăng nhập ngay';
         tabLogin.className = 'seg-btn active';
-        tabReg.className = 'seg-btn';
-      }
-    }
-
-    function showAuthMsg(text, type) {
-      const box = document.getElementById('auth-error');
-      box.textContent = text;
-      if (type === 'info') {
-        box.style.color = '#bfe9d7';
-        box.style.background = 'rgba(127,209,176,.1)';
-        box.style.border = '1px solid rgba(127,209,176,.3)';
+        tabRegister.className = 'seg-btn';
+        document.getElementById('auth-username').required = false;
+        document.getElementById('auth-uid').required = false;
       } else {
-        box.style.color = '#ffb4bf';
-        box.style.background = 'rgba(244,63,94,.1)';
-        box.style.border = '1px solid rgba(244,63,94,.3)';
+        regFields.classList.remove('hidden');
+        submitBtn.textContent = 'Tạo tài khoản mới';
+        tabRegister.className = 'seg-btn active';
+        tabLogin.className = 'seg-btn';
+        document.getElementById('auth-username').required = true;
+        document.getElementById('auth-uid').required = true;
       }
-      box.classList.remove('hidden');
     }
 
     async function handleAuth(e) {
@@ -1322,188 +1770,116 @@
       const email = document.getElementById('auth-email').value.trim();
       const password = document.getElementById('auth-password').value;
       const errorBox = document.getElementById('auth-error');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
       errorBox.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Đang kết nối Celestia...';
 
       try {
         if (authMode === 'register') {
           const username = document.getElementById('auth-username').value.trim();
           const uid = document.getElementById('auth-uid').value.trim();
 
-          const { data, error } = await supabaseClient.auth.signUp({ email, password });
-          if (error) throw error;
+          const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: { data: { username, uid } }
+          });
+          if (signUpError) throw signUpError;
 
-          if (data.user) {
+          if (authData.user) {
             const { error: profileError } = await supabaseClient
               .from('users')
-              .insert([{ id: data.user.id, username, uid }]);
+              .upsert([{ id: authData.user.id, username, uid }], { onConflict: 'id' });
             if (profileError) throw profileError;
           }
 
-          if (!data.session) {
-            showAuthMsg('Đã tạo tài khoản. Hãy kiểm tra email để xác nhận, sau đó đăng nhập.', 'info');
+          if (!authData.session) {
+            alert('Đăng ký thành công! Vui lòng kiểm tra email xác nhận (hoặc tắt Confirm Email trong Supabase Auth) rồi đăng nhập.');
+            switchAuthTab('login');
           }
         } else {
-          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) throw error;
+          const { error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (signInError) throw signInError;
         }
       } catch (err) {
-        showAuthMsg('Lỗi: ' + (err.message || 'Không thể xác thực.'), 'error');
+        errorBox.textContent = err.message || 'Có lỗi xảy ra khi xác thực.';
+        errorBox.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = authMode === 'login' ? 'Đăng nhập ngay' : 'Tạo tài khoản mới';
       }
     }
 
     async function handleLogout() {
+      stopPolling();
+      if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
       await supabaseClient.auth.signOut();
     }
 
-    // =========================================================================
-    // 1b. HIỆU ỨNG MỞ ĐẦU: SPLASH -> ĐĂNG NHẬP -> CÁNH CỬA -> VÀO APP
-    // =========================================================================
-    const $ = id => document.getElementById(id);
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-    let entered = false;
-    let gateShown = false;
-    let gateState = 'idle';
-    let dataReady = Promise.resolve();
-    let realtimeChannel = null;
-
-    let splashResolved;
-    const splashDone = new Promise(r => { splashResolved = r; });
-
-    (function runSplash() {
-      const splash = $('splash');
-      let finished = false;
-      const finish = () => {
-        if (finished) return;
-        finished = true;
-        splash.classList.add('out');
-        setTimeout(() => { splash.remove(); splashResolved(); }, 900);
-      };
-      setTimeout(finish, 3600);
-      splash.addEventListener('click', finish);
-    })();
-
-    function showAuth() {
-      const a = $('auth-section');
-      a.classList.remove('hidden', 'auth-leaving', 'fade-in');
-      void a.offsetWidth;
-      a.classList.add('fade-in');
-    }
-
-    splashDone.then(() => { if (!currentUser) showAuth(); });
-
-    async function showDoor() {
-      if (gateShown) return;
-      gateShown = true;
-      const door = $('door-gate');
-
-      const auth = $('auth-section');
-      if (!auth.classList.contains('hidden')) {
-        auth.classList.add('auth-leaving');
-        await sleep(750);
-        auth.classList.add('hidden');
-      }
-      if (!currentUser) return;
-
-      $('door-greet').textContent = '';
-      dataReady.then(() => {
-        const me = allUsers.find(u => u.id === currentUser?.id);
-        if (me) $('door-greet').textContent = 'Chào mừng, ' + me.username;
-      });
-      gateState = 'closed';
-      door.classList.remove('hidden');
-      requestAnimationFrame(() => requestAnimationFrame(() => door.classList.add('show')));
-
-      await sleep(1300);
-      if (!currentUser) return;
-      gateState = 'ready';
-      door.classList.add('ready');
-    }
-
-    async function openDoor() {
-      if (gateState !== 'ready') return;
-      gateState = 'opening';
-      const door = $('door-gate');
-      door.classList.add('opening');
-
-      await sleep(1300);
-      if (!currentUser) return;
-      $('app-section').classList.remove('hidden');
-      $('user-nav').classList.remove('hidden');
-
-      await sleep(500);
-      door.classList.add('leaving');
-      await sleep(1000);
-
-      door.classList.add('hidden');
-      door.classList.remove('show', 'ready', 'opening', 'leaving');
-      entered = true;
-      gateState = 'done';
-    }
-
-    $('door-gate').addEventListener('click', openDoor);
-    document.addEventListener('keydown', () => { if (gateState === 'ready') openDoor(); });
-
-    function resetToLogin() {
-      entered = false;
-      gateShown = false;
-      gateState = 'idle';
-      dataReady = Promise.resolve();
-      stopPolling();
-      if (realtimeChannel) { supabaseClient.removeChannel(realtimeChannel); realtimeChannel = null; }
-
-      const door = $('door-gate');
-      door.classList.add('hidden');
-      door.classList.remove('show', 'ready', 'opening', 'leaving');
-      $('app-section').classList.add('hidden');
-      $('user-nav').classList.add('hidden');
-      $('auth-password').value = '';
-      $('auth-error').classList.add('hidden');
-      splashDone.then(showAuth);
-    }
-
     supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        const isNewUser = !currentUser || currentUser.id !== session.user.id;
+      if (session && session.user) {
         currentUser = session.user;
+        appReadyPromise = initAppData();
 
-        if (isNewUser) {
-          dataReady = new Promise(resolve => {
-            setTimeout(async () => {
-              try {
-                await initAppData();
-              } catch (err) {
-                console.error('Lỗi tải dữ liệu:', err);
-              }
-              if (currentUser) setupRealtimeSubscriptions();
-              resolve();
-            }, 0);
+        if (event === 'SIGNED_IN') {
+          finishSplash();
+          const authSec = document.getElementById('auth-section');
+          if (!authSec.classList.contains('hidden')) {
+            authSec.classList.add('auth-leaving');
+            setTimeout(() => {
+              authSec.classList.add('hidden');
+              authSec.classList.remove('auth-leaving');
+              showCelestiaGate(session.user);
+            }, 680);
+          } else {
+            showCelestiaGate(session.user);
+          }
+        } else {
+          appReadyPromise.then(() => {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('user-nav').classList.remove('hidden');
+            document.getElementById('app-section').classList.remove('hidden');
           });
         }
-
-        splashDone.then(() => { if (!entered) showDoor(); });
       } else {
+        stopPolling();
         currentUser = null;
-        resetToLogin();
+        document.getElementById('user-nav').classList.add('hidden');
+        document.getElementById('app-section').classList.add('hidden');
+        document.getElementById('door-gate').classList.add('hidden');
+        if (splashDone) {
+          document.getElementById('auth-section').classList.remove('hidden');
+        }
       }
     });
 
     // =========================================================================
-    // 2. TẢI DỮ LIỆU & ĐỒNG BỘ REALTIME + SMART POLLING
+    // 2. KHỞI TẠO & ĐỒNG BỘ REALTIME
     // =========================================================================
     async function initAppData() {
+      const meta = currentUser.user_metadata || {};
+      if (meta.username && meta.uid) {
+        await supabaseClient
+          .from('users')
+          .upsert([{ id: currentUser.id, username: meta.username, uid: meta.uid }], { onConflict: 'id', ignoreDuplicates: true });
+      }
+
       const { data: chars } = await supabaseClient.from('characters').select('*').order('name');
       allCharacters = chars || [];
 
-      await refreshBosses();
+      await refreshBosses(true);
       await refreshUsersAndRosters();
-      await refreshLobbyResult();
+      await refreshLobbyResult(true);
       renderCharacterGrid();
+      setupRealtimeSubscriptions();
     }
 
     async function refreshUsersAndRosters() {
+      if (!currentUser) return;
       const { data: users } = await supabaseClient.from('users').select('*').order('stt');
-      allUsers = users || [];
+      if (users) allUsers = users;
 
       const me = allUsers.find(u => u.id === currentUser.id);
       if (me) {
@@ -1511,24 +1887,54 @@
         document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
       }
 
-      const { data: uChars } = await supabaseClient.from('user_characters').select('*');
-      userCharactersMap = {};
-      myCharacterIds.clear();
+      const { data: uChars, error } = await supabaseClient.from('user_characters').select('*');
+      if (error || !uChars) return;
 
-      (uChars || []).forEach(row => {
-        if (!userCharactersMap[row.user_id]) userCharactersMap[row.user_id] = [];
-        userCharactersMap[row.user_id].push(row.character_id);
+      const nextMap = {};
+      const nextMyIds = new Set();
+
+      uChars.forEach(row => {
+        if (!nextMap[row.user_id]) nextMap[row.user_id] = [];
+        nextMap[row.user_id].push(row.character_id);
         if (row.user_id === currentUser.id) {
-          myCharacterIds.add(row.character_id);
+          nextMyIds.add(row.character_id);
         }
       });
 
+      // Áp dụng lại các thao tác chọn/bỏ chọn đang chờ hoặc vừa hoàn tất (< 1.5s) để chống ghi đè ngược
+      const now = Date.now();
+      const myList = nextMap[currentUser.id] ? [...nextMap[currentUser.id]] : [];
+
+      for (const [key, op] of pendingCharOps.entries()) {
+        if (op.expiresAt <= now) {
+          pendingCharOps.delete(key);
+          continue;
+        }
+        const matchedChar = allCharacters.find(c => String(c.id) === key);
+        const actualId = matchedChar ? matchedChar.id : op.rawId;
+
+        if (op.action === 'add') {
+          nextMyIds.add(actualId);
+          if (!myList.some(id => String(id) === key)) myList.push(actualId);
+        } else if (op.action === 'remove') {
+          for (const id of Array.from(nextMyIds)) {
+            if (String(id) === key) nextMyIds.delete(id);
+          }
+          for (let i = myList.length - 1; i >= 0; i--) {
+            if (String(myList[i]) === key) myList.splice(i, 1);
+          }
+        }
+      }
+
+      nextMap[currentUser.id] = myList;
+      userCharactersMap = nextMap;
+      myCharacterIds = nextMyIds;
+
       document.getElementById('my-char-count').textContent = myCharacterIds.size;
+      syncCharacterGridStates();
       renderParticipantCheckboxes();
       renderBoardTable();
     }
-
-    let lastLobbySig = null;
 
     function updateMainActionVisibility() {
       const actionWrap = document.getElementById('random-main-action');
@@ -1568,7 +1974,7 @@
 
       const sig = JSON.stringify(lastLobbyResults.map(r => [r.user_id, r.character_id, r.random_number, Boolean(r.forced_main)]));
       if (!force && sig === lastLobbySig) {
-        metaDiv.textContent = (lastLobbyResults.length && spinnerName) ? `Quay bởi: ${spinnerName}` : '';
+        metaDiv.textContent = (lastLobbyResults.length && spinnerName) ? `Quay bởi: ${spinnerName}` : 'Giữ chuột 3s vào thẻ để phóng to';
         updateMainActionVisibility();
         return;
       }
@@ -1576,7 +1982,7 @@
 
       if (lastLobbyResults.length === 0) {
         resultDiv.innerHTML = `<div class="col-span-full text-center italic py-10 font-display text-lg" style="color: var(--ink-mute);">Chưa có lượt quay nào</div>`;
-        metaDiv.textContent = '';
+        metaDiv.textContent = 'Giữ chuột 3s vào thẻ để phóng to';
         updateMainActionVisibility();
         return;
       }
@@ -1606,7 +2012,7 @@
           ? `<div class="flex flex-wrap items-center gap-1.5 mt-1.5">${mainBadge}${wpBadge}${reqElBadge}</div>`
           : '';
         return `
-          <div class="slot-card ${isMainForced ? 'main-picked' : (isDuplicate ? 'dup' : '')}" style="animation-delay:${idx * 90}ms">
+          <div class="slot-card hover-zoom-target ${isMainForced ? 'main-picked' : (isDuplicate ? 'dup' : '')}" style="animation-delay:${idx * 90}ms">
             <div class="flex items-center gap-3.5 min-w-0">
               ${avatarHtml}
               <div class="min-w-0">
@@ -1623,30 +2029,36 @@
         `;
       }).join('');
 
-      metaDiv.textContent = spinnerName ? `Quay bởi: ${spinnerName}` : '';
+      metaDiv.textContent = spinnerName ? `Quay bởi: ${spinnerName}` : 'Giữ chuột 3s vào thẻ để phóng to';
       updateMainActionVisibility();
     }
 
-    async function refreshBosses() {
+    async function refreshBosses(force = false) {
+      if (!force && Date.now() < bossMutationLockUntil) return;
       const { data: bosses } = await supabaseClient.from('bosses').select('*').order('id');
-      allBosses = bosses || [];
-      renderBossLists();
+      if (!bosses) return;
+      if (!force && Date.now() < bossMutationLockUntil) return;
+      allBosses = bosses;
+      renderBossLists(force);
     }
 
-    async function refreshLobbyResult() {
+    async function refreshLobbyResult(force = false) {
+      if (!force && Date.now() < bossMutationLockUntil) return;
       const { data: lobby } = await supabaseClient.from('random_lobby').select('*').eq('id', 1).single();
       if (!lobby) return;
+      if (!force && Date.now() < bossMutationLockUntil) return;
+
       const spinner = allUsers.find(u => u.id === lobby.updated_by);
-      renderLobbyCards(lobby.results_json || [], spinner ? spinner.username : '');
+      renderLobbyCards(lobby.results_json || [], spinner ? spinner.username : '', force);
 
       activeBoss = lobby.current_boss_json || null;
       pendingBoss = lobby.pending_boss_json || null;
-      renderActiveBossBanner();
-      syncBossAlertModal();
+      renderActiveBossBanner(force);
+      syncBossAlertModal(force);
       updateMainActionVisibility();
     }
 
-    // Đồng bộ HTTP định kỳ 2.5s song song với Realtime (đảm bảo chạy qua Vercel Proxy)
+    // Đồng bộ HTTP định kỳ 2.5s song song với Realtime
     let pollTimer = null;
     function startPolling() {
       if (pollTimer) return;
@@ -1676,8 +2088,24 @@
     }
 
     // =========================================================================
-    // 3. QUẢN LÝ KHO NHÂN VẬT CÁ NHÂN
+    // 3. QUẢN LÝ KHO NHÂN VẬT CÁ NHÂN (FIX XUNG ĐỘT CHỌN NHÂN VẬT)
     // =========================================================================
+    function syncCharacterGridStates() {
+      const grid = document.getElementById('character-grid');
+      if (!grid) return;
+      const buttons = grid.querySelectorAll('button[data-char-id]');
+      buttons.forEach(btn => {
+        const key = btn.getAttribute('data-char-id');
+        let isOwned = false;
+        for (const id of myCharacterIds) {
+          if (String(id) === key) { isOwned = true; break; }
+        }
+        btn.classList.toggle('owned', isOwned);
+        const mark = btn.querySelector('.mark');
+        if (mark) mark.innerHTML = isOwned ? '&#10003;' : '';
+      });
+    }
+
     function renderCharacterGrid() {
       const keyword = document.getElementById('char-search').value.toLowerCase().trim();
       const grid = document.getElementById('character-grid');
@@ -1695,19 +2123,23 @@
       }
 
       grid.innerHTML = filtered.map(char => {
-        const owned = myCharacterIds.has(char.id);
+        const key = String(char.id);
+        let owned = false;
+        for (const id of myCharacterIds) {
+          if (String(id) === key) { owned = true; break; }
+        }
         const avatarHtml = renderAvatarImg(char, 'char-avatar', 'char-avatar-fallback');
         const wpText = char.weapon ? (WEAPON_LABELS[Object.keys(WEAPON_LABELS).find(k => k.toLowerCase() === String(char.weapon).trim().toLowerCase())] || char.weapon) : '';
         const metaParts = [char.element, wpText].filter(Boolean);
         const subMeta = metaParts.length > 0
-          ? `<div class="text-[10px] truncate mt-0.5" style="color: var(--ink-mute);">${esc(metaParts.join(' · '))}</div>`
+          ? `<div class="char-sub-text text-[10px] truncate mt-0.5" style="color: var(--ink-mute);">${esc(metaParts.join(' · '))}</div>`
           : '';
         return `
-          <button onclick="toggleCharacter(${char.id})" class="char-card ${owned ? 'owned' : ''}">
+          <button type="button" data-char-id="${esc(key)}" onclick="toggleCharacter(${esc(JSON.stringify(char.id))}, this)" class="char-card hover-zoom-target ${owned ? 'owned' : ''}">
             <div class="flex items-center gap-2.5 min-w-0">
               ${avatarHtml}
               <div class="min-w-0">
-                <div class="truncate">${esc(char.name)}</div>
+                <div class="char-title-text truncate">${esc(char.name)}</div>
                 ${subMeta}
               </div>
             </div>
@@ -1717,29 +2149,90 @@
       }).join('');
     }
 
-    async function toggleCharacter(charId) {
-      const isOwned = myCharacterIds.has(charId);
+    async function toggleCharacter(charId, btnEl) {
+      if (!currentUser) return;
+      const key = String(charId);
 
+      // Kiểm tra trạng thái sở hữu theo chuỗi ID chuẩn hóa để tránh lệch kiểu number/string
+      let existingId = null;
+      for (const id of myCharacterIds) {
+        if (String(id) === key) { existingId = id; break; }
+      }
+      const isOwned = existingId !== null;
+      const nextOwned = !isOwned;
+      const opId = ++charOpCounter;
+
+      // 1. Cập nhật ngay lập tức trên RAM + DOM nút bấm (không phá hủy lại toàn bộ grid gây nhảy vị trí)
       if (isOwned) {
-        myCharacterIds.delete(charId);
+        myCharacterIds.delete(existingId);
       } else {
         myCharacterIds.add(charId);
       }
-      document.getElementById('my-char-count').textContent = myCharacterIds.size;
-      renderCharacterGrid();
 
-      if (isOwned) {
-        await supabaseClient.from('user_characters')
-          .delete()
-          .match({ user_id: currentUser.id, character_id: charId });
+      if (!userCharactersMap[currentUser.id]) userCharactersMap[currentUser.id] = [];
+      if (nextOwned) {
+        if (!userCharactersMap[currentUser.id].some(id => String(id) === key)) {
+          userCharactersMap[currentUser.id].push(charId);
+        }
       } else {
-        await supabaseClient.from('user_characters')
-          .insert([{ user_id: currentUser.id, character_id: charId }]);
+        userCharactersMap[currentUser.id] = userCharactersMap[currentUser.id].filter(id => String(id) !== key);
+      }
+
+      pendingCharOps.set(key, {
+        action: nextOwned ? 'add' : 'remove',
+        rawId: charId,
+        opId,
+        expiresAt: Date.now() + 5000
+      });
+
+      document.getElementById('my-char-count').textContent = myCharacterIds.size;
+      if (btnEl) {
+        btnEl.classList.toggle('owned', nextOwned);
+        const mark = btnEl.querySelector('.mark');
+        if (mark) mark.innerHTML = nextOwned ? '&#10003;' : '';
+      } else {
+        syncCharacterGridStates();
+      }
+      renderParticipantCheckboxes();
+      renderBoardTable();
+
+      // 2. Đồng bộ xuống Supabase
+      try {
+        if (isOwned) {
+          const { error } = await supabaseClient.from('user_characters')
+            .delete()
+            .match({ user_id: currentUser.id, character_id: existingId });
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient.from('user_characters')
+            .insert([{ user_id: currentUser.id, character_id: charId }]);
+          if (error && error.code !== '23505') throw error;
+        }
+
+        // Giữ grace period 1.5s sau khi DB xong để poll cũ đang bay về không ghi đè ngược
+        const curOp = pendingCharOps.get(key);
+        if (curOp && curOp.opId === opId) {
+          curOp.expiresAt = Date.now() + 1500;
+        }
+      } catch (err) {
+        console.error('Lỗi đồng bộ nhân vật:', err);
+        const curOp = pendingCharOps.get(key);
+        if (curOp && curOp.opId === opId) {
+          pendingCharOps.delete(key);
+          // Hoàn tác nếu lỗi mạng thực sự
+          if (nextOwned) {
+            myCharacterIds.delete(charId);
+          } else {
+            myCharacterIds.add(charId);
+          }
+          document.getElementById('my-char-count').textContent = myCharacterIds.size;
+          syncCharacterGridStates();
+        }
       }
     }
 
     // =========================================================================
-    // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM (KHÔNG TRÙNG NHÂN VẬT)
+    // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM
     // =========================================================================
     function renderBoardTable() {
       const tbody = document.getElementById('board-tbody');
@@ -1751,29 +2244,27 @@
       tbody.innerHTML = allUsers.map((user, idx) => {
         const charIds = userCharactersMap[user.id] || [];
         const charObjs = charIds
-          .map(id => allCharacters.find(c => c.id === id))
+          .map(id => allCharacters.find(c => String(c.id) === String(id)))
           .filter(Boolean)
           .sort((a, b) => a.name.localeCompare(b.name));
 
-        const badges = charObjs.length > 0
+        const isMe = user.id === currentUser.id;
+        const badgesHtml = charObjs.length > 0
           ? charObjs.map(c => {
-              const iconUrl = getCharacterIconUrl(c);
-              const imgTag = iconUrl
-                ? `<img src="${esc(iconUrl)}" alt="" class="tag-avatar" loading="lazy" onerror="this.style.display='none'" />`
-                : '';
-              return `<span class="tag-with-icon">${imgTag}<span>${esc(c.name)}</span></span>`;
+              const avatar = renderAvatarImg(c, 'tag-avatar', 'tag-avatar');
+              return `<span class="tag-with-icon">${avatar}<span>${esc(c.name)}</span></span>`;
             }).join('')
-          : `<span class="italic text-xs" style="color: var(--ink-mute);">Chưa chọn nhân vật nào</span>`;
+          : `<span class="italic text-xs" style="color: var(--ink-mute);">Chưa thêm nhân vật nào</span>`;
 
         return `
           <tr>
             <td class="py-4 px-5 text-center"><span class="rank">${idx + 1}</span></td>
-            <td class="py-4 px-5">
-              <div class="font-display text-xl font-bold" style="color: var(--gold-bright);">${esc(user.username)}</div>
-              <div class="text-xs mt-0.5" style="color: var(--ink-mute);">${charObjs.length} nhân vật</div>
+            <td class="py-4 px-5 font-semibold" style="color: var(--ink-strong);">
+              ${esc(user.username)}
+              ${isMe ? '<span class="ml-2 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:rgba(227,194,122,.16); color:var(--gold-bright); border:1px solid var(--line);">Bạn</span>' : ''}
             </td>
             <td class="py-4 px-5 font-mono text-xs" style="color: var(--ink-dim);">${esc(user.uid)}</td>
-            <td class="py-4 px-5">${badges}</td>
+            <td class="py-4 px-5 leading-relaxed">${badgesHtml}</td>
           </tr>
         `;
       }).join('');
@@ -1781,42 +2272,40 @@
 
     function renderParticipantCheckboxes() {
       const container = document.getElementById('participant-checkboxes');
-      const previouslyChecked = new Set(
-        Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value)
+      const prevChecked = new Set(
+        Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value)
       );
-      const hadRendered = container.children.length > 0;
+      const isFirstRender = container.children.length === 0;
 
-      container.innerHTML = allUsers.map(user => {
-        const count = (userCharactersMap[user.id] || []).length;
-        const checked = hadRendered ? previouslyChecked.has(user.id) : count > 0;
+      container.innerHTML = allUsers.map(u => {
+        const count = (userCharactersMap[u.id] || []).length;
+        const checked = isFirstRender ? true : prevChecked.has(u.id);
         return `
           <label class="member-chip">
-            <input type="checkbox" value="${esc(user.id)}" class="participant-cb" ${checked ? 'checked' : ''} />
+            <input type="checkbox" value="${esc(u.id)}" class="participant-cb" ${checked ? 'checked' : ''} />
             <span class="dot"></span>
-            <span>${esc(user.username)}</span>
+            <span>${esc(u.username)}</span>
             <span class="cnt">(${count})</span>
           </label>
         `;
       }).join('');
     }
 
-    function toggleAllPlayers(checked) {
-      document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = checked);
+    function toggleAllPlayers(state) {
+      document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = state);
     }
 
     // =========================================================================
-    // 4b. QUẢN LÝ BOSS & VÒNG QUAY BOSS (TẠM XÓA SAU XÁC NHẬN + RESET CÓ XÁC NHẬN)
+    // 4b. QUẢN LÝ BOSS, VÒNG LẶP BOSS & CHỐNG NHẤP NHÁY KHI ĐỒNG BỘ
     // =========================================================================
     function toggleBossManager() {
-      const panel = document.getElementById('boss-manager-panel');
-      panel.classList.toggle('hidden');
+      document.getElementById('boss-manager-panel').classList.toggle('hidden');
     }
 
     function limitBossElements(changedCb) {
       const checked = Array.from(document.querySelectorAll('#new-boss-elements input:checked'));
       if (checked.length > 2) {
         changedCb.checked = false;
-        alert('Mỗi Boss chỉ được chọn tối đa 2 nguyên tố yêu cầu!');
       }
     }
 
@@ -1845,7 +2334,7 @@
       if (locateInput) locateInput.value = '';
       if (canMainInput) canMainInput.checked = false;
       document.querySelectorAll('#new-boss-elements input').forEach(cb => cb.checked = false);
-      await refreshBosses();
+      await refreshBosses(true);
     }
 
     async function deleteBoss(bossId) {
@@ -1854,10 +2343,14 @@
         alert('Lỗi xóa Boss: ' + error.message);
         return;
       }
-      await refreshBosses();
+      await refreshBosses(true);
     }
 
-    function renderBossLists() {
+    function renderBossLists(force = false) {
+      const sig = JSON.stringify(allBosses.map(b => [b.id, b.name, Boolean(b.is_eliminated), isBossRequireMain(b), b.required_elements || []]));
+      if (!force && sig === lastBossListSig) return;
+      lastBossListSig = sig;
+
       const remaining = allBosses.filter(b => !b.is_eliminated);
       document.getElementById('boss-remaining-badge').textContent = `Còn ${remaining.length}/${allBosses.length} Boss`;
 
@@ -1895,11 +2388,13 @@
       }
     }
 
-    function renderActiveBossBanner() {
+    function renderActiveBossBanner(force = false) {
       const container = document.getElementById('active-boss-display');
       const meta = document.getElementById('boss-meta');
 
       if (!activeBoss) {
+        if (!force && lastActiveBossSig === 'NONE') return;
+        lastActiveBossSig = 'NONE';
         container.innerHTML = `
           <div class="text-center italic py-8 font-display text-lg" style="color: var(--ink-mute);">
             Chưa chọn Boss — Vòng quay nhân vật đang ở chế độ tự do
@@ -1912,6 +2407,24 @@
       const bossRecord = allBosses.find(b => b.id === activeBoss.id);
       const needMain = isBossRequireMain(activeBoss) || isBossRequireMain(bossRecord);
       const reqEls = activeBoss.required_elements || [];
+      const locateUrl = (activeBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
+
+      const sig = JSON.stringify({
+        id: activeBoss.id,
+        name: activeBoss.name,
+        needMain,
+        reqEls,
+        locateUrl,
+        spunBy: activeBoss.spun_by_name || ''
+      });
+
+      // Giữ nguyên DOM nếu dữ liệu Boss không đổi -> mất hoàn toàn hiện tượng nhấp nháy!
+      if (!force && sig === lastActiveBossSig) {
+        meta.textContent = activeBoss.spun_by_name ? `Quay bởi: ${activeBoss.spun_by_name}` : '';
+        return;
+      }
+      lastActiveBossSig = sig;
+
       const mainBadge = needMain ? `<span class="main-badge">✨ Cần Main (Aether / Lumine)</span>` : '';
       const elBadges = (reqEls.length > 0 || needMain)
         ? `${mainBadge} ${reqEls.map(renderElementBadge).join(' ')}`.trim()
@@ -1928,7 +2441,6 @@
         ? notes.join(' ')
         : 'Boss này không giới hạn nguyên tố — cả nhóm quay nhân vật tự do.';
 
-      const locateUrl = (activeBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
       const mapBlock = locateUrl
         ? `<div class="boss-locate-wrap mt-3 mb-1">
              <img src="${esc(locateUrl)}" alt="Bản đồ ${esc(activeBoss.name)}" class="boss-locate-img" style="max-height: 180px;" loading="lazy" onerror="this.parentElement.style.display='none'" />
@@ -1940,7 +2452,7 @@
           <div class="flex flex-wrap justify-between items-center gap-3">
             <div>
               <div class="text-[11px] uppercase tracking-widest font-semibold" style="color: var(--gold);">Boss đang khiêu chiến</div>
-              <div class="font-display text-3xl md:text-4xl font-bold text-white mt-0.5">${esc(activeBoss.name)}</div>
+              <div class="font-display text-3xl md:text-4xl font-bold mt-0.5" style="color: var(--ink-strong);">${esc(activeBoss.name)}</div>
             </div>
             <div class="flex flex-wrap gap-2">${elBadges}</div>
           </div>
@@ -1951,22 +2463,37 @@
       meta.textContent = activeBoss.spun_by_name ? `Quay bởi: ${activeBoss.spun_by_name}` : '';
     }
 
-    function syncBossAlertModal() {
+    function syncBossAlertModal(force = false) {
       const modal = document.getElementById('boss-alert-modal');
       if (!pendingBoss) {
+        lastPendingBossSig = 'NONE';
         modal.classList.add('hidden');
         return;
       }
 
-      document.getElementById('modal-boss-name').textContent = pendingBoss.name;
       const bossRecord = allBosses.find(b => b.id === pendingBoss.id);
       const needMain = isBossRequireMain(pendingBoss) || isBossRequireMain(bossRecord);
       const reqEls = pendingBoss.required_elements || [];
+      const locateUrl = (pendingBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
+
+      const sig = JSON.stringify({
+        id: pendingBoss.id,
+        name: pendingBoss.name,
+        needMain,
+        reqEls,
+        locateUrl
+      });
+
+      if (!force && sig === lastPendingBossSig && !modal.classList.contains('hidden')) {
+        return;
+      }
+      lastPendingBossSig = sig;
+
+      document.getElementById('modal-boss-name').textContent = pendingBoss.name;
       const elBox = document.getElementById('modal-boss-elements');
       const locateBox = document.getElementById('modal-boss-locate');
       const descBox = document.getElementById('modal-boss-desc');
 
-      const locateUrl = (pendingBoss.locate_url || (bossRecord && bossRecord.locate_url) || '').trim();
       if (locateUrl) {
         locateBox.innerHTML = `
           <div class="boss-locate-wrap">
@@ -1994,7 +2521,7 @@
         }
         descBox.innerHTML = descParts.join(' ');
       } else {
-        elBox.innerHTML = `<span class="text-xs px-3 py-1 rounded-full" style="color: var(--ink-dim); background: rgba(255,255,255,.06);">Không yêu cầu nguyên tố</span>`;
+        elBox.innerHTML = `<span class="text-xs px-3 py-1 rounded-full" style="color: var(--ink-dim); background: var(--surface-tag);">Không yêu cầu nguyên tố</span>`;
         descBox.innerHTML = `Bấm <strong>Xác nhận</strong> để chốt Boss này và tạm xóa khỏi vòng lặp hiện tại.`;
       }
 
@@ -2008,6 +2535,7 @@
         return;
       }
 
+      bossMutationLockUntil = Date.now() + 2000;
       const chosen = availableBosses[Math.floor(Math.random() * availableBosses.length)];
       const me = allUsers.find(u => u.id === currentUser.id);
       const bossPayload = {
@@ -2020,7 +2548,7 @@
       };
 
       pendingBoss = bossPayload;
-      syncBossAlertModal();
+      syncBossAlertModal(true);
 
       await supabaseClient
         .from('random_lobby')
@@ -2033,18 +2561,18 @@
 
     async function confirmCurrentBoss() {
       if (!pendingBoss) return;
+      bossMutationLockUntil = Date.now() + 2000;
       const confirmed = { ...pendingBoss };
       pendingBoss = null;
       activeBoss = confirmed;
 
-      syncBossAlertModal();
-      renderActiveBossBanner();
+      syncBossAlertModal(true);
+      renderActiveBossBanner(true);
       updateMainActionVisibility();
 
-      // Đánh dấu tạm xóa boss khỏi vòng lặp hiện tại
       const localBoss = allBosses.find(b => b.id === confirmed.id);
       if (localBoss) localBoss.is_eliminated = true;
-      renderBossLists();
+      renderBossLists(true);
 
       await supabaseClient.from('bosses').update({ is_eliminated: true }).eq('id', confirmed.id);
       await supabaseClient
@@ -2067,13 +2595,14 @@
 
     async function confirmResetBossLoop() {
       closeResetBossModal();
+      bossMutationLockUntil = Date.now() + 2000;
 
       allBosses.forEach(b => b.is_eliminated = false);
       activeBoss = null;
       pendingBoss = null;
-      renderBossLists();
-      renderActiveBossBanner();
-      syncBossAlertModal();
+      renderBossLists(true);
+      renderActiveBossBanner(true);
+      syncBossAlertModal(true);
       updateMainActionVisibility();
 
       await supabaseClient.from('bosses').update({ is_eliminated: false }).neq('id', 0);
@@ -2109,13 +2638,12 @@
         return;
       }
 
-      // 1. Trộn ngẫu nhiên danh sách người chơi và lấy tối đa desiredCount người
+      bossMutationLockUntil = Date.now() + 1800;
       const pickedUserIds = shuffleArray(validUsers).slice(0, Math.min(desiredCount, validUsers.length));
       const preselectedMainUid = (activeBoss && activeBoss.main_player && pickedUserIds.includes(activeBoss.main_player.user_id))
         ? activeBoss.main_player.user_id
         : null;
 
-      // 2. Gán ngẫu nhiên 1 hoặc 2 người chơi cho nguyên tố yêu cầu của Boss (ưu tiên người không cầm Main)
       const reqElements = (activeBoss && Array.isArray(activeBoss.required_elements))
         ? activeBoss.required_elements.slice(0, 2)
         : [];
@@ -2132,7 +2660,7 @@
             if (assignedUsers.has(uid)) return false;
             const roster = userCharactersMap[uid] || [];
             return roster.some(cid => {
-              const c = allCharacters.find(ch => ch.id === cid);
+              const c = allCharacters.find(ch => String(ch.id) === String(cid));
               return c && String(c.element || '').trim().toLowerCase() === targetEl;
             });
           });
@@ -2152,7 +2680,6 @@
         });
       }
 
-      // 3. Bốc nhân vật (vẫn bốc 1 nhân vật dự phòng cho người cầm Main để có thể Hủy dùng Main bất cứ lúc nào)
       const pickOrder = [...pickedUserIds].sort((a, b) => {
         const aReq = userRequiredElementMap[a] ? 0 : 1;
         const bReq = userRequiredElementMap[b] ? 0 : 1;
@@ -2171,21 +2698,21 @@
         if (reqEl) {
           const targetEl = String(reqEl).trim().toLowerCase();
           const matchingElRoster = roster.filter(cid => {
-            const c = allCharacters.find(ch => ch.id === cid);
+            const c = allCharacters.find(ch => String(ch.id) === String(cid));
             return c && String(c.element || '').trim().toLowerCase() === targetEl;
           });
           if (matchingElRoster.length > 0) candidatePool = matchingElRoster;
         }
 
-        const available = candidatePool.filter(charId => !usedCharacterIds.has(charId));
+        const available = candidatePool.filter(charId => !usedCharacterIds.has(String(charId)));
         const pool = available.length > 0 ? available : candidatePool;
 
         const chosenCharId = pool[Math.floor(Math.random() * pool.length)];
-        usedCharacterIds.add(chosenCharId);
+        usedCharacterIds.add(String(chosenCharId));
 
         const originalIndex = roster.indexOf(chosenCharId);
         const userObj = allUsers.find(u => u.id === uid);
-        const charObj = allCharacters.find(c => c.id === chosenCharId);
+        const charObj = allCharacters.find(c => String(c.id) === String(chosenCharId));
 
         pickedMap[uid] = {
           user_id: uid,
@@ -2231,10 +2758,10 @@
         return;
       }
 
+      bossMutationLockUntil = Date.now() + 1800;
       const me = allUsers.find(u => u.id === currentUser.id);
       const hasLobbyResults = Array.isArray(lastLobbyResults) && lastLobbyResults.length > 0;
 
-      // Trường hợp 1: Đã quay nhân vật rồi -> Chọn ngẫu nhiên 1 người trong đội hình hiện tại đổi sang Main
       if (hasLobbyResults) {
         const chosenIndex = Math.floor(Math.random() * lastLobbyResults.length);
         const updatedResults = lastLobbyResults.map((item, idx) => ({
@@ -2265,7 +2792,6 @@
         return;
       }
 
-      // Trường hợp 2: Vừa random xong Boss (chưa quay nhân vật) -> Chọn ngẫu nhiên 1 thành viên đang tham gia
       const checkedIds = Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value);
       const candidateUsers = checkedIds.length > 0
         ? allUsers.filter(u => checkedIds.includes(u.id))
@@ -2299,6 +2825,7 @@
 
     function clearMainPlayer() {
       if (!activeBoss) return;
+      bossMutationLockUntil = Date.now() + 1800;
       const { main_player, ...restBoss } = activeBoss;
       activeBoss = restBoss;
 
@@ -2348,6 +2875,10 @@
         btnBoard.className = 'tab-main';
       }
     }
+
+    // Kích hoạt phóng to khi giữ chuột ~3 giây trên cả 2 khu vực nhân vật
+    initDelayedHoverZoom('character-grid', '.char-card');
+    initDelayedHoverZoom('lobby-result', '.slot-card');
   </script>
 </body>
 </html>
