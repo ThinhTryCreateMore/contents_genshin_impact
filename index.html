@@ -371,10 +371,13 @@
     }
     .dup-tag { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin-top: 6px; font-weight: 600; }
 
-    /* ---------- Hiệu ứng giữ chuột 3 giây phóng to thẻ nhân vật (v10) ---------- */
+    /* ---------- Hiệu ứng giữ chuột 3 giây phóng to khung nhân vật (~1/2 thông báo) ---------- */
     .zoomable-card {
       position: relative;
       overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
     }
     .hold-progress {
       position: absolute;
@@ -385,36 +388,54 @@
       opacity: 0;
       transition: none;
     }
+    .zoomable-card.holding {
+      transform: scale(1.03);
+      border-color: rgba(227, 194, 122, .65);
+    }
     .zoomable-card.holding .hold-progress {
       opacity: 1;
       width: 100%;
       transition: width 3s linear;
     }
-    .zoomable-card.card-zoomed {
-      opacity: 1 !important;
-      transform: scale(1.18) !important;
-      z-index: 45 !important;
-      border-color: var(--gold-bright) !important;
-      box-shadow: 0 22px 48px -10px rgba(0, 0, 0, .82), 0 0 0 1.5px var(--gold), 0 0 24px rgba(227, 194, 122, .45) !important;
-      overflow: visible !important;
+
+    /* Khung phóng to trung tâm (~1/2 kích thước modal thông báo tiêu chuẩn) */
+    .char-zoom-backdrop {
+      position: fixed; inset: 0; z-index: 90;
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+      background: rgba(4, 7, 15, .58);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      animation: fadeIn .18s ease both;
+      user-select: none;
     }
-    .zoomable-card.card-zoomed .truncate {
-      white-space: normal !important;
-      overflow: visible !important;
-      text-overflow: unset !important;
-      word-break: break-word;
+    .char-zoom-backdrop.hidden { display: none; }
+    .char-zoom-box {
+      width: 100%;
+      max-width: 310px;
+      padding: 24px 20px 20px;
+      text-align: center;
+      animation: zoomCardPop .24s cubic-bezier(.2, .85, .25, 1.08) both;
     }
-    .zoomable-card.card-zoomed .char-avatar,
-    .zoomable-card.card-zoomed .char-avatar-fallback {
-      width: 48px;
-      height: 48px;
-      transition: width .25s ease, height .25s ease;
+    @keyframes zoomCardPop {
+      from { opacity: 0; transform: scale(.82); }
+      to   { opacity: 1; transform: scale(1); }
     }
-    .zoomable-card.card-zoomed .slot-avatar,
-    .zoomable-card.card-zoomed .slot-avatar-fallback {
-      width: 68px;
-      height: 68px;
-      transition: width .25s ease, height .25s ease;
+    .zoom-portrait {
+      width: 112px; height: 112px; margin: 10px auto 14px;
+      border-radius: 50%; object-fit: cover; object-position: top center;
+      background: rgba(7, 11, 22, .92);
+      border: 2px solid var(--gold);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .65), 0 0 22px rgba(227, 194, 122, .38);
+    }
+    .zoom-portrait-fallback {
+      width: 112px; height: 112px; margin: 10px auto 14px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 46px;
+      color: var(--gold-bright);
+      background: rgba(227, 194, 122, .14);
+      border: 2px solid var(--gold);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .65), 0 0 22px rgba(227, 194, 122, .38);
     }
 
     /* ---------- Bảng ---------- */
@@ -1352,6 +1373,11 @@
   </div>
 </div>
 
+<!-- MODAL 4: KHUNG PHÓNG TO NHÂN VẬT (~1/2 THÔNG BÁO BÌNH THƯỜNG) -->
+<div id="char-zoom-overlay" class="char-zoom-backdrop hidden">
+  <div id="char-zoom-box" class="panel panel-gold char-zoom-box"></div>
+</div>
+
 <!-- MODAL 3: LUẬT & NGUYÊN TẮC CO-OP + CREDIT -->
 <div id="rules-modal" class="modal-backdrop hidden" onclick="if(event.target === this) closeRulesModal()">
   <div class="panel panel-gold modal-box text-left">
@@ -1453,8 +1479,68 @@
     }
 
     // =========================================================================
-    // 0b. HIỆU ỨNG GIỮ CHUỘT 3 GIÂY PHÓNG TO KHUNG NHÂN VẬT (KHO & LOBBY)
+    // 0b. HIỆU ỨNG GIỮ CHUỘT 3 GIÂY PHÓNG TO KHUNG NHÂN VẬT (~1/2 THÔNG BÁO)
     // =========================================================================
+    function openCharacterZoomOverlay(card) {
+      const overlay = document.getElementById('char-zoom-overlay');
+      const box = document.getElementById('char-zoom-box');
+      if (!overlay || !box) return;
+
+      const source = card.dataset.zoomSource || 'roster';
+      const name = card.dataset.zoomName || 'Unknown';
+      const element = card.dataset.zoomElement || '';
+      const weapon = card.dataset.zoomWeapon || '';
+      const iconUrl = card.dataset.zoomIcon || '';
+      const extraMeta = card.dataset.zoomMeta || '';
+      const charId = Number(card.dataset.charId || 0);
+
+      const portraitHtml = iconUrl
+        ? `<img src="${esc(iconUrl)}" alt="${esc(name)}" class="zoom-portrait" onerror="this.outerHTML='<div class=\'zoom-portrait-fallback\'>${esc(name.charAt(0).toUpperCase())}</div>'" />`
+        : `<div class="zoom-portrait-fallback">${esc(name.charAt(0).toUpperCase())}</div>`;
+
+      let eyebrowText = 'Chi tiết nhân vật';
+      let statusBadge = '';
+
+      if (source === 'roster') {
+        const owned = myCharacterIds.has(charId);
+        eyebrowText = 'Kho nhân vật';
+        statusBadge = owned
+          ? `<span class="main-badge">✓ Đã sở hữu</span>`
+          : `<span class="wp-badge">Chưa sở hữu</span>`;
+      } else {
+        eyebrowText = extraMeta || 'Đội hình ngẫu nhiên';
+      }
+
+      const badges = [
+        element ? renderElementBadge(element) : '',
+        weapon ? renderWeaponBadge(weapon) : '',
+        statusBadge
+      ].filter(Boolean).join(' ');
+
+      box.innerHTML = `
+        <div class="eyebrow">${esc(eyebrowText)}</div>
+        ${portraitHtml}
+        <h4 class="font-display text-3xl font-bold title-gold leading-tight">${esc(name)}</h4>
+        ${badges ? `<div class="flex flex-wrap justify-center items-center gap-1.5 mt-3">${badges}</div>` : ''}
+        <div class="text-[11px] mt-4 pt-3" style="color: var(--ink-mute); border-top: 1px solid var(--line-soft);">
+          Thả chuột để thu nhỏ lại
+        </div>
+      `;
+
+      overlay.classList.remove('hidden');
+    }
+
+    function closeCharacterZoomOverlay() {
+      const overlay = document.getElementById('char-zoom-overlay');
+      if (overlay && !overlay.classList.contains('hidden')) {
+        overlay.classList.add('hidden');
+      }
+    }
+
+    window.addEventListener('pointerup', closeCharacterZoomOverlay);
+    window.addEventListener('pointercancel', closeCharacterZoomOverlay);
+    window.addEventListener('blur', closeCharacterZoomOverlay);
+
     function initDelayedHoverZoom(containerEl) {
       if (!containerEl) return;
       const cards = containerEl.querySelectorAll('.zoomable-card');
@@ -1472,23 +1558,41 @@
           holdTimer = setTimeout(() => {
             didZoom = true;
             card.classList.remove('holding');
-            card.classList.add('card-zoomed');
+            openCharacterZoomOverlay(card);
           }, 3000);
         };
 
-        const cancelHold = () => {
+        const cancelHoldBeforeZoom = () => {
           clearTimeout(holdTimer);
           holdTimer = null;
-          card.classList.remove('holding', 'card-zoomed');
+          card.classList.remove('holding');
+          if (!didZoom) {
+            closeCharacterZoomOverlay();
+          }
         };
 
         card.addEventListener('pointerdown', (e) => {
           if (e.button !== 0 && e.pointerType === 'mouse') return;
           startHold();
         });
-        card.addEventListener('pointerup', cancelHold);
-        card.addEventListener('pointerleave', cancelHold);
-        card.addEventListener('pointercancel', cancelHold);
+        card.addEventListener('pointerup', () => {
+          clearTimeout(holdTimer);
+          holdTimer = null;
+          card.classList.remove('holding');
+          closeCharacterZoomOverlay();
+        });
+        card.addEventListener('pointerleave', cancelHoldBeforeZoom);
+        card.addEventListener('pointercancel', () => {
+          clearTimeout(holdTimer);
+          holdTimer = null;
+          card.classList.remove('holding');
+          closeCharacterZoomOverlay();
+        });
+        card.addEventListener('contextmenu', (e) => {
+          if (card.classList.contains('holding') || didZoom) {
+            e.preventDefault();
+          }
+        });
 
         // Chặn sự kiện click toggle nhân vật nếu người dùng vừa giữ chuột đủ 3 giây để phóng to
         card.addEventListener('click', (e) => {
@@ -1964,8 +2068,19 @@
         const subRow = (wpBadge || reqElBadge || mainBadge)
           ? `<div class="flex flex-wrap items-center gap-1.5 mt-1.5">${mainBadge}${wpBadge}${reqElBadge}</div>`
           : '';
+        const zoomIcon = isMainForced ? 'https://enka.network/ui/UI_AvatarIcon_PlayerBoy.png' : getCharacterIconUrl(charObj);
+        const zoomEl = isMainForced ? '' : (item.element || charObj.element || '');
+        const zoomWp = wpVal || '';
+        const zoomMeta = `Slot ${idx + 1} · ${item.username}`;
         return `
-          <div class="slot-card zoomable-card ${isMainForced ? 'main-picked' : (isDuplicate ? 'dup' : '')}" style="animation-delay:${idx * 90}ms">
+          <div class="slot-card zoomable-card ${isMainForced ? 'main-picked' : (isDuplicate ? 'dup' : '')}"
+               data-zoom-source="lobby"
+               data-zoom-name="${esc(displayName)}"
+               data-zoom-element="${esc(zoomEl)}"
+               data-zoom-weapon="${esc(zoomWp)}"
+               data-zoom-icon="${esc(zoomIcon)}"
+               data-zoom-meta="${esc(zoomMeta)}"
+               style="animation-delay:${idx * 90}ms">
             <div class="flex items-center gap-3.5 min-w-0">
               ${avatarHtml}
               <div class="min-w-0">
@@ -2067,8 +2182,17 @@
         const subMeta = metaParts.length > 0
           ? `<div class="text-[10px] truncate mt-0.5" style="color: var(--ink-mute);">${esc(metaParts.join(' · '))}</div>`
           : '';
+        const charIconUrl = getCharacterIconUrl(char);
         return `
-          <button type="button" data-char-id="${char.id}" onclick="toggleCharacter(${char.id})" class="char-card zoomable-card ${owned ? 'owned' : ''}">
+          <button type="button"
+                  data-char-id="${char.id}"
+                  data-zoom-source="roster"
+                  data-zoom-name="${esc(char.name)}"
+                  data-zoom-element="${esc(char.element || '')}"
+                  data-zoom-weapon="${esc(char.weapon || '')}"
+                  data-zoom-icon="${esc(charIconUrl)}"
+                  onclick="toggleCharacter(${char.id})"
+                  class="char-card zoomable-card ${owned ? 'owned' : ''}">
             <div class="flex items-center gap-2.5 min-w-0">
               ${avatarHtml}
               <div class="min-w-0">
