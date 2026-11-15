@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> Contents NguyenThan </title>
+  <title>Genshin Roster & Randomizer Sync</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
@@ -22,31 +22,35 @@
   </script>
   <style>
     :root {
-      --bg-0: #070b16;
-      --bg-1: #0d1426;
-      --bg-2: #141d36;
-      --ink: #eef0f6;
-      --ink-dim: #a3adc4;
-      --ink-mute: #6b7794;
-      --gold: #e3c27a;
-      --gold-bright: #f6dfa4;
-      --gold-deep: #b8914a;
-      --line: rgba(227, 194, 122, 0.22);
-      --line-soft: rgba(163, 173, 196, 0.14);
-      --ok: #7fd1b0;
-      --panel-bg: linear-gradient(160deg, rgba(24, 34, 62, .82), rgba(13, 20, 38, .88));
-      --sub-bg: rgba(7, 11, 22, .55);
-      --stage-bg: radial-gradient(500px 220px at 50% 0%, rgba(227,194,122,.12), transparent 70%), linear-gradient(160deg, rgba(20,29,54,.9), rgba(9,14,28,.95));
-      --slot-bg: linear-gradient(135deg, rgba(30,42,76,.85), rgba(14,21,40,.9));
+      /* Chế độ Hiện tại: Xanh biển dịu nhẹ, không chói mắt + Vàng rực rỡ nhưng không gắt */
+      --bg-0: #112436;
+      --bg-1: #18324a;
+      --bg-2: #20415e;
+      --ink: #f2f7fb;
+      --ink-dim: #bfd2e2;
+      --ink-mute: #8ba6bc;
+      --gold: #ecc265;
+      --gold-bright: #ffe294;
+      --gold-deep: #c5963c;
+      --line: rgba(236, 194, 101, 0.30);
+      --line-soft: rgba(188, 218, 238, 0.18);
+      --ok: #6fe0b8;
+      --panel-bg: linear-gradient(160deg, rgba(25, 51, 75, .78), rgba(16, 35, 53, .84));
+      --sub-bg: rgba(12, 27, 42, .56);
+      --stage-bg: radial-gradient(520px 230px at 50% 0%, rgba(236,194,101,.15), transparent 70%), linear-gradient(160deg, rgba(24,50,74,.86), rgba(13,30,46,.90));
+      --slot-bg: linear-gradient(135deg, rgba(31,63,92,.84), rgba(17,38,58,.90));
       --slot-name-color: #ffffff;
-      --thead-bg: rgba(10,16,32,.96);
-      --card-bg: rgba(10,16,32,.55);
-      --tag-ink: #d8def0;
-      --tag-bg: rgba(255, 255, 255, 0.045);
+      --thead-bg: rgba(14,32,49,.95);
+      --card-bg: rgba(15,34,52,.58);
+      --tag-ink: #e2eef7;
+      --tag-bg: rgba(188, 218, 238, 0.08);
+      --bg-photo-tint: linear-gradient(180deg, rgba(17, 36, 54, 0.42), rgba(13, 29, 44, 0.56));
+      --bg-prox-blur: 1.5px;
+      --bg-prox-bright: 0.96;
       --body-bg-image:
-        radial-gradient(1200px 600px at 12% -10%, rgba(88, 101, 190, 0.28), transparent 60%),
-        radial-gradient(900px 500px at 100% 0%, rgba(184, 145, 74, 0.16), transparent 55%),
-        radial-gradient(800px 600px at 50% 120%, rgba(60, 80, 150, 0.22), transparent 60%),
+        radial-gradient(1150px 580px at 14% -8%, rgba(72, 166, 198, 0.32), transparent 62%),
+        radial-gradient(880px 500px at 92% 4%, rgba(238, 194, 92, 0.16), transparent 56%),
+        radial-gradient(900px 600px at 50% 115%, rgba(44, 118, 158, 0.28), transparent 64%),
         linear-gradient(180deg, var(--bg-1), var(--bg-0));
     }
 
@@ -72,6 +76,7 @@
       --card-bg: rgba(14,16,23,.75);
       --tag-ink: #dfe4f0;
       --tag-bg: rgba(255, 255, 255, 0.05);
+      --bg-photo-tint: linear-gradient(180deg, rgba(5, 6, 9, 0.50), rgba(5, 6, 9, 0.65));
       --body-bg-image:
         radial-gradient(1100px 550px at 15% -10%, rgba(184, 145, 74, 0.12), transparent 60%),
         radial-gradient(900px 500px at 85% 110%, rgba(90, 100, 130, 0.12), transparent 60%),
@@ -100,6 +105,7 @@
       --card-bg: rgba(255,255,255,.82);
       --tag-ink: #2b3345;
       --tag-bg: rgba(166, 122, 40, 0.08);
+      --bg-photo-tint: linear-gradient(180deg, rgba(250, 247, 240, 0.56), rgba(239, 234, 224, 0.68));
       --body-bg-image:
         radial-gradient(1200px 600px at 12% -10%, rgba(140, 185, 222, 0.26), transparent 60%),
         radial-gradient(900px 500px at 100% 0%, rgba(227, 194, 122, 0.25), transparent 55%),
@@ -138,7 +144,60 @@
       animation: twinkle 7s ease-in-out infinite alternate;
     }
     html[data-theme="light"] body::before { opacity: .25; }
+    body.has-bg-photo::before { opacity: .22; }
     @keyframes twinkle { from { opacity: .55; } to { opacity: 1; } }
+
+    /* ---------- Hệ thống Ảnh Nền Theo Mode (Xoay vòng 1 phút + Làm mờ gần khung tương tác) ---------- */
+    #bg-photo-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity .8s ease;
+    }
+    body.has-bg-photo #bg-photo-stage {
+      opacity: 1;
+    }
+    .bg-photo-layer {
+      position: absolute;
+      inset: -24px;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      filter: blur(var(--bg-prox-blur)) brightness(var(--bg-prox-bright));
+      transform: scale(1.02);
+      transition: opacity 1.4s ease-in-out, filter .45s ease, transform 8s ease-out;
+      will-change: opacity, filter;
+    }
+    .bg-photo-layer.active {
+      opacity: 1;
+      transform: scale(1.0);
+    }
+    #bg-photo-tint {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-photo-tint);
+      transition: background .35s ease;
+    }
+    body.has-bg-photo .panel {
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .bg-thumb-card {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line-soft);
+      background: var(--sub-bg);
+      aspect-ratio: 16 / 9;
+    }
+    .bg-thumb-card.current-slide {
+      border-color: var(--gold);
+      box-shadow: 0 0 16px -4px rgba(236, 194, 101, 0.65);
+    }
 
     #page { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
@@ -797,10 +856,17 @@
 </head>
 <body class="min-h-screen">
 
+<!-- LỚP ẢNH NỀN ĐỘNG THEO MODE (XOAY VÒNG 60S + LÀM MỜ GẦN KHUNG TƯƠNG TÁC) -->
+<div id="bg-photo-stage" aria-hidden="true">
+  <div id="bg-photo-a" class="bg-photo-layer"></div>
+  <div id="bg-photo-b" class="bg-photo-layer"></div>
+  <div id="bg-photo-tint"></div>
+</div>
+
 <!-- MÀN HÌNH MỞ ĐẦU (SPLASH) -->
 <div id="splash">
   <div class="splash-word">HOYOVERSE</div>
-  <div class="splash-sub">Made by Ngọt</div>
+  <div class="splash-sub">Fan-made co-op tool</div>
 </div>
 
 <!-- CÁNH CỬA: HIỆN SAU KHI ĐĂNG NHẬP (CELESTIA FULLSCREEN SVG SCENE) -->
@@ -1047,6 +1113,16 @@
         <button type="button" data-theme-val="dark" onclick="setTheme('dark')" class="theme-btn">Dark</button>
         <button type="button" data-theme-val="light" onclick="setTheme('light')" class="theme-btn">Light</button>
       </div>
+
+      <!-- Bộ chuyển đổi kiểu nền: Ảnh nền (xoay vòng 1 phút) / Nền đơn sắc -->
+      <div class="theme-switcher" role="group" aria-label="Kiểu hiển thị nền">
+        <button type="button" data-bg-style="image" onclick="setBgStyle('image')" class="theme-btn bg-style-btn active" title="Hiển thị ảnh nền theo chế độ (tự đổi mỗi 1 phút)">🖼 Ảnh nền</button>
+        <button type="button" data-bg-style="solid" onclick="setBgStyle('solid')" class="theme-btn bg-style-btn" title="Sử dụng màu nền đơn sắc gốc">🎨 Đơn sắc</button>
+      </div>
+
+      <button type="button" onclick="openBgManagerModal()" class="btn-ghost px-3 py-1.5 text-xs font-semibold" title="Thêm hoặc quản lý ảnh nền cho từng chế độ">
+        + Ảnh nền
+      </button>
 
       <div id="user-nav" class="hidden flex items-center gap-5">
         <div class="text-right">
@@ -1378,6 +1454,48 @@
   <div id="char-zoom-box" class="panel panel-gold char-zoom-box"></div>
 </div>
 
+<!-- MODAL 5: QUẢN LÝ ẢNH NỀN THEO CHẾ ĐỘ (HIỆN TẠI / DARK / LIGHT) -->
+<div id="bg-manager-modal" class="modal-backdrop hidden" onclick="if(event.target === this) closeBgManagerModal()">
+  <div class="panel panel-gold modal-box text-left" style="max-width: 640px;">
+    <div class="text-center mb-4">
+      <div class="eyebrow mb-1">Wallpaper Manager</div>
+      <h3 class="font-display text-3xl font-bold title-gold">Ảnh Nền Theo Chế Độ</h3>
+      <p class="text-xs mt-1" style="color: var(--ink-dim);">
+        Mỗi chế độ có danh sách ảnh riêng, tự động chuyển mượt mỗi <strong>1 phút</strong> và làm mờ nhẹ gần các khung tương tác.
+      </p>
+    </div>
+
+    <form onsubmit="handleAddThemeBackground(event)" class="p-4 rounded-2xl space-y-3.5" style="background: var(--sub-bg); border: 1px solid var(--line);">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <label class="field-label">Chọn Mode</label>
+          <select id="bg-upload-mode" class="field !py-2.5">
+            <option value="default">Hiện tại (Xanh biển)</option>
+            <option value="dark">Dark Mode</option>
+            <option value="light">Light Mode</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="field-label">Đường dẫn ảnh (image_url)</label>
+          <input type="url" id="bg-upload-url" required placeholder="https://.../wallpaper.jpg" class="field !py-2.5" />
+        </div>
+      </div>
+      <div class="flex flex-wrap justify-between items-center gap-2 pt-1">
+        <span class="text-[11px]" style="color: var(--ink-mute);">Lưu trực tiếp vào bảng <code style="color: var(--gold-bright);">theme_backgrounds</code></span>
+        <button type="submit" class="btn-gold px-5 py-2 text-xs uppercase tracking-wider">Lưu Ảnh Nền</button>
+      </div>
+    </form>
+
+    <div class="ornament my-5"><i></i></div>
+
+    <div id="bg-manager-list" class="space-y-4 max-h-[46vh] overflow-y-auto pr-1"></div>
+
+    <div class="mt-6 flex justify-end">
+      <button type="button" onclick="closeBgManagerModal()" class="btn-ghost px-5 py-2.5 text-xs font-semibold">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL 3: LUẬT & NGUYÊN TẮC CO-OP + CREDIT -->
 <div id="rules-modal" class="modal-backdrop hidden" onclick="if(event.target === this) closeRulesModal()">
   <div class="panel panel-gold modal-box text-left">
@@ -1444,10 +1562,105 @@
     let lastPendingBossSig = null;
 
     // =========================================================================
-    // 0. CHUYỂN ĐỔI GIAO DIỆN (HIỆN TẠI / DARK / LIGHT) & MODAL LUẬT
+    // 0. CHUYỂN ĐỔI GIAO DIỆN (HIỆN TẠI / DARK / LIGHT), ẢNH NỀN 1 PHÚT & MỜ GẦN KHUNG
     // =========================================================================
+    let currentThemeMode = 'default';
+    let currentBgStyle = 'image'; // 'image' | 'solid'
+    let themeBackgrounds = [];
+    let bgSlideIndex = 0;
+    let bgSlideTimer = null;
+    let bgActiveSlot = 'a';
+    let lastBgTableSig = null;
+
+    function getActiveModeBackgrounds(mode = currentThemeMode) {
+      return themeBackgrounds.filter(row => (row.mode || 'default') === mode);
+    }
+
+    function applyBackgroundSlide(url, instant = false) {
+      const layerA = document.getElementById('bg-photo-a');
+      const layerB = document.getElementById('bg-photo-b');
+      if (!layerA || !layerB || !url) return;
+
+      const nextSlot = bgActiveSlot === 'a' ? 'b' : 'a';
+      const incoming = nextSlot === 'a' ? layerA : layerB;
+      const outgoing = nextSlot === 'a' ? layerB : layerA;
+
+      const preloader = new Image();
+      const commitSwap = () => {
+        incoming.style.backgroundImage = `url("${url.replace(/"/g, '\"')}")`;
+        if (instant) {
+          incoming.style.transition = 'none';
+          outgoing.style.transition = 'none';
+        }
+        incoming.classList.add('active');
+        outgoing.classList.remove('active');
+        bgActiveSlot = nextSlot;
+        if (instant) {
+          void incoming.offsetWidth;
+          incoming.style.transition = '';
+          outgoing.style.transition = '';
+        }
+        renderBgManagerList();
+      };
+
+      preloader.onload = commitSwap;
+      preloader.onerror = commitSwap;
+      preloader.src = url;
+    }
+
+    function syncBackgroundController(resetIndex = true) {
+      clearInterval(bgSlideTimer);
+      bgSlideTimer = null;
+
+      const modeImgs = getActiveModeBackgrounds(currentThemeMode);
+      const shouldShowPhoto = currentBgStyle === 'image' && modeImgs.length > 0;
+
+      document.body.classList.toggle('has-bg-photo', shouldShowPhoto);
+
+      if (!shouldShowPhoto) {
+        renderBgManagerList();
+        return;
+      }
+
+      if (resetIndex || bgSlideIndex >= modeImgs.length) {
+        bgSlideIndex = 0;
+      }
+
+      const firstItem = modeImgs[bgSlideIndex];
+      const firstUrl = firstItem.image_url || firstItem.anh_url || firstItem.url || '';
+      if (firstUrl) {
+        applyBackgroundSlide(firstUrl, resetIndex);
+      }
+
+      // Nếu có từ 2 ảnh trở lên trong mode này, tự động đổi ảnh mỗi 1 phút (60.000ms)
+      if (modeImgs.length > 1) {
+        bgSlideTimer = setInterval(() => {
+          const latestImgs = getActiveModeBackgrounds(currentThemeMode);
+          if (currentBgStyle !== 'image' || latestImgs.length <= 1) return;
+          bgSlideIndex = (bgSlideIndex + 1) % latestImgs.length;
+          const nextItem = latestImgs[bgSlideIndex];
+          const nextUrl = nextItem.image_url || nextItem.anh_url || nextItem.url || '';
+          if (nextUrl) applyBackgroundSlide(nextUrl, false);
+        }, 60000);
+      }
+    }
+
+    function setBgStyle(styleName) {
+      currentBgStyle = styleName === 'solid' ? 'solid' : 'image';
+      try {
+        localStorage.setItem('genshin_sync_bg_style', currentBgStyle);
+      } catch (e) {}
+
+      document.querySelectorAll('.bg-style-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-bg-style') === currentBgStyle);
+      });
+
+      syncBackgroundController(true);
+    }
+
     function setTheme(themeName) {
       const normalized = (themeName === 'dark' || themeName === 'light') ? themeName : 'default';
+      currentThemeMode = normalized;
       if (normalized === 'default') {
         document.documentElement.removeAttribute('data-theme');
       } else {
@@ -1457,18 +1670,205 @@
         localStorage.setItem('genshin_sync_theme', normalized);
       } catch (e) {}
 
-      document.querySelectorAll('.theme-btn').forEach(btn => {
+      document.querySelectorAll('.theme-btn[data-theme-val]').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-theme-val') === normalized);
       });
+
+      const uploadSelect = document.getElementById('bg-upload-mode');
+      if (uploadSelect) uploadSelect.value = normalized;
+
+      syncBackgroundController(true);
     }
 
     (function syncInitialThemeButtons() {
-      let saved = 'default';
+      let savedTheme = 'default';
+      let savedBgStyle = 'image';
       try {
-        saved = localStorage.getItem('genshin_sync_theme') || 'default';
+        savedTheme = localStorage.getItem('genshin_sync_theme') || 'default';
+        savedBgStyle = localStorage.getItem('genshin_sync_bg_style') || 'image';
       } catch (e) {}
-      setTheme(saved);
+      currentBgStyle = savedBgStyle === 'solid' ? 'solid' : 'image';
+      document.querySelectorAll('.bg-style-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-bg-style') === currentBgStyle);
+      });
+      setTheme(savedTheme);
     })();
+
+    // Hiệu ứng làm mờ ảnh nền đi 1 chút khi con trỏ hoặc focus tiến gần các khung tương tác
+    (function initProximityBackgroundBlur() {
+      let rafPending = false;
+      let lastX = -9999;
+      let lastY = -9999;
+      let hasFocusedInput = false;
+
+      const updateBlur = () => {
+        rafPending = false;
+        if (!document.body.classList.contains('has-bg-photo')) return;
+
+        if (hasFocusedInput) {
+          document.documentElement.style.setProperty('--bg-prox-blur', '7.5px');
+          document.documentElement.style.setProperty('--bg-prox-bright', '0.88');
+          return;
+        }
+
+        const frames = document.querySelectorAll('.panel, .stage, header, footer');
+        let minDist = Infinity;
+        const threshold = 72; // khoảng cách (px) tính là "gần khung tương tác"
+
+        for (let i = 0; i < frames.length; i++) {
+          const el = frames[i];
+          if (el.offsetParent === null) continue;
+          const r = el.getBoundingClientRect();
+          const dx = Math.max(r.left - lastX, 0, lastX - r.right);
+          const dy = Math.max(r.top - lastY, 0, lastY - r.bottom);
+          const dist = Math.hypot(dx, dy);
+          if (dist < minDist) minDist = dist;
+          if (minDist === 0) break;
+        }
+
+        const proximity = Math.max(0, Math.min(1, 1 - minDist / threshold));
+        const blurPx = (1.5 + proximity * 6.0).toFixed(2);
+        const brightVal = (0.96 - proximity * 0.08).toFixed(3);
+
+        document.documentElement.style.setProperty('--bg-prox-blur', `${blurPx}px`);
+        document.documentElement.style.setProperty('--bg-prox-bright', brightVal);
+      };
+
+      window.addEventListener('pointermove', (e) => {
+        lastX = e.clientX;
+        lastY = e.clientY;
+        if (!rafPending) {
+          rafPending = true;
+          requestAnimationFrame(updateBlur);
+        }
+      }, { passive: true });
+
+      document.addEventListener('focusin', (e) => {
+        if (e.target && e.target.matches('input, select, textarea')) {
+          hasFocusedInput = true;
+          updateBlur();
+        }
+      });
+
+      document.addEventListener('focusout', () => {
+        hasFocusedInput = false;
+        updateBlur();
+      });
+    })();
+
+    function openBgManagerModal() {
+      const uploadSelect = document.getElementById('bg-upload-mode');
+      if (uploadSelect) uploadSelect.value = currentThemeMode;
+      renderBgManagerList();
+      document.getElementById('bg-manager-modal').classList.remove('hidden');
+    }
+
+    function closeBgManagerModal() {
+      document.getElementById('bg-manager-modal').classList.add('hidden');
+    }
+
+    function renderBgManagerList() {
+      const container = document.getElementById('bg-manager-list');
+      if (!container) return;
+
+      const modeNames = {
+        default: 'Hiện tại (Xanh biển + Vàng)',
+        dark: 'Dark Mode',
+        light: 'Light Mode'
+      };
+
+      const activeList = getActiveModeBackgrounds(currentThemeMode);
+      const activeCurrentItem = activeList[bgSlideIndex] || null;
+
+      container.innerHTML = ['default', 'dark', 'light'].map(m => {
+        const items = themeBackgrounds.filter(r => (r.mode || 'default') === m);
+        const gridHtml = items.length > 0
+          ? `<div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-2">
+              ${items.map((item, idx) => {
+                const url = item.image_url || item.anh_url || item.url || '';
+                const isShowing = currentBgStyle === 'image' && currentThemeMode === m && activeCurrentItem && activeCurrentItem.id === item.id;
+                return `
+                  <div class="bg-thumb-card ${isShowing ? 'current-slide' : ''}">
+                    <img src="${esc(url)}" alt="BG ${idx + 1}" class="w-full h-full object-cover" loading="lazy" />
+                    <div class="absolute inset-x-0 bottom-0 px-2 py-1 flex items-center justify-between text-[10px]" style="background: rgba(6,10,20,.78); color: #eef3f8;">
+                      <span>#${idx + 1}${isShowing ? ' · Đang hiện' : ''}</span>
+                      <button type="button" onclick="deleteThemeBackground(${item.id})" class="text-red-300 hover:text-red-400 font-bold px-1" title="Xóa ảnh này">✕</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>`
+          : `<div class="text-xs italic mt-1" style="color: var(--ink-mute);">Chưa có ảnh nền nào cho chế độ này.</div>`;
+
+        return `
+          <div class="p-3.5 rounded-xl" style="background: var(--sub-bg); border: 1px solid var(--line-soft);">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--gold-bright);">${modeNames[m]}</span>
+              <span class="text-[11px]" style="color: var(--ink-mute);">${items.length} ảnh</span>
+            </div>
+            ${gridHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function refreshThemeBackgrounds(force = false) {
+      const { data, error } = await supabaseClient
+        .from('theme_backgrounds')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (error) {
+        // Nếu bảng chưa được tạo trên Supabase, giữ nguyên nhẹ nhàng không làm gián đoạn app
+        return;
+      }
+
+      const rows = data || [];
+      const sig = JSON.stringify(rows.map(r => [r.id, r.mode, r.image_url || r.anh_url || r.url]));
+      if (!force && sig === lastBgTableSig) return;
+      lastBgTableSig = sig;
+
+      themeBackgrounds = rows;
+      syncBackgroundController(false);
+    }
+
+    async function handleAddThemeBackground(e) {
+      e.preventDefault();
+      const modeVal = document.getElementById('bg-upload-mode').value || 'default';
+      const urlInput = document.getElementById('bg-upload-url');
+      const imageUrl = urlInput.value.trim();
+      if (!imageUrl) return;
+
+      const { error } = await supabaseClient
+        .from('theme_backgrounds')
+        .insert([{ mode: modeVal, image_url: imageUrl }]);
+
+      if (error) {
+        alert('Lỗi lưu ảnh nền (hãy chắc chắn đã tạo bảng theme_backgrounds trên Supabase): ' + error.message);
+        return;
+      }
+
+      urlInput.value = '';
+      await refreshThemeBackgrounds(true);
+      if (modeVal === currentThemeMode && currentBgStyle === 'image') {
+        bgSlideIndex = Math.max(0, getActiveModeBackgrounds(modeVal).length - 1);
+        syncBackgroundController(false);
+      }
+    }
+
+    async function deleteThemeBackground(bgId) {
+      const { error } = await supabaseClient
+        .from('theme_backgrounds')
+        .delete()
+        .eq('id', bgId);
+
+      if (error) {
+        alert('Lỗi xóa ảnh nền: ' + error.message);
+        return;
+      }
+
+      await refreshThemeBackgrounds(true);
+    }
 
     function openRulesModal() {
       document.getElementById('rules-modal').classList.remove('hidden');
@@ -1918,6 +2318,7 @@
       const { data: chars } = await supabaseClient.from('characters').select('*').order('name');
       allCharacters = chars || [];
 
+      await refreshThemeBackgrounds(true);
       await refreshBosses(true);
       await refreshUsersAndRosters(true);
       await refreshLobbyResult(true);
@@ -2132,6 +2533,7 @@
       if (pollTimer) return;
       pollTimer = setInterval(() => {
         if (!currentUser) return;
+        refreshThemeBackgrounds();
         refreshBosses();
         refreshUsersAndRosters();
         refreshLobbyResult();
@@ -2146,6 +2548,7 @@
       startPolling();
       if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
       realtimeChannel = supabaseClient.channel('genshin-sync-channel')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'theme_backgrounds' }, () => refreshThemeBackgrounds())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'bosses' }, () => refreshBosses())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => refreshUsersAndRosters())
         .on('postgres_changes', { event: '*', schema: 'public', table: 'user_characters' }, () => refreshUsersAndRosters())
