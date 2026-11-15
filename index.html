@@ -19,7 +19,7 @@
         }
       } catch (e) {}
     })();
-  </script>
+  </>
   <style>
     :root {
       /* Chế độ Hiện tại: Xanh biển dịu nhẹ, không chói mắt + Vàng rực rỡ nhưng không gắt */
@@ -1390,6 +1390,7 @@
           <div>
             <h3 class="font-display text-2xl font-bold" style="color: var(--gold-bright);">Chọn các nhân vật bạn đang sở hữu</h3>
             <p class="text-xs mt-1" style="color: var(--ink-mute);">Hệ thống tự động lưu ngay khi bấm chọn · Giữ chuột 3 giây vào thẻ để phóng to.</p>
+            <div id="roster-min-status" class="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold"></div>
           </div>
           <input type="text" id="char-search" oninput="renderCharacterGrid()" placeholder="Tìm tên nhân vật..."
             class="field sm:!w-72" />
@@ -1538,7 +1539,7 @@
     // =========================================================================
     const SUPABASE_URL = 'https://contentsgenshinimpact.vercel.app/supabase';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dWdwY3FubWdyaXFtYndrdHBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NDIwODQsImV4cCI6MjExMDIxODA4NH0.DvugX1F8WA1xleFzgHNWxmD2LC_xffIZ8bxA69DKQGI';
-
+    const MIN_REQUIRED_CHARS = 42;
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Biến trạng thái toàn cục
@@ -2333,6 +2334,24 @@
       renderCharacterGrid();
     }
 
+    function updateRosterRequirementUI() {
+  const box = document.getElementById('roster-min-status');
+  if (!box) return;
+  const count = myCharacterIds.size;
+  const missing = Math.max(0, MIN_REQUIRED_CHARS - count);
+
+  if (missing === 0) {
+    box.style.color = 'var(--ok)';
+    box.style.background = 'rgba(111, 224, 184, 0.12)';
+    box.style.border = '1px solid rgba(111, 224, 184, 0.35)';
+    box.innerHTML = `✓ Đã đạt ${count}/${MIN_REQUIRED_CHARS} nhân vật — Đủ điều kiện tham gia Vòng Quay`;
+  } else {
+    box.style.color = '#ffb4bf';
+    box.style.background = 'rgba(244, 63, 94, 0.12)';
+    box.style.border = '1px solid rgba(244, 63, 94, 0.35)';
+    box.innerHTML = `⚠ Hiện có ${count}/${MIN_REQUIRED_CHARS} nhân vật — Cần chọn thêm tối thiểu ${missing} nhân vật nữa để được quay`;
+  }
+}
     function syncSingleCharButtonDOM(charId, owned) {
       const btn = document.querySelector(`#character-grid button[data-char-id="${charId}"]`);
       if (!btn) return;
@@ -2349,6 +2368,7 @@
       if (me) {
      document.getElementById('nav-username').textContent = me.username;
      document.getElementById('nav-uid').textContent = 'UID: ' + me.uid;
+     updateRosterRequirementUI()
 }
 
 // Chỉ hiện nút "+ Ảnh nền" nếu user có cột can_edit_bg = true
@@ -2644,6 +2664,7 @@
       syncSingleCharButtonDOM(charId, nextOwned);
       renderParticipantCheckboxes();
       renderBoardTable();
+      updateRosterRequirementUI()
 
       try {
         if (!nextOwned) {
@@ -2664,7 +2685,7 @@
     // =========================================================================
     // 4. BẢNG TỔNG HỢP & THUẬT TOÁN QUAY RANDOM (KHÔNG TRÙNG NHÂN VẬT)
     // =========================================================================
-    function renderBoardTable() {
+  function renderBoardTable() {
       const tbody = document.getElementById('board-tbody');
       if (allUsers.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="py-12 text-center italic font-display text-lg" style="color: var(--ink-mute);">Chưa có thành viên nào đăng ký.</td></tr>`;
@@ -2677,6 +2698,11 @@
           .map(id => allCharacters.find(c => c.id === id))
           .filter(Boolean)
           .sort((a, b) => a.name.localeCompare(b.name));
+
+        const isEnough = charObjs.length >= MIN_REQUIRED_CHARS;
+        const countBadge = isEnough
+          ? `<div class="text-xs mt-0.5 font-medium" style="color: var(--ok);">✓ ${charObjs.length}/${MIN_REQUIRED_CHARS} nhân vật</div>`
+          : `<div class="text-xs mt-0.5 font-medium" style="color: #ffb4bf;">⚠ ${charObjs.length}/${MIN_REQUIRED_CHARS} nhân vật (Chưa đủ)</div>`;
 
         const badges = charObjs.length > 0
           ? charObjs.map(c => {
@@ -2693,7 +2719,7 @@
             <td class="py-4 px-5 text-center"><span class="rank">${idx + 1}</span></td>
             <td class="py-4 px-5">
               <div class="font-display text-xl font-bold" style="color: var(--gold-bright);">${esc(user.username)}</div>
-              <div class="text-xs mt-0.5" style="color: var(--ink-mute);">${charObjs.length} nhân vật</div>
+              ${countBadge}
             </td>
             <td class="py-4 px-5 font-mono text-xs" style="color: var(--ink-dim);">${esc(user.uid)}</td>
             <td class="py-4 px-5">${badges}</td>
@@ -2701,32 +2727,42 @@
         `;
       }).join('');
     }
+function renderParticipantCheckboxes() {
+  const container = document.getElementById('participant-checkboxes');
+  const previouslyChecked = new Set(
+    Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value)
+  );
+  const hadRendered = container.children.length > 0;
 
-    function renderParticipantCheckboxes() {
-      const container = document.getElementById('participant-checkboxes');
-      const previouslyChecked = new Set(
-        Array.from(document.querySelectorAll('.participant-cb:checked')).map(cb => cb.value)
-      );
-      const hadRendered = container.children.length > 0;
+  container.innerHTML = allUsers.map(user => {
+    const count = (userCharactersMap[user.id] || []).length;
+    const isEligible = count >= MIN_REQUIRED_CHARS;
+    const checked = isEligible && (hadRendered ? previouslyChecked.has(user.id) : true);
 
-      container.innerHTML = allUsers.map(user => {
-        const count = (userCharactersMap[user.id] || []).length;
-        const checked = hadRendered ? previouslyChecked.has(user.id) : count > 0;
-        return `
-          <label class="member-chip">
-            <input type="checkbox" value="${esc(user.id)}" class="participant-cb" ${checked ? 'checked' : ''} />
-            <span class="dot"></span>
-            <span>${esc(user.username)}</span>
-            <span class="cnt">(${count})</span>
-          </label>
-        `;
-      }).join('');
-    }
+    return `
+      <label class="member-chip ${!isEligible ? 'opacity-45 cursor-not-allowed' : ''}"
+             title="${isEligible ? 'Đủ điều kiện tham gia' : `Cần tối thiểu ${MIN_REQUIRED_CHARS} nhân vật (hiện có ${count})`}">
+        <input type="checkbox" value="${esc(user.id)}" class="participant-cb"
+               ${checked ? 'checked' : ''} ${!isEligible ? 'disabled' : ''} />
+        <span class="dot"></span>
+        <span>${esc(user.username)}</span>
+        <span class="cnt">(${count}/${MIN_REQUIRED_CHARS}${!isEligible ? ' · Thiếu' : ''})</span>
+      </label>
+    `;
+  }).join('');
+}
 
-    function toggleAllPlayers(checked) {
-      document.querySelectorAll('.participant-cb').forEach(cb => cb.checked = checked);
-    }
+   function toggleAllPlayers(checked) {
+  document.querySelectorAll('.participant-cb:not(:disabled)').forEach(cb => cb.checked = checked);
+}
 
+// Bên trong spinRandom(), thay dòng lọc validUsers cũ bằng:
+const validUsers = checkedUserIds.filter(uid => (userCharactersMap[uid] || []).length >= MIN_REQUIRED_CHARS);
+
+if (validUsers.length === 0) {
+  alert(`Cần ít nhất 1 thành viên sở hữu tối thiểu ${MIN_REQUIRED_CHARS} nhân vật để bắt đầu quay!`);
+  return;
+}
     // =========================================================================
     // 4b. QUẢN LÝ BOSS & VÒNG QUAY BOSS (CHỐNG NHẤP NHÁY + RESET CÓ XÁC NHẬN)
     // =========================================================================
